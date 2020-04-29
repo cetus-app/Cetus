@@ -1,0 +1,26 @@
+{
+  "name": "cetus-frontend",
+  "version": "1.0.0",
+  "description": "The frontend package for Cetus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "parcel build panel/index.html --public-url=/dashboard --no-source-maps",
+    "dev": "parcel panel/index.html",
+    "check": "tsc --noEmit"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.7",
+    "bulma": "^0.8.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6"
+  }
+}
