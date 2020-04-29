@@ -1,12 +1,11 @@
 // Represents an authentication token
-import {Entity, ManyToOne} from "typeorm";
-import User from "./User.entity";
+import { Entity, ManyToOne } from "typeorm";
+
 import Key from "./Key.abstract.entity";
+import User from "./User.entity";
 
 @Entity()
-export class Auth extends Key{
-	@ManyToOne(() => User, (user: User) => user.auth)
-	user: User;
+export default class Auth extends Key {
+  @ManyToOne(() => User, (user: User) => user.auth)
+  user: User;
 }
-
-export default Auth;
