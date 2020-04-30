@@ -6,6 +6,6 @@ import './panel.css'
 import 'bulma/bulma.sass'
 
 ReactDOM.render(
-  <p className="has-text-centered">Hello</p>,
+  <p className="has-text-centered">Hello: Dashboard root.</p>,
   document.getElementById('root'),
 );

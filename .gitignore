@@ -5,4 +5,4 @@ dist/
 .env
 .cache
 
-frontend/public/dash/
+frontend/public/dashboard/
