@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "parcel build src/index.html --out-dir public/dashboard --public-url=/dashboard --no-source-maps",
-    "dev": "parcel src/index.html",
+    "dev:dash": "parcel src/index.html",
+    "dev:static": "live-server public --watch public --port=1400 --entry-file=404.html",
     "check": "tsc --noEmit"
   },
   "author": "",
@@ -23,6 +24,7 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "cssnano": "^4.1.10",
+    "live-server": "^1.2.1",
     "parcel-bundler": "^1.12.4"
   }
 }
