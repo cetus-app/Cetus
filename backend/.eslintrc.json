@@ -130,6 +130,7 @@
         ]
       }
     ],
+    "linebreak-style": ["error", "windows"],
     "max-len": [
       "error",
       140,
