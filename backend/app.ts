@@ -11,11 +11,18 @@ import { Action } from "./types";
 const options: RoutingControllersOptions = {
   controllers,
   // Example
+  // My proposal is that we use authorizationChecker for authorised actions that aren't associated with a user
+  // For example - The "Public" API which is authorised with Group API tokens
   authorizationChecker: (action: Action, _roles: string[]) => {
     const token = action.request.header("authorization");
 
     return token === "top sekret";
-  }
+  },
+
+  // And then this is used to validate Panel/User associated ones
+  // If Current user is marked as required on a route and it isn't returned,
+  // it returns unauthorised anyway - so that works.
+  currentUserChecker: async (_action: Action) => false
 };
 
 const app = createExpressServer(options);
