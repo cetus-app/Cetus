@@ -13,7 +13,9 @@
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
     "@types/express": "^4.17.6",
+    "@types/ioredis": "^4.16.0",
     "@types/node": "^13.13.4",
+    "@types/redis": "^2.8.18",
     "@types/swagger-ui-express": "^4.1.2",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
@@ -32,6 +34,8 @@
     "class-validator-jsonschema": "^1.3.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "ioredis": "^4.16.3",
+    "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.8.1",
     "routing-controllers-openapi": "^1.8.1",
