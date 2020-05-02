@@ -25,12 +25,6 @@ export default class Group {
   robloxId: number;
 
   @Column({
-    length: 30,
-    unique: true
-  })
-  username: string;
-
-  @Column({
     type: "timestamptz",
     default: "NOW()"
   })
