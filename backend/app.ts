@@ -6,10 +6,12 @@ import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
 
 import controllers from "./controllers";
+import { ServicesMiddleware } from "./middleware";
 import { Action } from "./types";
 
 const options: RoutingControllersOptions = {
   controllers,
+  middlewares: [ServicesMiddleware],
   // Example
   authorizationChecker: (action: Action, _roles: string[]) => {
     const token = action.request.header("authorization");

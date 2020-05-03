@@ -1,13 +1,11 @@
 import {
   IsBoolean, IsNotEmpty, IsNumber, IsString, Max, Min
 } from "class-validator";
+import { Request } from "express";
 import {
-  Authorized, BadRequestError, Body, HeaderParam, JsonController, Param, Post
+  BadRequestError, Body, HeaderParam, JsonController, Param, Post, Req
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
-
-import { redisPrefixes } from "../constants";
-import { redis } from "../shared";
 
 class StartBody {
   @IsString()
@@ -30,7 +28,7 @@ class VerifyBody {
   code: number;
 }
 
-class VerifyResponse {
+export class VerifyResponse {
   @IsBoolean()
   success: boolean;
 
@@ -42,15 +40,14 @@ class VerifyResponse {
 export default class VerificationController {
   @Post("/")
   @ResponseSchema(StartResponse)
-  @Authorized()
-  async start (@Body() { username }: StartBody): Promise<StartResponse> {
+  // @Authorized()
+  async start (@Body() { username }: StartBody, @Req() { verificationService }: Request): Promise<StartResponse> {
     //  const rId = await Roblox.getIdFromUsername(username);
     const rId = 1;
 
     if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
 
-    const redisKey = redisPrefixes.verification + rId;
-    const existing = await redis.get(redisKey);
+    const existing = await verificationService.getCode(rId);
 
     if (existing) {
       return {
@@ -59,8 +56,7 @@ export default class VerificationController {
       };
     }
 
-    const code = Math.floor(1000 + Math.random() * 9000);
-    await redis.set(redisKey, code.toString());
+    const code = await verificationService.setNewCode(rId);
 
     return {
       rId,
@@ -71,7 +67,7 @@ export default class VerificationController {
   @Post("/:rId")
   @ResponseSchema(VerifyResponse)
   // Validation disabled because Roblox has bad (trash) HTTP support
-  async verify (@Param("rId") rId: number, @HeaderParam("authorization") token: string, @Body({ validate: false }) { code }: VerifyBody): Promise<VerifyResponse> {
+  async verify (@Param("rId") rId: number, @HeaderParam("authorization") token: string, @Body({ validate: false }) { code }: VerifyBody, @Req() { verificationService }: Request): Promise<VerifyResponse> {
     if (token !== process.env.verificationApiKey) {
       return {
         success: false,
@@ -79,35 +75,13 @@ export default class VerificationController {
       };
     }
 
-    if (!code || code < 1000 || code > 9999) {
+    if (!verificationService.validateCode(code)) {
       return {
         success: false,
         message: "Invalid verification code"
       };
     }
 
-    const redisKey = redisPrefixes.verification + rId;
-    const validCode = await redis.get(redisKey);
-
-    if (!validCode) {
-      return {
-        success: false,
-        message: "No pending verification found"
-      };
-    }
-
-    if (code !== parseInt(validCode, 10)) {
-      return {
-        success: false,
-        message: "Incorrect verification code"
-      };
-    }
-
-    await redis.del(redisKey);
-
-    return {
-      success: true,
-      message: "Successfully verified"
-    };
+    return verificationService.verify(rId, code);
   }
 }

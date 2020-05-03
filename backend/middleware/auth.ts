@@ -10,11 +10,11 @@ const validator = new Validator();
 // Temporary; where do we put this?
 const authLife = 60 * 60 * 12;
 
-const authRepository = getRepository(Auth);
-
 // Handles authentication of requests, and sets req.user.
 // TODO: Make it work/convert to services
 export default async function checkAuth (req: Request, res: Response, next: NextFunction) {
+  const authRepository = getRepository(Auth);
+
   const { token } = req.cookies || {};
   if (!token || validator.isEmpty(token) || !validator.min(token, 100) || !validator.max(token, 100)) {
     res.status(errors.unauthorized.error.status);
