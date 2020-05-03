@@ -10,12 +10,6 @@ module.exports = {
   logging: false,
   // JS because thats the file extension when they're compiled.
   entities: [
-    `src/db/entity/*.entity.js`
-  ],
-  migrations: [
-    "src/db/migration/*.js"
-  ],
-  subscribers: [
-    "src/db/subscriber/*.js"
+    process.env.NODE_ENV === "production" ? `${__dirname}/**/*.entity.js` : `${__dirname}/**/*.entity.ts`
   ]
 };
