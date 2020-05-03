@@ -3,7 +3,7 @@ import {
 } from "class-validator";
 import { Request } from "express";
 import {
-  BadRequestError, Body, HeaderParam, JsonController, Param, Post, Req
+  Authorized, BadRequestError, Body, HeaderParam, JsonController, Param, Post, Req
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
@@ -40,7 +40,7 @@ export class VerifyResponse {
 export default class VerificationController {
   @Post("/")
   @ResponseSchema(StartResponse)
-  // @Authorized()
+  @Authorized()
   async start (@Body() { username }: StartBody, @Req() { verificationService }: Request): Promise<StartResponse> {
     //  const rId = await Roblox.getIdFromUsername(username);
     const rId = 1;
