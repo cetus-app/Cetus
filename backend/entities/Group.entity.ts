@@ -37,16 +37,16 @@ export default class Group {
   // TO consider;
   // If we want to add additional permissions the owner field could be replaced by a join table
   // With permission fields. One of those permissions could be ownership.
-  @OneToMany(_type => ApiKey, key => key.group)
+  @OneToMany(() => ApiKey, key => key.group)
   keys: ApiKey[];
 
-  @OneToMany(_type => Integration, integration => integration.group)
+  @OneToMany(() => Integration, integration => integration.group)
   integrations: Integration[];
 
-  @ManyToOne(() => User, (user: User) => user.groups)
+  @ManyToOne(() => User, user => user.groups)
   users: User[];
 
   // Possible problem: What happens when Group ownership is transferred?
-  @ManyToOne(() => User, (user: User) => user.groups)
+  @ManyToOne(() => User, user => user.groups, { nullable: false })
   owner: User;
 }

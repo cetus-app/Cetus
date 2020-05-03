@@ -15,6 +15,6 @@ export default class Integration {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(_type => Group, grp => grp.integrations)
+  @ManyToOne(() => Group, grp => grp.integrations, { nullable: false })
   group: Group;
 }

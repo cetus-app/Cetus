@@ -6,6 +6,6 @@ import User from "./User.entity";
 
 @Entity()
 export default class Auth extends Key {
-  @ManyToOne(() => User, (user: User) => user.auth)
+  @ManyToOne(() => User, user => user.auth, { nullable: false })
   user: User;
 }

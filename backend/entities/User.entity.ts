@@ -38,6 +38,6 @@ export default class User {
   @OneToMany(() => Auth, auth => auth.user)
   auth: Auth[];
 
-  @OneToMany(_type => Group, grp => grp.owner)
+  @OneToMany(() => Group, grp => grp.owner)
   groups: Group[];
 }

@@ -10,6 +10,6 @@ export default class ApiKey extends Key {
   @Column()
   name: string;
 
-  @ManyToOne(() => Group, grp => grp.keys)
+  @ManyToOne(() => Group, grp => grp.keys, { nullable: false })
   group: Group;
 }
