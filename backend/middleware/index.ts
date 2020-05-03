@@ -1,2 +1,6 @@
-export { default as checkAuth } from "./auth";
-export { default as ServicesMiddleware } from "./ServicesMiddleware";
+import AuthMiddleware from "./Auth";
+import ServicesMiddleware from "./Services";
+
+export default [AuthMiddleware, ServicesMiddleware];
+
+export { AuthMiddleware, ServicesMiddleware };

@@ -6,6 +6,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
@@ -43,7 +45,8 @@ export default class Group {
   @OneToMany(() => Integration, integration => integration.group)
   integrations: Integration[];
 
-  @ManyToOne(() => User, user => user.groups)
+  @ManyToMany(() => User, user => user.groups)
+  @JoinTable()
   users: User[];
 
   // Possible problem: What happens when Group ownership is transferred?

@@ -1,6 +1,6 @@
 // Used to present a user on the service
 import {
-  Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn
+  Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
 
 import Auth from "./Auth.entity";
@@ -38,6 +38,6 @@ export default class User {
   @OneToMany(() => Auth, auth => auth.user)
   auth: Auth[];
 
-  @OneToMany(() => Group, grp => grp.owner)
+  @ManyToMany(() => Group, grp => grp.owner)
   groups: Group[];
 }

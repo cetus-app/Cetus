@@ -1,26 +1,27 @@
 // Express app
 import { getFromContainer, MetadataStorage } from "class-validator";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
-import { createExpressServer, getMetadataArgsStorage, RoutingControllersOptions } from "routing-controllers";
+import cookieParser from "cookie-parser";
+import express from "express";
+import { getMetadataArgsStorage, RoutingControllersOptions, useExpressServer } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
 
 import controllers from "./controllers";
-import { ServicesMiddleware } from "./middleware";
-import { Action } from "./types";
+import middlewares from "./middleware";
 
 const options: RoutingControllersOptions = {
   controllers,
-  middlewares: [ServicesMiddleware],
-  // Example
-  authorizationChecker: (action: Action, _roles: string[]) => {
-    const token = action.request.header("authorization");
-
-    return token === "top sekret";
-  }
+  middlewares,
+  authorizationChecker: action => !!action.request.user,
+  currentUserChecker: action => action.request.user
 };
 
-const app = createExpressServer(options);
+const app = express();
+
+app.use(cookieParser());
+
+useExpressServer(app, options);
 
 const { validationMetadatas } = getFromContainer(MetadataStorage) as any;
 const schemas = validationMetadatasToSchemas(validationMetadatas);
