@@ -4,6 +4,7 @@
 // TODO: Have a look at eager relationships - some of these would probably suit being made Eager.
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -30,10 +31,7 @@ export default class Group {
   })
   username: string;
 
-  @Column({
-    type: "timestamptz",
-    default: "NOW()"
-  })
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
   // TO consider;

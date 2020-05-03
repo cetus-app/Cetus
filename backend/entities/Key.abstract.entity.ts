@@ -1,5 +1,7 @@
 // Represents an authentication token
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column, CreateDateColumn, Entity, PrimaryGeneratedColumn
+} from "typeorm";
 
 @Entity()
 export default abstract class Key {
@@ -9,9 +11,6 @@ export default abstract class Key {
   @Column({ length: 100 })
   token: string;
 
-  @Column({
-    type: "timestamptz",
-    default: "NOW()"
-  })
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 }

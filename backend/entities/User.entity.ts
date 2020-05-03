@@ -1,6 +1,6 @@
 // Used to present a user on the service
 import {
-  Column, Entity, OneToMany, PrimaryGeneratedColumn
+  Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
 
 import Auth from "./Auth.entity";
@@ -32,10 +32,7 @@ export default class User {
   })
   email: string;
 
-  @Column({
-    type: "timestamptz",
-    default: "NOW()"
-  })
+  @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
   @OneToMany(() => Auth, auth => auth.user)
