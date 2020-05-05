@@ -1,5 +1,4 @@
 // Express app
-import { getFromContainer, MetadataStorage } from "class-validator";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -23,8 +22,7 @@ app.use(cookieParser());
 
 useExpressServer(app, options);
 
-const { validationMetadatas } = getFromContainer(MetadataStorage) as any;
-const schemas = validationMetadatasToSchemas(validationMetadatas);
+const schemas = validationMetadatasToSchemas();
 const metadataStorage = getMetadataArgsStorage();
 
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });
