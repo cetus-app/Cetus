@@ -1,6 +1,6 @@
 // This might become a service
 // Exports common errors and the generic error handling middleware.
-// COPYRIGHT Josh Muir 2019.
+
 
 // TODO: Add different error handling based on production or development
 // "Unfriendly" error messages.
