@@ -60,6 +60,18 @@ const errors = {
   notImplemented: errorGenerator(501, "Not implemented.")
 };
 
+export class ExternalHttpError extends Error {
+  constructor (url: string, ...params: ConstructorParameters<typeof Error>) {
+    super(...params);
+
+    Error.captureStackTrace(this, ExternalHttpError);
+
+    this.name = "ExternalHttpError";
+    this.url = url;
+  }
+
+  url: string;
+}
 
 export {
   errorHandler, errorGenerator, errors, errorCatch

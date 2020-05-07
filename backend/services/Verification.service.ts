@@ -13,7 +13,7 @@ export default class VerificationService {
 
   async setNewCode (rId: number): Promise<number> {
     const code = Math.floor(1000 + Math.random() * 9000);
-    await redis.set(redisPrefixes.verification + rId, code);
+    await redis.set(redisPrefixes.verification + rId, code, "EX", 60 * 30);
     return code;
   }
 

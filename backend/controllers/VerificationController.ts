@@ -3,9 +3,11 @@ import {
 } from "class-validator";
 import { Request } from "express";
 import {
-  Authorized, BadRequestError, Body, HeaderParam, JsonController, Param, Post, Req
+  Authorized, BadRequestError, Body, HeaderParam, InternalServerError, JsonController, Param, Post, Req
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
+
+import Roblox from "../api/roblox/Roblox";
 
 class StartBody {
   @IsString()
@@ -42,26 +44,29 @@ export default class VerificationController {
   @ResponseSchema(StartResponse)
   @Authorized()
   async start (@Body() { username }: StartBody, @Req() { verificationService }: Request): Promise<StartResponse> {
-    //  const rId = await Roblox.getIdFromUsername(username);
-    const rId = 1;
+    try {
+      const rId = await Roblox.getIdFromUsername(username);
 
-    if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
+      if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
 
-    const existing = await verificationService.getCode(rId);
+      const existing = await verificationService.getCode(rId);
 
-    if (existing) {
+      if (existing) {
+        return {
+          rId,
+          code: parseInt(existing, 10)
+        };
+      }
+
+      const code = await verificationService.setNewCode(rId);
+
       return {
         rId,
-        code: parseInt(existing, 10)
+        code
       };
+    } catch (e) {
+      throw new InternalServerError(e.message);
     }
-
-    const code = await verificationService.setNewCode(rId);
-
-    return {
-      rId,
-      code
-    };
   }
 
   @Post("/:rId")
