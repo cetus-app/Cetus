@@ -12,6 +12,12 @@ export default class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Column("int", {
+    nullable: true,
+    unique: true
+  })
+  rId?: number;
+
   @Column({
     length: 30,
     unique: true
