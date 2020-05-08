@@ -6,7 +6,11 @@ import Group from "../entities/Group.entity";
 @EntityRepository(Group)
 export default class GroupRepository extends Repository<Group> {
   getGroup (groupId: string) {
-    return this.findOne({ id: groupId }, { relations: ["owner"] });
+    return this.findOne({ id: groupId });
+  }
+
+  getFullGroup (groupId: string) {
+    return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys"] });
   }
 
   getGroupByRoblox (robloxGroupId: number) {
