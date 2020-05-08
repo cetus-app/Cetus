@@ -1,13 +1,14 @@
 import {
-  IsBoolean, IsNotEmpty, IsNumber, IsString, Max, Min
+  IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min
 } from "class-validator";
 import { Request } from "express";
 import {
-  Authorized, BadRequestError, Body, HeaderParam, InternalServerError, JsonController, Param, Post, Req
+  Authorized, BadRequestError, Body, CurrentUser, HeaderParam, InternalServerError, JsonController, Param, Post, QueryParams, Req
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../api/roblox/Roblox";
+import { User } from "../entities";
 
 class StartBody {
   @IsString()
@@ -15,12 +16,21 @@ class StartBody {
   username: string;
 }
 
+class StartQuery {
+  @IsOptional()
+  @IsBoolean()
+  blurb: boolean = false;
+}
+
 class StartResponse {
   @IsNumber()
   rId: number;
 
   @IsNumber()
-  code: number;
+  code?: number;
+
+  @IsString()
+  blurbCode?: string;
 }
 
 class VerifyBody {
@@ -42,31 +52,39 @@ export class VerifyResponse {
 export default class VerificationController {
   @Post("/")
   @ResponseSchema(StartResponse)
-  @Authorized()
-  async start (@Body() { username }: StartBody, @Req() { verificationService }: Request): Promise<StartResponse> {
+  async start (
+    @QueryParams() { blurb }: StartQuery,
+    @Body() { username }: StartBody,
+    @Req() { verificationService }: Request,
+    @CurrentUser({ required: true }) user: User
+  ): Promise<StartResponse> {
+    let rId: number | undefined;
+
     try {
-      const rId = await Roblox.getIdFromUsername(username);
-
-      if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
-
-      const existing = await verificationService.getCode(rId);
-
-      if (existing) {
-        return {
-          rId,
-          code: parseInt(existing, 10)
-        };
-      }
-
-      const code = await verificationService.setNewCode(rId);
-
-      return {
-        rId,
-        code
-      };
+      rId = await Roblox.getIdFromUsername(username);
     } catch (e) {
       throw new InternalServerError(e.message);
     }
+
+    if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
+
+    const existing = await verificationService.get(rId);
+
+    if (existing) {
+      return {
+        rId,
+        code: typeof existing.code === "number" ? existing.code : undefined,
+        blurbCode: typeof existing.code === "string" ? existing.code : undefined
+      };
+    }
+
+    const code = await verificationService.setNewCode(blurb ? "blurb" : "game", user.id, rId);
+
+    return {
+      rId,
+      code: typeof code === "number" ? code : undefined,
+      blurbCode: typeof code === "string" ? code : undefined
+    };
   }
 
   @Post("/:rId")
@@ -87,6 +105,13 @@ export default class VerificationController {
       };
     }
 
-    return verificationService.verify(rId, code);
+    return verificationService.verify("game", rId, code);
+  }
+
+  @Post("/blurb/:rId")
+  @ResponseSchema(VerifyResponse)
+  @Authorized()
+  async verifyBlurb (@Param("rId") rId: number, @Req() { verificationService }: Request): Promise<VerifyResponse> {
+    return verificationService.verify("blurb", rId, undefined);
   }
 }
