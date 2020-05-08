@@ -1,3 +1,2 @@
-// Intentionally lowercase: These are instances as provided by getCustomRepository
-export { default as userRepository } from "./UserRepository";
-export { default as groupRepository } from "./GroupRepository";
+export { default as UserRepository } from "./UserRepository";
+export { default as GroupRepository } from "./GroupRepository";
