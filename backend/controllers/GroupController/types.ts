@@ -1,22 +1,31 @@
-import { IsNumber, IsUUID, Min } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  IsDate, IsNumber, IsPositive, IsUUID
+} from "class-validator";
 
 import { ApiKey, Integration, User } from "../../entities";
 
 export class PartialGroup {
+  @IsUUID("4")
   id: string;
 
+  @IsPositive()
   robloxId: number;
 
+  @IsDate()
   created: Date;
 }
 
 export class FullGroup extends PartialGroup {
   // Make this a DTO too?
+  @Type(() => ApiKey)
   keys: ApiKey[];
 
   // Make this a DTO?
+  @Type(() => Integration)
   integrations: Integration[];
 
+  @Type(() => User)
   owner: User;
 }
 
@@ -28,6 +37,17 @@ export class GroupParam {
 
 export class addGroupBody {
   @IsNumber()
-  @Min(0)
+  @IsPositive()
   robloxId: number
+}
+export class UnlinkedGroup {
+  name: string;
+
+  id: number;
+
+  emblemUrl: string;
+
+  rank: number;
+
+  role: string;
 }

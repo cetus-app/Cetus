@@ -5,7 +5,6 @@ import {
   Delete,
   ForbiddenError,
   Get,
-  HttpError,
   InternalServerError,
   JsonController,
   NotFoundError,
@@ -21,15 +20,15 @@ import database from "../../database";
 import { Group, User } from "../../entities";
 import { UserRobloxGroup } from "../../types";
 import {
-  addGroupBody, FullGroup, GroupParam, PartialGroup
+  addGroupBody, FullGroup, GroupParam, PartialGroup, UnlinkedGroup
 } from "./types";
 
 
 @JsonController("/groups")
-export default class Index {
+export default class Groups {
   @Get("/")
-  @ResponseSchema(Group, { isArray: true })
-  async getGroups (@CurrentUser({ required: true }) user: User): Promise<Group[]> {
+  @ResponseSchema(PartialGroup, { isArray: true })
+  async getGroups (@CurrentUser({ required: true }) user: User): Promise<PartialGroup[]> {
     // Get user groups
     return database.users.getUserGroups(user);
   }
@@ -38,7 +37,7 @@ export default class Index {
   // Begins the link process for a given group
   @OpenAPI({ description: "Begins the account link process for a given group." })
   @Post("/")
-  @ResponseSchema(Group)
+  @ResponseSchema(PartialGroup)
   async addGroup (@CurrentUser({ required: true }) user: User, @Body() { robloxId }: addGroupBody): Promise<PartialGroup> {
     // TODO: Check their payment level & if they're allowed to add another one
 
@@ -80,7 +79,7 @@ export default class Index {
 
   @OpenAPI({ description: "Fetches the user's linkable groups (Owned by them & Not currently linked)" })
   @Get("/unlinked")
-  @ResponseSchema(Group)
+  @ResponseSchema(UnlinkedGroup, { isArray: true })
   async getUnlinked (@CurrentUser({ required: true }) user: User): Promise<UserRobloxGroup[]> {
     // TODO: Check their payment level & if they're allowed to add another one
     //  This isn't super critical, but it would be a good idea.
@@ -102,7 +101,7 @@ export default class Index {
   }
 
   @Get("/:id")
-  @ResponseSchema(Group, { isArray: true })
+  @ResponseSchema(FullGroup)
   async getGroup (@CurrentUser({ required: true }) user: User, @Param("id") { id }: GroupParam): Promise<FullGroup> {
     // Get specific group
     const grp = await database.groups.getFullGroup(id);
@@ -117,7 +116,7 @@ export default class Index {
     throw new ForbiddenError("You do not have access to that group.");
   }
 
-  @OpenAPI({ description: "Fetches the user's linkable groups (Owned by them & Not currently linked)" })
+  @OpenAPI({ description: "Modifies the state of the currently deployed bot, for example by notifying our server that it has been accepted into the group." })
   @Patch("/:groupId/bot")
   @ResponseSchema(Group)
   async updateBot (@CurrentUser({ required: true }) _user: User): Promise<any> {
@@ -136,6 +135,8 @@ export default class Index {
     // Check permissions
     if (grp.owner.id === user.id) {
       await database.groups.remove(grp);
+
+      // TODO: Remove the bot from the group
       return true;
     }
     throw new ForbiddenError("You do not have access to that group.");

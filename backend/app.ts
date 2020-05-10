@@ -1,4 +1,5 @@
 // Express app
+import { defaultMetadataStorage } from "class-transformer/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -15,14 +16,13 @@ const options: RoutingControllersOptions = {
   authorizationChecker: action => !!action.request.user,
   currentUserChecker: action => action.request.user
 };
-
 const app = express();
 
 app.use(cookieParser());
 
 useExpressServer(app, options);
 
-const schemas = validationMetadatasToSchemas();
+const schemas = validationMetadatasToSchemas({ classTransformerMetadataStorage: defaultMetadataStorage });
 const metadataStorage = getMetadataArgsStorage();
 
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });
