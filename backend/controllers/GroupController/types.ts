@@ -35,11 +35,12 @@ export class GroupParam {
   id: string
 }
 
-export class addGroupBody {
+export class AddGroupBody {
   @IsNumber()
   @IsPositive()
   robloxId: number
 }
+
 export class UnlinkedGroup {
   name: string;
 

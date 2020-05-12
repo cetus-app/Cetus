@@ -20,7 +20,7 @@ import database from "../../database";
 import { Group, User } from "../../entities";
 import { UserRobloxGroup } from "../../types";
 import {
-  addGroupBody, FullGroup, GroupParam, PartialGroup, UnlinkedGroup
+  AddGroupBody, FullGroup, GroupParam, PartialGroup, UnlinkedGroup
 } from "./types";
 
 
@@ -38,7 +38,7 @@ export default class Groups {
   @OpenAPI({ description: "Begins the account link process for a given group." })
   @Post("/")
   @ResponseSchema(PartialGroup)
-  async addGroup (@CurrentUser({ required: true }) user: User, @Body() { robloxId }: addGroupBody): Promise<PartialGroup> {
+  async addGroup (@CurrentUser({ required: true }) user: User, @Body() { robloxId }: AddGroupBody): Promise<PartialGroup> {
     // TODO: Check their payment level & if they're allowed to add another one
 
     // Get group info - Check owner

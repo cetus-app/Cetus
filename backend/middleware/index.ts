@@ -1,5 +1,5 @@
+import AuthMiddleware from "./Auth";
 import ServicesMiddleware from "./Services";
-import AuthMiddleware from "./auth";
 
 
 export default [AuthMiddleware, ServicesMiddleware];

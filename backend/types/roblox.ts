@@ -1,3 +1,6 @@
+// Roblox have different conventions than us
+/* eslint-disable @typescript-eslint/naming-convention */
+
 interface RobloxRole {
   name: string,
   rank: number
