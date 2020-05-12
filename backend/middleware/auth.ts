@@ -2,8 +2,8 @@ import { NextFunction, RequestHandler } from "express";
 import { ExpressMiddlewareInterface, Middleware } from "routing-controllers";
 import { getRepository } from "typeorm";
 
-import { Auth } from "../entities";
 import { authLife } from "../constants";
+import { Auth } from "../entities";
 
 // Handles authentication of requests, and sets req.user.
 @Middleware({ type: "before" })

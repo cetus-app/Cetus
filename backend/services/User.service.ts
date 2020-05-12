@@ -1,13 +1,12 @@
 // Allows emails to be sent, manages email verification
 import { Request, Response } from "express";
 
-import Roblox from "../api/roblox/Roblox";
 import { authLife } from "../constants";
+import { PartialUser } from "../controllers/AccountController/types";
 import database from "../database";
 import Auth from "../entities/Auth.entity";
 import User from "../entities/User.entity";
 import generateToken from "../shared/util/generateToken";
-import {PartialUser} from "../controllers/AccountController/types";
 
 export default class UserService {
   constructor (private request: Request, private response: Response) {
