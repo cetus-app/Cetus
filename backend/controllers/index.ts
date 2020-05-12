@@ -2,6 +2,6 @@ import GroupController from "./GroupController";
 import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
 
-export default [SampleController, VerificationController, GroupController];
+export default [GroupController, SampleController, VerificationController];
 
-export { SampleController, VerificationController, GroupController };
+export { GroupController, SampleController, VerificationController };
