@@ -3,9 +3,7 @@ import { ExpressMiddlewareInterface, Middleware } from "routing-controllers";
 import { getRepository } from "typeorm";
 
 import { Auth } from "../entities";
-
-// Temporary; where do we put this?
-const authLife = 60 * 60 * 12;
+import { authLife } from "../constants";
 
 // Handles authentication of requests, and sets req.user.
 @Middleware({ type: "before" })

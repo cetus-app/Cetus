@@ -28,4 +28,9 @@ const metadataStorage = getMetadataArgsStorage();
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });
 app.use("/docs", swaggerServe, setup(openApiSpec));
 
+// Temporary
+app.get("/swagger.json", (_req, res) => {
+  res.send(openApiSpec);
+});
+
 export default app;

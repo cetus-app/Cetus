@@ -47,7 +47,7 @@ export default class Groups {
       throw new BadRequestError("Invalid Roblox group id");
     }
     // This would also error if the user hasn't yet verified their account
-    if (groupInfo.owner.id !== user.robloxId) {
+    if (groupInfo.owner.id !== user.rId) {
       throw new ForbiddenError("You cannot add a group you do not own.");
     }
 
@@ -55,7 +55,7 @@ export default class Groups {
     const existingGroup = await database.groups.getGroupByRoblox(robloxId);
     if (existingGroup) {
       // Check group owner
-      if (existingGroup.owner.robloxId !== groupInfo.owner.id) {
+      if (existingGroup.owner.rId !== groupInfo.owner.id) {
         // Case 1: Current group is bound to someone else who no longer owns it
         // The new user does own it, so we update the group as such.
         existingGroup.owner = user;
@@ -83,9 +83,9 @@ export default class Groups {
   async getUnlinked (@CurrentUser({ required: true }) user: User): Promise<UserRobloxGroup[]> {
     // TODO: Check their payment level & if they're allowed to add another one
     //  This isn't super critical, but it would be a good idea.
-    if (user.robloxId) {
+    if (user.rId) {
       const linkable:UserRobloxGroup[] = [];
-      const groups = await Roblox.getUserGroups(user.robloxId);
+      const groups = await Roblox.getUserGroups(user.rId);
       if (!groups) {
         throw new InternalServerError("Failed to get user's Roblox groups");
       }

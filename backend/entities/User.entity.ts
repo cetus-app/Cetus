@@ -18,13 +18,6 @@ export default class User {
   })
   rId?: number;
 
-  @Column({
-    length: 30,
-    unique: true
-  })
-  username: string;
-
-
   // The Bcrypt hash of the password. These are always 60 characters long.
   @Column({
     length: 60,
@@ -41,9 +34,6 @@ export default class User {
 
   @Column({ default: false })
   emailVerified: boolean;
-
-  @Column()
-  robloxId?: number;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;

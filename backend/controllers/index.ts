@@ -1,7 +1,10 @@
+import AccountController from "./AccountController";
 import GroupController from "./GroupController";
 import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
 
-export default [GroupController, SampleController, VerificationController];
+export default [SampleController, VerificationController, GroupController, AccountController];
 
-export { GroupController, SampleController, VerificationController };
+export {
+  SampleController, VerificationController, GroupController, AccountController
+};
