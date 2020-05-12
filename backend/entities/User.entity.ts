@@ -16,7 +16,7 @@ export default class User {
     nullable: true,
     unique: true
   })
-  rId?: number;
+  robloxId?: number;
 
   // The Bcrypt hash of the password. These are always 60 characters long.
   @Column({
