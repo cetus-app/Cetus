@@ -49,5 +49,7 @@ export default class Roblox {
       }
       return outGroups;
     }
+
+    return undefined;
   }
 }
