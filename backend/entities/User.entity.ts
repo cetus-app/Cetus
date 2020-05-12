@@ -39,7 +39,7 @@ export default class User {
   })
   email: string;
 
-  @Column()
+  @Column({ default: false })
   emailVerified: boolean;
 
   @Column()
