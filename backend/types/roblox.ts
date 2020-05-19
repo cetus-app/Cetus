@@ -33,3 +33,12 @@ export interface RobloxGroup extends GroupBase{
   description: string,
   roles: RobloxRole[]
 }
+
+export interface RobloxUser{
+  description: string,
+  created: Date,
+  isBanned: boolean,
+  id: number,
+  name: string,
+  displayName:string
+}

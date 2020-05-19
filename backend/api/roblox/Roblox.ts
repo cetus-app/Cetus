@@ -1,9 +1,9 @@
 import fetch from "node-fetch";
 
-import { ExternalHttpError } from "../../shared";
+import {ExternalHttpError} from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
-import { RobloxGroup, UserRobloxGroup } from "../../types";
+import {RobloxGroup, RobloxUser, UserRobloxGroup} from "../../types";
 
 export const BASE_API_URL = "https://api.roblox.com";
 export const USERS_API_URL = "https://users.roblox.com";
@@ -37,6 +37,13 @@ export default class Roblox {
     // Data is undefined for 404
     return data ? camelify(data) : data;
   }
+
+  static getUserInfo (userId: number): Promise<RobloxUser | undefined> {
+    const url = `${USERS_API_URL}/v1/users/${userId}`;
+    // Data is undefined for 404
+    return fetch(url).then(checkStatus).then(res => res && res.json());
+  }
+
 
   static async getUserGroups (userId: number): Promise<UserRobloxGroup[] | undefined> {
     const url = `${BASE_API_URL}/users/${userId}/groups`;

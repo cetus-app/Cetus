@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import {
-  IS_UUID, IsBoolean, IsDate,
+  IS_UUID, IsAscii, IsBoolean, IsDate,
   IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength
 } from "class-validator";
 import exp from "constants";
@@ -14,6 +14,14 @@ export class UserAccessBody {
   @IsNotEmpty()
   @MinLength(5)
   password: string
+}
+
+export class VerificationCode {
+  @IsString()
+  @MinLength(50)
+  @MaxLength(50)
+  @IsAscii()
+  code: string
 }
 
 export class PartialUser {

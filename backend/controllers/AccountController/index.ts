@@ -1,11 +1,7 @@
 import { compare, hash } from "bcrypt";
 import { Request } from "express";
 import {
-  BadRequestError,
-  Body, ForbiddenError,
-  JsonController,
-  Post,
-  Req
+  BadRequestError, Body, CurrentUser, ForbiddenError, Get, JsonController, Params, Post, Redirect, Req
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
@@ -13,13 +9,19 @@ import { ResponseSchema } from "routing-controllers-openapi";
 import { hashRounds } from "../../constants";
 import database from "../../database";
 import { User } from "../../entities";
-import { PartialUser, UserAccessBody } from "./types";
+import {FullUser, PartialUser, UserAccessBody, VerificationCode} from "./types";
 
 
 @JsonController("/account")
 export default class Account {
+  @Get("/")
+  @ResponseSchema(FullUser)
+  async getUser (@CurrentUser({ required: true }) user: User): Promise<FullUser> {
+    // TODO: Fetch additional props
+    return user;
+  }
   @Post("/")
-  @ResponseSchema(User)
+  @ResponseSchema(PartialUser)
   async register (
     @Body() { email, password }: UserAccessBody,
   @Req() request: Request
@@ -61,5 +63,15 @@ export default class Account {
     }
 
     return request.userService.completeAuthentication(existingUser);
+  }
+
+  // When this is set up it will redirect to the dashboard itself
+  @Get("/verify/:code")
+  @Redirect(`${process.env.frontendUrl}?success=true`)
+  async verify (@CurrentUser({ required: true }) _user: User,
+                @Params({ validate: true }) { code }: VerificationCode,
+                @Req() request: Request) {
+    const succ = await request.userService.checkEmailCode(code);
+    return `${process.env.frontendUrl}/dashboard?emailVerified=${succ}`;
   }
 }
