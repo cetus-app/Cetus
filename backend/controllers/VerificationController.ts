@@ -27,9 +27,11 @@ class StartResponse {
   rId: number;
 
   @IsNumber()
+  @IsOptional()
   code?: number;
 
   @IsString()
+  @IsOptional()
   blurbCode?: string;
 }
 
