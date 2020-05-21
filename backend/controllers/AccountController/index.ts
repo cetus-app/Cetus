@@ -9,7 +9,9 @@ import { ResponseSchema } from "routing-controllers-openapi";
 import { hashRounds } from "../../constants";
 import database from "../../database";
 import { User } from "../../entities";
-import {FullUser, PartialUser, UserAccessBody, VerificationCode} from "./types";
+import {
+  FullUser, PartialUser, UserAccessBody, VerificationCode
+} from "./types";
 
 
 @JsonController("/account")
@@ -20,6 +22,7 @@ export default class Account {
     // TODO: Fetch additional props
     return user;
   }
+
   @Post("/")
   @ResponseSchema(PartialUser)
   async register (

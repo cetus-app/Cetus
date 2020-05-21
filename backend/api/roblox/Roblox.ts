@@ -1,9 +1,9 @@
 import fetch from "node-fetch";
 
-import {ExternalHttpError} from "../../shared";
+import { ExternalHttpError } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
-import {RobloxGroup, RobloxUser, UserRobloxGroup} from "../../types";
+import { RobloxGroup, RobloxUser, UserRobloxGroup } from "../../types";
 
 export const BASE_API_URL = "https://api.roblox.com";
 export const USERS_API_URL = "https://users.roblox.com";

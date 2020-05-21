@@ -1,9 +1,7 @@
-import { Type } from "class-transformer";
 import {
-  IS_UUID, IsAscii, IsBoolean, IsDate,
+  IsAscii, IsBoolean, IsDate,
   IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength
 } from "class-validator";
-import exp from "constants";
 
 export class UserAccessBody {
   @IsEmail()
