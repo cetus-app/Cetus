@@ -14,7 +14,11 @@ const options: RoutingControllersOptions = {
   controllers,
   middlewares,
   authorizationChecker: action => !!action.request.user,
-  currentUserChecker: action => action.request.user
+  currentUserChecker: action => action.request.user,
+  cors: {
+    origin: process.env.frontendUrl,
+    credentials: true
+  }
 };
 const app = express();
 
