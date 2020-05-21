@@ -52,7 +52,7 @@ export default class Account {
   }
 
   @Post("/login")
-  @ResponseSchema(User)
+  @ResponseSchema(PartialUser)
   async login (@Body() { email, password }: UserAccessBody, @Req() request: Request): Promise<PartialUser> {
     // Check that email is not in use
     const existingUser = await database.users.findOne({ email }, { select: ["hash", "id", "email", "created"] });
