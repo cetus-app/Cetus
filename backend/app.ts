@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/node";
 import { defaultMetadataStorage } from "class-transformer/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import cookieParser from "cookie-parser";
-import express from "express";
+import express, { ErrorRequestHandler, Request, Response } from "express";
 import { getMetadataArgsStorage, RoutingControllersOptions, useExpressServer } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
@@ -18,13 +18,14 @@ const options: RoutingControllersOptions = {
   middlewares,
   authorizationChecker: action => !!action.request.user,
   currentUserChecker: action => action.request.user
+  // defaultErrorHandler: false
 };
 
 // Sentry setup
 global.sentryRoot = __dirname || process.cwd();
-if (process.env.NODE_ENV !== "production") {
+if (process.env.sentryToken) {
   Sentry.init({
-    dsn: process.env.sentry,
+    dsn: process.env.sentryToken,
     integrations: [new RewriteFrames({ root: global.sentryRoot })],
     release: `${name}@${version}`
   });
@@ -47,7 +48,5 @@ app.use("/docs", swaggerServe, setup(openApiSpec));
 app.get("/swagger.json", (_req, res) => {
   res.send(openApiSpec);
 });
-// Sentry error reporting
-app.use(Sentry.Handlers.errorHandler());
 
 export default app;
