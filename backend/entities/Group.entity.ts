@@ -13,6 +13,7 @@ import {
 } from "typeorm";
 
 import ApiKey from "./ApiKey.entity";
+import Bot from "./Bot.entity";
 import Integration from "./Integration.entity";
 import User from "./User.entity";
 
@@ -35,8 +36,10 @@ export default class Group {
   @OneToMany(() => Integration, integration => integration.group)
   integrations: Integration[];
 
-
   // Possible problem: What happens when Group ownership is transferred?
   @ManyToOne(() => User, user => user.groups, { nullable: false })
   owner: User;
+
+  @ManyToOne(() => Bot)
+  bot: Bot;
 }

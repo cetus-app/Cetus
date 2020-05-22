@@ -21,8 +21,8 @@ const options: RoutingControllersOptions = {
   cors: {
     origin: process.env.frontendUrl,
     credentials: true
-  }
-  // defaultErrorHandler: false
+  },
+  validation: { forbidUnknownValues: true }
 };
 
 // Sentry setup

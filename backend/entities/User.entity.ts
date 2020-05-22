@@ -6,6 +6,11 @@ import {
 import Auth from "./Auth.entity";
 import Group from "./Group.entity";
 
+export enum PermissionLevel {
+  user,
+  admin
+}
+
 @Entity()
 export default class User {
   // UUID V4
@@ -43,4 +48,11 @@ export default class User {
 
   @ManyToMany(() => Group, grp => grp.owner)
   groups: Group[];
+
+  @Column({
+    type: "enum",
+    enum: PermissionLevel,
+    default: PermissionLevel.user
+  })
+  permissionLevel: PermissionLevel
 }
