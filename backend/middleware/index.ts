@@ -1,6 +1,6 @@
+import AuthMiddleware from "./Auth";
 import ErrorHandlerMiddleware from "./ErrorHandler";
 import ServicesMiddleware from "./Services";
-import AuthMiddleware from "./auth";
 
 
 export default [AuthMiddleware, ErrorHandlerMiddleware, ServicesMiddleware];
