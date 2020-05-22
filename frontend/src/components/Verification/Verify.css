@@ -1,0 +1,24 @@
+.verify-box {
+  padding: 32px;
+}
+
+.verify-box .username-field {
+  width: 280px;
+}
+
+.verify-box input.is-static {
+  padding-left: calc(0.625em - 1px);
+  padding-right: calc(0.625em - 1px);
+}
+
+.verify-blurb .code-container {
+  width: 360px;
+  padding: 14px 10px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.verify-blurb code {
+  letter-spacing: 4px;
+  font-size: 20px;
+}
