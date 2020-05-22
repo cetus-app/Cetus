@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The backend for Cetus",
   "scripts": {
-    "start": "ts-node-dev -r dotenv/config --no-notify --respawn index.ts",
+    "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
     "start:prod": "node dist",
     "build": "rimraf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
