@@ -9,7 +9,7 @@ const AuthenticatedApp: FunctionComponent = () => {
 
   if (!user) return <Redirect to="/signup" />;
 
-  if (!user.rId) return <Verify />;
+  if (!user.robloxId) return <Verify />;
 
   return (
     <div className="has-text-centered">{user.email}</div>

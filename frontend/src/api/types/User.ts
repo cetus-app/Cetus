@@ -5,7 +5,7 @@ export interface PartialUser {
 
   emailVerified?: boolean;
 
-  rId?: number;
+  robloxId?: number;
 
   created: Date
 }

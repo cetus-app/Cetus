@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 
+import { fetch } from "../api";
 import { FullUser } from "../api/types";
 import { UserProvider } from "../context/UserContext";
 import AuthenticatedApp from "./AuthenticatedApp";
@@ -13,7 +14,7 @@ const App: FunctionComponent = () => {
   useEffect(() => {
     setLoading(true);
 
-    fetch(`${process.env.BACKEND_URL}/account`, { credentials: "include" }).then(async res => {
+    fetch(`${process.env.BACKEND_URL}/account`).then(async res => {
       if (res.ok) {
         setUser(await res.json());
       } else if (res.status !== 401) {
@@ -25,9 +26,9 @@ const App: FunctionComponent = () => {
     }).catch(() => setError("Error occurred. Try refreshing the page"));
   }, []);
 
-  if (loading) return <div className="has-text-centered">Loading..</div>;
-
   if (error) return <div className="has-text-centered">{error}</div>;
+
+  if (loading) return <div className="has-text-centered">Loading..</div>;
 
   if (!user) return <UnauthenticatedApp />;
 
