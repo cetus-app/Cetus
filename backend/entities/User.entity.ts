@@ -46,7 +46,7 @@ export default class User {
   @OneToMany(() => Auth, auth => auth.user)
   auth: Auth[];
 
-  @ManyToMany(() => Group, grp => grp.owner)
+  @OneToMany(() => Group, grp => grp.owner)
   groups: Group[];
 
   @Column({

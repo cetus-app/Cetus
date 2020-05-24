@@ -4,8 +4,9 @@ import {
 } from "class-validator";
 
 import { ApiKey, Integration, User } from "../../entities";
+import Group from "../../entities/Group.entity";
 
-export class PartialGroup {
+export class PartialGroup implements Partial<Group> {
   @IsUUID("4")
   id: string;
 
@@ -29,8 +30,8 @@ export class FullGroup extends PartialGroup {
   owner: User;
 }
 
-// Issue regarding validation of Group.id in params: https://github.com/typestack/routing-controllers/issues/348
-export class GroupParam {
+// Issue regarding validation of id in params: https://github.com/typestack/routing-controllers/issues/348
+export class IdParam {
   @IsUUID("4")
   id: string
 }

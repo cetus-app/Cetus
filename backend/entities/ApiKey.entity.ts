@@ -7,7 +7,7 @@ import Key from "./Key.abstract.entity";
 @Entity()
 export default class ApiKey extends Key {
   // A user inputted name for the key, so they can easily identify it
-  @Column()
+  @Column({ length: 30 })
   name: string;
 
   @ManyToOne(() => Group, grp => grp.keys, { nullable: false })
