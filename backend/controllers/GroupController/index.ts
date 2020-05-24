@@ -69,6 +69,7 @@ export default class Groups {
       throw new BadRequestError("Group is already registered");
     } else {
       // Register it
+      // TODO: Assign a bot
       const newGroup = new Group();
       newGroup.robloxId = robloxId;
       newGroup.owner = user;
