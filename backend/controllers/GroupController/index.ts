@@ -1,3 +1,4 @@
+import { Request } from "express";
 import {
   BadRequestError,
   Body,
@@ -8,10 +9,9 @@ import {
   InternalServerError,
   JsonController,
   NotFoundError,
-  Param,
   Params,
   Patch,
-  Post
+  Post, Req
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
@@ -21,7 +21,7 @@ import database from "../../database";
 import { Group, User } from "../../entities";
 import { UserRobloxGroup } from "../../types";
 import {
-  AddGroupBody, FullGroup, GroupParam, PartialGroup, UnlinkedGroup
+  AddGroupBody, FullGroup, IdParam, PartialGroup, UnlinkedGroup
 } from "./types";
 
 
@@ -103,21 +103,14 @@ export default class Groups {
 
   @Get("/:id")
   @ResponseSchema(FullGroup)
-  async getGroup (@CurrentUser({ required: true }) user: User, @Params({
-    required: true,
-    validate: true
-  }) { id }: GroupParam): Promise<FullGroup> {
+  async getGroup (@CurrentUser({ required: true }) _user: User,
+                  @Params({
+                    required: true,
+                    validate: true
+                  }) { id }: IdParam,
+                  @Req() request: Request): Promise<FullGroup> {
     // Get specific group
-    const grp = await database.groups.getFullGroup(id);
-    if (!grp) {
-      throw new NotFoundError("Group not found");
-    }
-
-    // Check permissions
-    if (grp.owner.id === user.id) {
-      return grp;
-    }
-    throw new ForbiddenError("You do not have access to that group.");
+    return request.groupService.canAccessGroup(id);
   }
 
   @OpenAPI({ description: "Modifies the state of the currently deployed bot, for example by notifying our server that it has been accepted into the group." })
@@ -129,8 +122,10 @@ export default class Groups {
 
   @OpenAPI({ description: "Removes a group and causes our bot account to leave." })
   @Delete("/:id")
-  @ResponseSchema(Group)
-  async removeGroup (@CurrentUser({ required: true }) user: User, @Param("id") { id }: GroupParam): Promise<boolean> {
+  async removeGroup (@CurrentUser({ required: true }) user: User, @Params({
+    required: true,
+    validate: true
+  }) { id }: IdParam): Promise<boolean> {
     const grp = await database.groups.getFullGroup(id);
     if (!grp) {
       throw new NotFoundError("Group not found");

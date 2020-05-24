@@ -6,7 +6,7 @@ import {
 @Entity()
 export default abstract class Key {
   @PrimaryGeneratedColumn("uuid")
-  id: number;
+  id: string;
 
   @Column({ length: 100 })
   token: string;

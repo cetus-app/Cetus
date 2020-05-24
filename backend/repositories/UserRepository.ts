@@ -9,7 +9,7 @@ export default class UserRepository extends Repository<User> {
   getUserGroups (user: User): Promise<Group[]> {
     return this.createQueryBuilder()
       .relation(User, "groups")
-      .of(user)
+      .of(user.id)
       .loadMany();
   }
 

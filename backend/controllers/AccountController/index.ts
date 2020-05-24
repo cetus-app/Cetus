@@ -77,9 +77,4 @@ export default class Account {
     const succ = await request.userService.checkEmailCode(code);
     return `${process.env.frontendUrl}/dashboard?emailVerified=${succ}`;
   }
-
-  @Get("/test")
-  async test (@CurrentUser({ required: true }) _user: User) {
-    throw new Error("Oops - something broke.");
-  }
 }

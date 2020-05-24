@@ -3,6 +3,7 @@ declare namespace Express {
     user?: import("../entities").User;
     verificationService: import("../services").VerificationService;
     userService: import("../services").UserService;
+    groupService: import("../services").GroupService;
   }
 }
 
