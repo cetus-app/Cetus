@@ -6,12 +6,18 @@ import { StartVerificationResponse } from "../../api/types";
 import verifyBlurb from "../../api/verification/verifyBlurb";
 import { InputChange } from "../../types";
 import BlurbVerification from "./BlurbVerification";
+import GameVerification from "./GameVerification";
 import StartVerification from "./StartVerification";
 
 const Verify: FunctionComponent = () => {
   const [error, setError] = useState("");
-  const [username, setUsername] = useState("");
-  const [verification, setVerification] = useState<StartVerificationResponse | null>(null);
+  // const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("EirikFA");
+  // const [verification, setVerification] = useState<StartVerificationResponse | null>(null);
+  const [verification, setVerification] = useState<StartVerificationResponse | null>({
+    rId: 1,
+    code: 8459
+  });
   const [completed, setCompleted] = useState(false);
 
   const handleUsernameChange: InputChange = event => setUsername(event.target.value);
@@ -56,6 +62,8 @@ const Verify: FunctionComponent = () => {
     }
   };
 
+  const handleGame = async () => null;
+
   return (
     <section className="section columns is-centered">
       <div className="verify-box column is-one-third box has-background-grey-light has-text-black">
@@ -64,16 +72,8 @@ const Verify: FunctionComponent = () => {
         {(!completed && verification?.blurbCode)
           && <BlurbVerification username={username} code={verification.blurbCode} onClick={handleBlurb} />}
 
-        {(!completed && verification?.code) && (
-          <div>
-            Game:&nbsp;
-            {verification.code}
-
-            <br />
-
-            {verification.rId}
-          </div>
-        )}
+        {(!completed && verification?.code)
+          && <GameVerification username={username} code={verification.code.toString()} onClick={handleGame} />}
 
         {completed && (
           <div>Your Roblox account ({username}) is now verified in the Cetus system. You can now register and set up your groups!</div>

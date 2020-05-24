@@ -22,3 +22,31 @@
   letter-spacing: 4px;
   font-size: 20px;
 }
+
+.verify-game .game-code-container {
+  width: 360px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.verify-game .game-code-container .game-code-digit {
+  display: inline-block;
+  width: 15%;
+  height: 70px;
+  border-radius: 20%;
+  line-height: 70px;
+  font-size: 36px;
+}
+
+/*
+TODO: Potentially reduce font-size (and other sizing properties) for mobile
+Wait for SCSS to use Bulma variables for screen width
+*/
+
+.verify-game .game-code-container .game-code-digit:not(:last-child) {
+  margin-right: 20px;
+}
+
+.verify-game .force-game-check-button {
+  margin-top: 8px;
+}
