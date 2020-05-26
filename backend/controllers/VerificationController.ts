@@ -70,7 +70,7 @@ export default class VerificationController {
 
     if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
 
-    const existing = await verificationService.get(rId);
+    const existing = await verificationService.get(rId, blurb);
 
     if (existing) {
       return {

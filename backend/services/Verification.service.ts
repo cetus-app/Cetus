@@ -28,15 +28,26 @@ export default class VerificationService {
     return output.join(" ");
   }
 
-  async get (rId: number): Promise<Verification | null> {
-    const raw = await redis.get(redisPrefixes.verification + rId);
+  async get (rId: number, blurb: boolean): Promise<Verification | null> {
+    if (!this.request.user) throw new Error("No user on request");
+
+    const idSuffix = blurb ? `-${this.request.user.id}` : "";
+    const key = redisPrefixes.verification + rId + idSuffix;
+
+    const raw = await redis.get(key);
+
     return raw ? JSON.parse(raw) : null;
   }
 
   async setNewCode <Type extends VerificationType> (type: Type, userId: string, rId: number): Promise<number | string> {
+    if (!this.request.user) throw new Error("No user on request");
+
     const code = type === "game" ? Math.floor(1000 + Math.random() * 9000) : this.generateBlurbCode(animals, 8);
 
-    await redis.set(redisPrefixes.verification + rId, JSON.stringify({
+    const idSuffix = type === "blurb" ? `-${this.request.user.id}` : "";
+    const key = redisPrefixes.verification + rId + idSuffix;
+
+    await redis.set(key, JSON.stringify({
       code,
       userId
     }), "EX", 60 * 30);
@@ -49,7 +60,10 @@ export default class VerificationService {
   }
 
   async verify <Type extends VerificationType> (type: Type, rId: number, code: Type extends "game" ? number : undefined): Promise<VerifyResponse> {
-    const key = redisPrefixes.verification + rId;
+    if (!this.request.user) throw new Error("No user on request");
+
+    const idSuffix = type === "blurb" ? `-${this.request.user.id}` : "";
+    const key = redisPrefixes.verification + rId + idSuffix;
 
     const raw = await redis.get(key);
     if (!raw) {
