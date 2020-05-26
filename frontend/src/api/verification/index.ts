@@ -1,2 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
+export { default as check } from "./check";
 export { default as startVerification } from "./start";
+export { default as verifyBlurb } from "./verifyBlurb";

@@ -60,6 +60,8 @@ export default class VerificationController {
     @Req() { verificationService }: Request,
     @CurrentUser({ required: true }) user: User
   ): Promise<StartResponse> {
+    if (user.robloxId) throw new BadRequestError("Already verified");
+
     let rId: number | undefined;
 
     try {
@@ -107,6 +109,8 @@ export default class VerificationController {
       };
     }
 
+    // TODO: Websocket event?
+
     return verificationService.verify("game", rId, code);
   }
 
@@ -115,5 +119,33 @@ export default class VerificationController {
   @Authorized()
   async verifyBlurb (@Param("rId") rId: number, @Req() { verificationService }: Request): Promise<VerifyResponse> {
     return verificationService.verify("blurb", rId, undefined);
+  }
+
+  // Method is called by client after in-game verification is completed, which means Redis key is deleted
+  // (thus check if user has Roblox ID set)
+  @Post("/check/:rId")
+  @ResponseSchema(VerifyResponse)
+  @Authorized()
+  async check (@CurrentUser({ required: true }) user: User, @Param("rId") rId: number, @Req() { verificationService }: Request): Promise<VerifyResponse> {
+    if (user.robloxId) {
+      return {
+        success: true,
+        message: "Successfully verified"
+      };
+    }
+
+    const existing = await verificationService.get(rId, false);
+
+    if (!existing) {
+      return {
+        success: false,
+        message: "No pending verification found"
+      };
+    }
+
+    return {
+      success: false,
+      message: "Not verified"
+    };
   }
 }
