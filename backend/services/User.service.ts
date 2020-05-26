@@ -1,7 +1,6 @@
 // Allows emails to be sent, manages email verification
 import { send, setApiKey } from "@sendgrid/mail";
 import { Request, Response } from "express";
-import { ForbiddenError, NotFoundError } from "routing-controllers";
 
 import Roblox from "../api/roblox/Roblox";
 import {
@@ -14,9 +13,7 @@ import {
   resendTime
 } from "../constants";
 import { PartialUser } from "../controllers/AccountController/types";
-import { FullGroup } from "../controllers/GroupController/types";
 import database from "../database";
-import { Group } from "../entities";
 import Auth from "../entities/Auth.entity";
 import User from "../entities/User.entity";
 import { redis } from "../shared";

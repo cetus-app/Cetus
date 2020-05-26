@@ -1,7 +1,6 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 import { ForbiddenError, NotFoundError } from "routing-controllers";
 
-import { FullGroup } from "../controllers/GroupController/types";
 import database from "../database";
 import { Group } from "../entities";
 import User from "../entities/User.entity";

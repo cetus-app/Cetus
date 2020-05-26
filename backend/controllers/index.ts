@@ -1,8 +1,8 @@
 import AccountController from "./AccountController";
 import GroupController from "./GroupController";
+import KeyController from "./KeyController";
 import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
-import KeyController from "./KeyController";
 
 export default [SampleController, VerificationController, GroupController, AccountController, KeyController];
 

@@ -1,6 +1,6 @@
 // Used to present a user on the service
 import {
-  Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn
+  Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
 
 import Auth from "./Auth.entity";
