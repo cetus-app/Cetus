@@ -72,7 +72,8 @@ export default class VerificationController {
 
     if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
 
-    const existing = await verificationService.get(rId, blurb);
+    const verifications = await verificationService.get(rId);
+    const existing = await verifications.find(v => v.userId === user.id);
 
     if (existing) {
       return {
@@ -82,7 +83,7 @@ export default class VerificationController {
       };
     }
 
-    const code = await verificationService.setNewCode(blurb ? "blurb" : "game", user.id, rId);
+    const code = await verificationService.setNewCode(blurb, user.id, rId);
 
     return {
       rId,
@@ -111,17 +112,17 @@ export default class VerificationController {
 
     // TODO: Websocket event?
 
-    return verificationService.verify("game", rId, code);
+    return verificationService.verify(false, rId, code);
   }
 
   @Post("/blurb/:rId")
   @ResponseSchema(VerifyResponse)
   @Authorized()
   async verifyBlurb (@Param("rId") rId: number, @Req() { verificationService }: Request): Promise<VerifyResponse> {
-    return verificationService.verify("blurb", rId, undefined);
+    return verificationService.verify(true, rId, undefined);
   }
 
-  // Method is called by client after in-game verification is completed, which means Redis key is deleted
+  // Method is called by client after in-game verification is completed, which means it is not stored in Redis
   // (thus check if user has Roblox ID set)
   @Post("/check/:rId")
   @ResponseSchema(VerifyResponse)
@@ -134,7 +135,7 @@ export default class VerificationController {
       };
     }
 
-    const existing = await verificationService.get(rId, false);
+    const existing = await verificationService.get(rId);
 
     if (!existing) {
       return {

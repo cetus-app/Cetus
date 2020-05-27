@@ -7,8 +7,6 @@ import database from "../database";
 import animals from "../res/animals.json";
 import { redis } from "../shared";
 
-export type VerificationType = "game" | "blurb";
-
 export interface Verification {
   userId: string;
   code: number | string;
@@ -28,29 +26,33 @@ export default class VerificationService {
     return output.join(" ");
   }
 
-  async get (rId: number, blurb: boolean): Promise<Verification | null> {
+  async get (rId: number): Promise<Verification[]> {
     if (!this.request.user) throw new Error("No user on request");
 
-    const idSuffix = blurb ? `-${this.request.user.id}` : "";
-    const key = redisPrefixes.verification + rId + idSuffix;
+    const key = redisPrefixes.verification + rId;
 
     const raw = await redis.get(key);
 
-    return raw ? JSON.parse(raw) : null;
+    return raw ? JSON.parse(raw) : [];
   }
 
-  async setNewCode <Type extends VerificationType> (type: Type, userId: string, rId: number): Promise<number | string> {
+  async setNewCode (blurb: boolean, userId: string, rId: number): Promise<number | string> {
     if (!this.request.user) throw new Error("No user on request");
 
-    const code = type === "game" ? Math.floor(1000 + Math.random() * 9000) : this.generateBlurbCode(animals, 8);
+    const code = blurb ? this.generateBlurbCode(animals, 8) : Math.floor(1000 + Math.random() * 9000);
 
-    const idSuffix = type === "blurb" ? `-${this.request.user.id}` : "";
-    const key = redisPrefixes.verification + rId + idSuffix;
+    const key = redisPrefixes.verification + rId;
 
-    await redis.set(key, JSON.stringify({
+    const raw = await redis.get(key);
+
+    const verifications = raw ? JSON.parse(raw) as Verification[] : [];
+
+    verifications.push({
       code,
       userId
-    }), "EX", 60 * 30);
+    });
+
+    await redis.set(key, JSON.stringify(verifications), "EX", 60 * 30);
 
     return code;
   }
@@ -59,11 +61,12 @@ export default class VerificationService {
     return typeof code === "number" && code >= 1000 && code <= 9999;
   }
 
-  async verify <Type extends VerificationType> (type: Type, rId: number, code: Type extends "game" ? number : undefined): Promise<VerifyResponse> {
-    if (!this.request.user) throw new Error("No user on request");
+  async verify (blurb: boolean, rId: number, code: number | undefined): Promise<VerifyResponse> {
+    if (!blurb && !code) throw new Error("Code required when type is game (not blurb)");
 
-    const idSuffix = type === "blurb" ? `-${this.request.user.id}` : "";
-    const key = redisPrefixes.verification + rId + idSuffix;
+    if (blurb && !this.request.user) throw new Error("No user on request");
+
+    const key = redisPrefixes.verification + rId;
 
     const raw = await redis.get(key);
     if (!raw) {
@@ -73,41 +76,39 @@ export default class VerificationService {
       };
     }
 
-    const verification = JSON.parse(raw) as Verification;
+    const verifications = JSON.parse(raw) as Verification[];
 
-    if (type === "game") {
-      if (typeof verification.code === "string") {
-        return {
-          success: false,
-          message: "Verification was started using blurb method"
-        };
-      }
+    // index instead of just element because we need the index later
+    let verificationIndex: number;
 
-      if (code !== verification.code) {
-        return {
-          success: false,
-          message: "Incorrect verification code"
-        };
-      }
+    if (!blurb) verificationIndex = verifications.findIndex(v => typeof v.code === "number" && v.code === code);
+
+    if (blurb) {
+      const userBlurb = await Roblox.getBlurb(rId);
+
+      verificationIndex = verifications.findIndex(v => typeof v.code === "string" && userBlurb.includes(v.code));
     }
 
-    if (type === "blurb") {
-      if (typeof verification.code === "number") {
-        return {
-          success: false,
-          message: "Verification was started using game method"
-        };
-      }
+    // TypeScript bug? Variable is always assigned by code above
+    if (verificationIndex! < 0) {
+      return {
+        success: false,
+        message: blurb ? "Code not found in profile" : "Incorrect verification code"
+      };
+    }
 
-      const blurb = await Roblox.getBlurb(rId);
+    const verification = verifications[verificationIndex!];
 
-      // Is string if type is blurb
-      if (!blurb.includes(verification.code)) {
-        return {
-          success: false,
-          message: "Code not found in profile"
-        };
-      }
+    // User exists on request if `blurb` is true, see checks above
+    // This check is not strictly necessary, but it stops others from verifying "for someone else"
+    // I. e; user who does not own account attempts to complete verification after the owner entered the code in their profile,
+    // but before the owner sent a completion request themselves
+    if (blurb && this.request.user!.id !== verification.userId) {
+      // Fake response for wrong user
+      return {
+        success: false,
+        message: "Code not found in profile"
+      };
     }
 
     const user = await database.users.findOne(verification.userId);
@@ -122,7 +123,9 @@ export default class VerificationService {
     user.robloxId = rId;
     await database.users.save(user);
 
-    await redis.del(key);
+    verifications.splice(verificationIndex!, 1);
+
+    await redis.set(key, JSON.stringify(verifications), "EX", 60 * 30);
 
     // Does this belong here?
     try {
