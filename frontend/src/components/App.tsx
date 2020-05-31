@@ -13,17 +13,19 @@ const App: FunctionComponent = () => {
 
   useEffect(() => {
     setLoading(true);
-
     fetch(`${process.env.BACKEND_URL}/account`).then(async res => {
       if (res.ok) {
         setUser(await res.json());
       } else if (res.status !== 401) {
-        throw new Error();
+        throw new Error("Non-authentication error");
       }
 
       // Wait for response to be parsed
       setLoading(false);
-    }).catch(() => setError("Error occurred. Try refreshing the page"));
+    }).catch(e => {
+      setError("Error occurred. Try refreshing the page");
+      console.error(e);
+    });
   }, []);
 
   if (error) return <div className="has-text-centered">{error}</div>;

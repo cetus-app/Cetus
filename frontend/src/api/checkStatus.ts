@@ -1,8 +1,7 @@
 import { ApiError } from ".";
 
 const checkStatus = (response: Response): Response => {
-  if (response.ok) return response;
-
+  if (response.ok || response.status === 401) return response;
   throw new ApiError(response);
 };
 
