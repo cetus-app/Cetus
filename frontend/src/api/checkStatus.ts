@@ -1,7 +1,7 @@
 import { ApiError } from ".";
 
-const checkStatus = (response: Response): Response => {
-  if (response.ok || response.status === 401) return response;
+const checkStatus = async (response: Response): Promise<Response> => {
+  if (response.ok) return response;
   throw new ApiError(response);
 };
 

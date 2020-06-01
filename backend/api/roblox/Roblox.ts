@@ -1,9 +1,16 @@
-import fetch from "node-fetch";
+import realFetch from "node-fetch";
 
-import { ExternalHttpError } from "../../shared";
+import { redisPrefixes } from "../../constants";
+import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import { RobloxGroup, RobloxUser, UserRobloxGroup } from "../../types";
+
+const fetch = (url: string, opt?: any) => {
+  console.log(`${(opt && opt.method) || "GET"} ${url}`);
+  return realFetch(url, opt);
+};
+
 
 export const BASE_API_URL = "https://api.roblox.com";
 export const USERS_API_URL = "https://users.roblox.com";
@@ -30,7 +37,23 @@ export default class Roblox {
     return data.description;
   }
 
-  static async getGroupInfo (groupId: number): Promise<RobloxGroup | undefined> {
+  // Caches
+  static async getGroup (groupId: number): Promise<RobloxGroup | undefined> {
+    const key = redisPrefixes.groupCache + groupId;
+    const cached = await redis.get(key);
+    if (cached) {
+      return JSON.parse(cached) as RobloxGroup;
+    }
+    const group = await this.fetchGroup(groupId);
+    if (group) {
+      // One hour cache time
+      await redis.set(key, JSON.stringify(group), "EX", 60 * 60);
+      return group;
+    }
+    return undefined;
+  }
+
+  static async fetchGroup (groupId: number): Promise<RobloxGroup | undefined> {
     const url = `${BASE_API_URL}/groups/${groupId}`;
     const data = await fetch(url).then(checkStatus).then(res => res && res.json());
 

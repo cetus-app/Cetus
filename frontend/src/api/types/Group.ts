@@ -1,4 +1,22 @@
-import { PartialUser } from "./User";
+interface GroupBase {
+  name: string,
+  id: number,
+  emblemUrl: string,
+}
+interface RobloxRole {
+  name: string,
+  rank: number
+}
+
+export interface RobloxGroup extends GroupBase{
+  owner: {
+    name: string,
+    id: number
+  },
+  description: string,
+  roles: RobloxRole[]
+}
+
 
 export class PartialGroup {
   id: string;
@@ -6,6 +24,8 @@ export class PartialGroup {
   robloxId: number;
 
   created: Date;
+
+  robloxInfo: RobloxGroup;
 }
 
 export class UnlinkedGroup {

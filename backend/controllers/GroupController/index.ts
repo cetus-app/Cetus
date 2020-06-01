@@ -15,7 +15,6 @@ import {
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
-
 import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
@@ -31,19 +30,42 @@ export default class Groups {
   @ResponseSchema(PartialGroup, { isArray: true })
   async getGroups (@CurrentUser({ required: true }) user: User): Promise<PartialGroup[]> {
     // Get user groups
-    return database.users.getUserGroups(user);
+    const groups: PartialGroup[] = await database.users.getUserGroups(user);
+    if (!groups) {
+      return [];
+    }
+    // Why? Makes them all run at once.
+    // I don't use Promise.all here because if one promise rejects, they all fail.
+    const promises = [];
+    for (let counter = 0; counter < groups.length; counter++) {
+      promises.push(Roblox.getGroup(groups[counter].robloxId));
+    }
+    // TODO: Pass to sentry?
+    promises.map(p => p.catch(e => { console.error(`Failed to get Roblox info for group ${e}`); return false; }));
+    const resp = await Promise.all(promises);
+    for (let counter = 0; counter < resp.length; counter++) {
+      try {
+        // If it failed it'll be false
+        if (resp[counter]) {
+          groups[counter].robloxInfo = resp[counter];
+        }
+      } catch (e) {
+        console.error(`Failed to get Roblox info for group ${e}`);
+      }
+    }
+    return groups;
   }
 
 
   // Begins the link process for a given group
-  @OpenAPI({ description: "Begins the account link process for a given group." })
+  @OpenAPI({ description: "Begins the link process for a given group." })
   @Post("/")
   @ResponseSchema(PartialGroup)
   async addGroup (@CurrentUser({ required: true }) user: User, @Body() { robloxId }: AddGroupBody): Promise<PartialGroup> {
     // TODO: Check their payment level & if they're allowed to add another one
 
     // Get group info - Check owner
-    const groupInfo = await Roblox.getGroupInfo(robloxId);
+    const groupInfo = await Roblox.getGroup(robloxId);
     if (!groupInfo) {
       throw new BadRequestError("Invalid Roblox group id");
     }
