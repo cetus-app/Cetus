@@ -36,7 +36,7 @@ export class PartialUser {
   @IsNumber()
   @IsPositive()
   @IsOptional()
-  rId?: number;
+  robloxId?: number;
 
   @IsDate()
   created: Date

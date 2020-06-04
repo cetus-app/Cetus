@@ -8,8 +8,8 @@ import {
 import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../api/roblox/Roblox";
-import { User } from "../entities";
 import database from "../database";
+import { User } from "../entities";
 
 class StartBody {
   @IsString()

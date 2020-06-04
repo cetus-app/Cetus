@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useContext } from "react";
 import {
-  BrowserRouter, Redirect, Route, Switch
+  BrowserRouter, Redirect, Route, Switch, useParams
 } from "react-router-dom";
 
 import UserContext from "../context/UserContext";
@@ -22,7 +22,7 @@ const AuthenticatedApp: FunctionComponent = () => {
         <Route exact path="/">
           <div className="has-text-centered">{user.email}</div>
         </Route>
-        <Route path="/groups">
+        <Route path="/groups" exact>
           <GroupMenu
             title="Linked groups"
             subtitle="Linked groups are groups which already have a bot deployed to them, and are ready to make use of group integrations.">
@@ -38,6 +38,11 @@ const AuthenticatedApp: FunctionComponent = () => {
           </GroupMenu>
         </Route>
 
+        <Route path="/groups/:id">
+          <GroupId />
+          <h1>Id</h1>
+        </Route>
+
         <Route path="*">
           <NoMatch />
         </Route>
@@ -48,3 +53,7 @@ const AuthenticatedApp: FunctionComponent = () => {
 };
 
 export default AuthenticatedApp;
+const GroupId = () => {
+  const { id } = useParams();
+  return <h1>Group - {id}</h1>;
+};

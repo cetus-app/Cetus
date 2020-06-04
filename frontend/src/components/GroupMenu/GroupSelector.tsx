@@ -28,7 +28,7 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = () => {
     }
   });
   if (redirect) {
-    return <Redirect to={`${match.url}/redirect`} />;
+    return <Redirect to={`${match.url}/${redirect}`} />;
   }
   if (groups) {
     return (
@@ -40,7 +40,8 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = () => {
               <GroupButton
                 imgUrl={g.robloxInfo ? g.robloxInfo.emblemUrl : "https://jdrf.org.uk/wp-content/uploads/2017/06/placeholder-image.jpg"}
                 groupName={g.robloxInfo ? g.robloxInfo.name : `${g.robloxId}`}
-                handleClick={() => setRedirect(g.id)} />
+                handleClick={() => setRedirect(g.id)}
+                key={g.id} />
             ))
       }
 
