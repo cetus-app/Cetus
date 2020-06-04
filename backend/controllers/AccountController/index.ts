@@ -43,7 +43,6 @@ export default class Account {
     user.hash = hashedPassword;
     await database.users.save(user);
 
-
     // Send email
 
     // Finish

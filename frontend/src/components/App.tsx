@@ -13,24 +13,28 @@ const App: FunctionComponent = () => {
 
   useEffect(() => {
     setLoading(true);
-
     fetch(`${process.env.BACKEND_URL}/account`).then(async res => {
-      if (res.ok) {
-        setUser(await res.json());
-      } else if (res.status !== 401) {
-        throw new Error();
-      }
+      setUser(await res.json());
+
 
       // Wait for response to be parsed
       setLoading(false);
-    }).catch(() => setError("Error occurred. Try refreshing the page"));
+    }).catch(e => {
+      if (e.response.status === 401) {
+        // Show unauthenticated
+        setLoading(false);
+        return false;
+      }
+      setError("Error occurred. Try refreshing the page");
+      throw new Error(`Non-authentication error: ${e.response.status}`);
+    });
   }, []);
 
   if (error) return <div className="has-text-centered">{error}</div>;
 
   if (loading) return <div className="has-text-centered">Loading..</div>;
 
-  if (!user) return <UnauthenticatedApp />;
+  if (!user) return <UnauthenticatedApp setUser={setUser}/>;
 
   return (
     <UserProvider value={user}>

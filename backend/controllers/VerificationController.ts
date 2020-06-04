@@ -8,6 +8,7 @@ import {
 import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../api/roblox/Roblox";
+import database from "../database";
 import { User } from "../entities";
 
 class StartBody {
@@ -71,6 +72,11 @@ export default class VerificationController {
     }
 
     if (!rId) throw new BadRequestError(`No Roblox account found for username ${username}`);
+
+    const existingUser = await database.users.findOne({ robloxId: rId });
+    if (existingUser) {
+      throw new BadRequestError("That Roblox account is already associated with another user. If you own this Roblox account but did not create this user on our service, please contact us.");
+    }
 
     const verifications = await verificationService.get(rId);
     const existing = await verifications.find(v => v.userId === user.id);

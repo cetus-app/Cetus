@@ -5,6 +5,7 @@ import {
 
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
+import { RobloxGroup } from "../../types";
 
 export class PartialGroup implements Partial<Group> {
   @IsUUID("4")
@@ -15,6 +16,8 @@ export class PartialGroup implements Partial<Group> {
 
   @IsDate()
   created: Date;
+
+  robloxInfo?: RobloxGroup
 }
 
 export class FullGroup extends PartialGroup {

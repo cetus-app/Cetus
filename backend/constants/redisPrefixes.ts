@@ -1,6 +1,7 @@
 const REDIS_PREFIXES = {
   verification: "verification-",
-  emailVerification: "emailVerification-"
+  emailVerification: "emailVerification-",
+  groupCache: "groupCache-"
 };
 
 export default REDIS_PREFIXES;

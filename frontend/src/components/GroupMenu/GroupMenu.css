@@ -1,0 +1,21 @@
+.main-top-space {
+    padding-top: 3vh;
+}
+.group-selector .group-selector-img {
+    border-radius: 4px;
+    margin: 0 auto 1vh auto;
+    width: 100%;
+    max-height: 18vh;
+    max-width: 18vh;
+
+}
+.group-button {
+    padding: 10px;
+    border: 1px solid #c8c8c8;
+    border-radius: 4px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}

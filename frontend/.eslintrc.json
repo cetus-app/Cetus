@@ -102,6 +102,7 @@
         ]
       }
     ],
+    "react/jsx-props-no-spreading": 0,
     "quotes": [
       "error",
       "double",

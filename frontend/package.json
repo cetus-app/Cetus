@@ -15,11 +15,14 @@
   "dependencies": {
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
+    "@types/yup": "^0.29.2",
     "bulma": "^0.8.2",
+    "formik": "^2.1.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "yup": "^0.29.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

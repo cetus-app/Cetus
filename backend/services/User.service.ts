@@ -58,7 +58,8 @@ export default class UserService {
     return {
       email: user.email,
       id: user.id,
-      created: user.created
+      created: user.created,
+      robloxId: user.robloxId
     };
   }
 
