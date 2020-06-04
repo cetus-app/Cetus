@@ -36,11 +36,14 @@ export default class KeyController {
     const newKey = new ApiKey();
     newKey.name = name;
     newKey.token = await generateToken();
+    newKey.group = grp;
+    await database.keys.save(newKey);
 
-    await database.groups.createQueryBuilder()
-      .relation(Group, "keys")
-      .of(grp.id)
-      .add(newKey);
+    // await database.groups.createQueryBuilder()
+    //   .relation(Group, "keys")
+    //   .of(grp.id)
+    //   .add(newKey).catch(console.error);
+    delete newKey.group;
 
     return newKey;
   }
