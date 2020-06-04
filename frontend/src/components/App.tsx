@@ -34,7 +34,7 @@ const App: FunctionComponent = () => {
 
   if (loading) return <div className="has-text-centered">Loading..</div>;
 
-  if (!user) return <UnauthenticatedApp />;
+  if (!user) return <UnauthenticatedApp setUser={setUser}/>;
 
   return (
     <UserProvider value={user}>
