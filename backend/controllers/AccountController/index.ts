@@ -54,7 +54,7 @@ export default class Account {
   @ResponseSchema(PartialUser)
   async login (@Body() { email, password }: UserAccessBody, @Req() request: Request): Promise<PartialUser> {
     // Check that email is not in use
-    const existingUser = await database.users.findOne({ email }, { select: ["hash", "id", "email", "created"] });
+    const existingUser = await database.users.findOne({ email }, { select: ["hash", "id", "robloxId", "email", "created"] });
     if (!existingUser) {
       throw new ForbiddenError("Incorrect email or password");
     }
