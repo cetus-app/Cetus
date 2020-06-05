@@ -2,7 +2,7 @@ import {
   Connection, createConnection, getCustomRepository, getRepository, Repository
 } from "typeorm";
 
-import { Auth } from "./entities";
+import { Auth, Integration } from "./entities";
 import ApiKey from "./entities/ApiKey.entity";
 import { GroupRepository, UserRepository } from "./repositories";
 
@@ -15,6 +15,7 @@ export class Database {
       this.users = getCustomRepository(UserRepository);
       this.groups = getCustomRepository(GroupRepository);
       this.keys = getRepository(ApiKey);
+      this.integrations = getRepository(Integration);
     });
   }
 
@@ -26,7 +27,9 @@ export class Database {
 
   groups: GroupRepository;
 
-  keys: Repository<ApiKey>
+  keys: Repository<ApiKey>;
+
+  integrations: Repository<Integration>;
 }
 
 export default new Database();
