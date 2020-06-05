@@ -3,9 +3,9 @@ import {
   Body,
   CurrentUser,
   Delete,
-  JsonController, OnUndefined,
-  Params,
-  Post, Req
+  JsonController, NotFoundError,
+  OnUndefined,
+  Params, Post, Req
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 // TODO:
@@ -15,7 +15,7 @@ import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 //  Move to a branch
 
 import database from "../../database";
-import { Group, User } from "../../entities";
+import { User } from "../../entities";
 import ApiKey from "../../entities/ApiKey.entity";
 import generateToken from "../../shared/util/generateToken";
 import { ApiKeyRequest, ApiKeyResponse, DeleteKeyRequest } from "./types";
@@ -39,10 +39,6 @@ export default class KeyController {
     newKey.group = grp;
     await database.keys.save(newKey);
 
-    // await database.groups.createQueryBuilder()
-    //   .relation(Group, "keys")
-    //   .of(grp.id)
-    //   .add(newKey).catch(console.error);
     delete newKey.group;
 
     return newKey;
@@ -51,17 +47,18 @@ export default class KeyController {
   @OpenAPI({ description: "Delete an API token" })
   @Delete("/:id")
   @OnUndefined(204)
-  async removeKey (@CurrentUser({ required: true }) _user: User,
+  async removeKey (@CurrentUser({ required: true }) user: User,
                    @Params({
                      required: true,
                      validate: true
-                   }) { id }: DeleteKeyRequest,
-                   @Req() request: Request): Promise<void> {
-    const grp = await request.groupService.canAccessGroup(id);
+                   }) { id }: DeleteKeyRequest): Promise<void> {
+    const key = await database.keys.findOne(id, { relations: ["group", "group.owner"] });
 
-    await database.groups.createQueryBuilder()
-      .relation(Group, "keys")
-      .of(grp.id)
-      .remove(id);
+    if (!key) throw new NotFoundError();
+
+    // Don't expose a valid ID
+    if (key.group.owner.id !== user.id) throw new NotFoundError();
+
+    await database.keys.remove(key);
   }
 }
