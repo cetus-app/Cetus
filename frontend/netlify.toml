@@ -1,4 +1,11 @@
 [[redirects]]
+  from = "/dashboard/*"
+  to = "/dashboard/index.html"
+  status = 200
+  force = false
+
+
+[[redirects]]
   from = "/"
   to = "/static/pages/index.html"
   status = 200
@@ -7,11 +14,5 @@
 [[redirects]]
   from = "/*"
   to = "/static/pages/:splat"
-  status = 200
-  force = false
-
-[[redirects]]
-  from = "/dashboard/*"
-  to = "/dashboard/index.html"
   status = 200
   force = false
