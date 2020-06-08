@@ -4,5 +4,6 @@ node_modules/
 dist/
 .env
 .cache
+.parcel-cache
 
-frontend/public/dashboard/
+frontend/public

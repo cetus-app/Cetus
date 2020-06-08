@@ -17,7 +17,7 @@ const AuthenticatedApp: FunctionComponent = () => {
 
   if (!user.robloxId) return <Verify />;
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/dashboard">
       <Switch>
         <Route exact path="/">
           <div className="has-text-centered">{user.email}</div>

@@ -20,13 +20,13 @@ const App: FunctionComponent = () => {
       // Wait for response to be parsed
       setLoading(false);
     }).catch(e => {
-      if (e.response.status === 401) {
+      if (e.response && e.response.status === 401) {
         // Show unauthenticated
         setLoading(false);
         return false;
       }
       setError("Error occurred. Try refreshing the page");
-      throw new Error(`Non-authentication error: ${e.response.status}`);
+      throw new Error(`Non-authentication error: ${e.response && e.response.status}`);
     });
   }, []);
 
@@ -34,7 +34,7 @@ const App: FunctionComponent = () => {
 
   if (loading) return <div className="has-text-centered">Loading..</div>;
 
-  if (!user) return <UnauthenticatedApp setUser={setUser}/>;
+  if (!user) return <UnauthenticatedApp setUser={setUser} />;
 
   return (
     <UserProvider value={user}>

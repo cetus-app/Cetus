@@ -1,11 +1,11 @@
 [[redirects]]
   from = "/"
-  to = "/pages/index.html"
+  to = "/static/pages/index.html"
   status = 200
   force = true
 
 [[redirects]]
   from = "/*"
-  to = "/pages/:splat"
+  to = "/static/pages/:splat"
   status = 200
   force = false

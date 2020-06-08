@@ -5,8 +5,7 @@ import "regenerator-runtime/runtime"; // https://github.com/parcel-bundler/parce
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./panel.css";
-import "bulma/bulma.sass";
+import "../index.scss";
 import App from "./components/App";
 
 ReactDOM.render(
