@@ -35,7 +35,6 @@ export default class Groups {
       return [];
     }
     // Why? Makes them all run at once.
-    // I don't use Promise.all here because if one promise rejects, they all fail.
     const promises = [];
     for (let counter = 0; counter < groups.length; counter++) {
       promises.push(Roblox.getGroup(groups[counter].robloxId));
@@ -133,7 +132,12 @@ export default class Groups {
                   }) { id }: IdParam,
                   @Req() request: Request): Promise<FullGroup> {
     // Get specific group
-    return request.groupService.canAccessGroup(id);
+    const group = await request.groupService.canAccessGroup(id);
+    console.log("went ok");
+    const robloxInfo = await Roblox.getGroup(group.robloxId);
+    const toSend:FullGroup = { ...group };
+    toSend.robloxInfo = robloxInfo;
+    return toSend;
   }
 
   @OpenAPI({ description: "Modifies the state of the currently deployed bot, for example by notifying our server that it has been accepted into the group." })

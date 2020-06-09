@@ -1,18 +1,19 @@
-import React, { FunctionComponent, useContext } from "react";
+import React, { FunctionComponent, useContext, useState } from "react";
 import {
   BrowserRouter, Redirect, Route, Switch, useParams
 } from "react-router-dom";
 
+import { GroupProvider } from "../context/GroupContext";
 import UserContext from "../context/UserContext";
 import GroupMenu from "./GroupMenu";
 import GroupSelector from "./GroupMenu/GroupSelector";
 import UnlinkedSelector from "./GroupMenu/UnlinkedSelector";
+import GroupPanel from "./GroupPanel";
 import { NoMatch } from "./NoMatch";
 import Verify from "./Verification/Verification";
 
 const AuthenticatedApp: FunctionComponent = () => {
   const user = useContext(UserContext);
-
   if (!user) return <Redirect to="/signup" />;
 
   if (!user.robloxId) return <Verify />;
@@ -38,9 +39,8 @@ const AuthenticatedApp: FunctionComponent = () => {
           </GroupMenu>
         </Route>
 
-        <Route path="/groups/:id">
-          <GroupId />
-          <h1>Id</h1>
+        <Route path="/groups/:groupId">
+          <GroupPanel />
         </Route>
 
         <Route path="*">

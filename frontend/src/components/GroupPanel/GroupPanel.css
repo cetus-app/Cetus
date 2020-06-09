@@ -1,0 +1,26 @@
+.group-img {
+    height: 100%;
+    border-radius: 4px;
+    width: auto;
+}
+.group-info {
+    padding: 1em;
+}
+.sidebar {
+    min-height: 100vh;
+    background-color: #C4C4C4;
+    position: relative;
+}
+.ownertext {
+    margin-top: -1.25em
+}
+.indented-text {
+    padding-left: 1em;
+}
+.panel-right-column {
+    padding-right: 2em;
+}
+.sidebar {
+    padding-left: 1em;
+    padding-right: 1em;
+}
