@@ -10,3 +10,4 @@ export const getUnlinkedGroups = async (): Promise<UnlinkedGroup[]> => {
   const response = await fetch(`${process.env.BACKEND_URL}/groups/unlinked`);
   return response.json();
 };
+

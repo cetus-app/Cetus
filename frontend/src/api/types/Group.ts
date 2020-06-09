@@ -1,3 +1,8 @@
+
+import ApiKey from "./ApiKey";
+import Integration from "./Integration";
+import { PartialUser } from "./User";
+
 interface GroupBase {
   name: string,
   id: number,
@@ -38,4 +43,14 @@ export class UnlinkedGroup {
   rank: number;
 
   role: string;
+}
+
+export class FullGroup extends PartialGroup {
+  // Make this a DTO too?
+  keys: ApiKey[];
+
+  // Make this a DTO?
+  integrations: Integration[];
+
+  owner: PartialUser;
 }
