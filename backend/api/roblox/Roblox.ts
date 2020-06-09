@@ -18,14 +18,21 @@ export const USERS_API_URL = "https://users.roblox.com";
 export default class Roblox {
   static async getIdFromUsername (username: string): Promise<number | undefined> {
     const url = `${BASE_API_URL}/users/get-by-username?username=${username}`;
-    const data = await fetch(url).then(checkStatus).then(res => res && res.json());
+    try {
+      const data = await fetch(url).then(checkStatus).then(res => res && res.json());
 
-    if (data) {
-      if (data.Id) return data.Id;
+      if (data) {
+        if (data.Id) return data.Id;
 
-      if (data.success === false && data.errorMessage && data.errorMessage.toLowerCase() === "user not found") return undefined;
+        if (data.success === false && data.errorMessage && data.errorMessage.toLowerCase() === "user not found") return undefined;
+      }
+
+      // Is caught below
+      throw new Error();
+    } catch (e) {
+      console.error(e);
+      throw new ExternalHttpError(url, "Error while getting ID from username");
     }
-    throw new ExternalHttpError(url, "Error while getting ID from username");
   }
 
   static async getBlurb (id: number): Promise<string> {

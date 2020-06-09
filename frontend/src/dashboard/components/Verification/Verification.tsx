@@ -62,7 +62,7 @@ const Verify: FunctionComponent = () => {
 
   return (
     <section className="section columns is-centered">
-      <div className="verify-box column is-one-third box has-background-grey-light has-text-black">
+      <div className="verify-box column is-three-fifths-tablet is-two-fifths-widescreen is-one-third-fullhd is box has-background-grey-light has-text-black">
         {!verification && <StartVerification username={username} onUsernameChange={handleUsernameChange} onClick={handleStart} />}
 
         {(!completed && verification?.blurbCode)

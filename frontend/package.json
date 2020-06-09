@@ -2,12 +2,10 @@
   "name": "cetus-frontend",
   "version": "1.0.0",
   "description": "The frontend package for Cetus",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "parcel build src/index.html --out-dir public/dashboard --public-url=/dashboard --no-source-maps",
-    "dev:dash": "parcel src/index.html",
-    "dev:static": "live-server public --watch public --port=1400 --entry-file=404.html",
+    "build": "rimraf public && parcel build src/dashboard/index.html src/static/pages/*.html src/404.html --dist-dir public --no-source-maps",
+    "dev:dash": "parcel src/dashboard/index.html src/static/pages/*.html src/404.html",
     "check": "tsc --noEmit"
   },
   "author": "",
@@ -26,7 +24,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
+    "@babel/plugin-transform-react-jsx": "^7.10.1",
     "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.10.1",
     "@types/node": "^14.0.4",
     "@types/react-router-dom": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
@@ -40,6 +40,8 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.2",
     "live-server": "^1.2.1",
-    "parcel-bundler": "^1.12.4"
+    "parcel": "^2.0.0-alpha.3.2",
+    "rimraf": "^3.0.2",
+    "sass": "^1.26.8"
   }
 }
