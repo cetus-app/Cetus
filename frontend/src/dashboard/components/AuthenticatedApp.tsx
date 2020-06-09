@@ -1,9 +1,8 @@
-import React, { FunctionComponent, useContext, useState } from "react";
+import React, { FunctionComponent, useContext } from "react";
 import {
   BrowserRouter, Redirect, Route, Switch, useParams
 } from "react-router-dom";
 
-import { GroupProvider } from "../context/GroupContext";
 import UserContext from "../context/UserContext";
 import GroupMenu from "./GroupMenu";
 import GroupSelector from "./GroupMenu/GroupSelector";

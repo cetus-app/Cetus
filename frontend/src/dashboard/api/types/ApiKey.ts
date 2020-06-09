@@ -1,7 +1,7 @@
 
 import { PartialGroup } from "./Group";
 
-export default class ApiKey {
+export class ApiKey {
   name: string;
 
   group?: PartialGroup;
@@ -12,3 +12,4 @@ export default class ApiKey {
 
   created: Date;
 }
+export default ApiKey;

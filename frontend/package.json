@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf public && parcel build src/dashboard/index.html src/static/pages/*.html src/404.html --dist-dir public --no-source-maps",
-    "dev:dash": "parcel src/dashboard/index.html src/static/pages/*.html src/404.html",
+    "dev": "parcel src/dashboard/index.html src/static/pages/*.html src/404.html",
     "check": "tsc --noEmit"
   },
   "author": "",
