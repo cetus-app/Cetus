@@ -1,3 +1,4 @@
+import { max, min } from "class-validator";
 import realFetch, { Response } from "node-fetch";
 
 import { cetusGroupId, redisPrefixes } from "../../constants";
@@ -6,7 +7,9 @@ import { Group } from "../../entities";
 import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
-import { RobloxGroup, RobloxUser, UserRobloxGroup } from "../../types";
+import {
+  FullRobloxRole, RobloxGroup, RobloxUser, UserRobloxGroup
+} from "../../types";
 
 const fetch = (url: string, opt?: any) => {
   console.log(`${(opt && opt.method) || "GET"} ${url}`);
@@ -165,6 +168,53 @@ export default class Roblox {
 
     const groupIds = groups.map(g => g.id);
     return groupIds.includes(groupId);
+  }
+
+  static async getRoles (groupId: number): Promise<FullRobloxRole[] | undefined> {
+    const key = redisPrefixes.groupRolesCache + groupId;
+
+    const cached = await redis.get(key);
+    if (cached) return JSON.parse(cached);
+
+    const roles = await this.fetchRoles(groupId);
+
+    if (roles) {
+      await redis.set(key, JSON.stringify(roles), "EX", 60 * 60);
+      return roles;
+    }
+
+    return undefined;
+  }
+
+  static async fetchRoles (groupId: number): Promise<FullRobloxRole[] | undefined> {
+    const data = await fetch(`${GROUPS_API_URL}/v1/groups/${groupId}/roles`).then(checkStatus).then(res => res && res.json());
+    return data?.roles;
+  }
+
+  async setRank (userId: number, rank: number): Promise<void> {
+    if (!min(rank, 0) || !max(rank, 255)) throw new TypeError("User ID must not be smaller than 0 or larger than 255");
+
+    const roles = await Roblox.getRoles(this.group.robloxId);
+    if (!roles) throw new Error(`Unknown error occurred while getting roles in group ${this.group.robloxId}`);
+
+    const { id: roleId } = roles.find(r => r.rank === rank) || {};
+    if (!roleId) throw new Error(`Role with rank ${rank} does not exist in group ${this.group.robloxId}`);
+
+    const body = JSON.stringify({ roleId });
+
+    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, {
+      method: "PATCH",
+      body
+    }).then(checkStatus).then(res => res && res.json());
+
+    if (!data) throw new Error(`Unknown error while updating user ${userId} to rank ${rank} in group ${this.group.robloxId}`);
+
+    if (data.errors && data.errors.length > 0) {
+      const firstErr = data.errors[0].message;
+      throw new Error(`Error(s) occurred while updating user ${userId} to rank ${rank} in group ${this.group.robloxId}: ${firstErr}`);
+    }
+
+    return undefined;
   }
 }
 

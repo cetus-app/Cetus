@@ -42,3 +42,11 @@ export interface RobloxUser{
   name: string,
   displayName:string
 }
+
+export interface FullRobloxRole {
+  id: number;
+  name: string;
+  description: string;
+  rank: number;
+  memberCount: number;
+}
