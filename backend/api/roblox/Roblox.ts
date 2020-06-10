@@ -1,6 +1,7 @@
-import realFetch from "node-fetch";
+import realFetch, { Response } from "node-fetch";
 
-import { redisPrefixes } from "../../constants";
+import { cetusGroupId, redisPrefixes } from "../../constants";
+import database from "../../database";
 import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
@@ -11,11 +12,58 @@ const fetch = (url: string, opt?: any) => {
   return realFetch(url, opt);
 };
 
-
 export const BASE_API_URL = "https://api.roblox.com";
 export const USERS_API_URL = "https://users.roblox.com";
+export const GROUPS_API_URL = "https://groups.roblox.com";
+
+export class InvalidRobloxCookie extends Error {
+  constructor (...params: ConstructorParameters<typeof Error>) {
+    super(...params);
+
+    Error.captureStackTrace(this, ExternalHttpError);
+
+    this.name = "InvalidRobloxCookie";
+  }
+}
 
 export default class Roblox {
+  private cookie: string;
+
+  private csrfToken: string;
+
+  async login (cookie: string): Promise<void> {
+    this.cookie = cookie;
+
+    try {
+      await this.authHttp(`${GROUPS_API_URL}/v1/groups/${cetusGroupId}/audit-log`).then(checkStatus).then(res => res && res.json());
+    } catch (e) {
+      if (e instanceof ExternalHttpError && e.response.status === 401) throw new InvalidRobloxCookie("Invalid login cookie");
+      throw e;
+    }
+
+    return undefined;
+  }
+
+  async authHttp (url: string, opts: RequestInit = {}): Promise<Response> {
+    const newOpts = opts;
+
+    if (!newOpts.headers) newOpts.headers = {};
+
+    // No idea why TypeScript won't use that type without casting
+    if (this.cookie) (newOpts.headers as Record<string, string>).cookie = `.ROBLOSECURITY=${this.cookie}`;
+
+    if (!this.csrfToken) {
+      const res = await fetch(`${GROUPS_API_URL}/v1/groups/${cetusGroupId}/audit-log`).then(checkStatus);
+      if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
+
+      this.csrfToken = res.headers.get("x-csrf-token") || "";
+    }
+
+    (newOpts.headers as Record<string, string>)["x-csrf-token"] = this.csrfToken;
+
+    return fetch(url, newOpts);
+  }
+
   static async getIdFromUsername (username: string): Promise<number | undefined> {
     const url = `${BASE_API_URL}/users/get-by-username?username=${username}`;
     try {
@@ -90,3 +138,29 @@ export default class Roblox {
     return undefined;
   }
 }
+
+const clients: Map<string, Roblox> = new Map();
+
+export const getGroupClient = async (groupId: string): Promise<Roblox> => {
+  let client = clients.get(groupId);
+  if (client) return client;
+
+  const group = await database.groups.getGroup(groupId);
+  if (!group) throw new Error(`Group ${groupId} not found`);
+
+  client = new Roblox();
+
+  return client.login(group.bot.cookie).then(() => {
+    // Client was just defined
+    clients.set(group.id, client!);
+    return client!;
+  }).catch(async e => {
+    if (e instanceof InvalidRobloxCookie) {
+      group.bot.dead = true;
+      await database.bots.save(group.bot);
+      throw new Error(`Group ${groupId} has invalid cookie`);
+    }
+
+    throw e;
+  });
+};

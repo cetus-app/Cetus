@@ -4,6 +4,7 @@ import {
 
 import { Auth, Integration } from "./entities";
 import ApiKey from "./entities/ApiKey.entity";
+import Bot from "./entities/Bot.entity";
 import { GroupRepository, UserRepository } from "./repositories";
 
 export class Database {
@@ -16,6 +17,7 @@ export class Database {
       this.groups = getCustomRepository(GroupRepository);
       this.keys = getRepository(ApiKey);
       this.integrations = getRepository(Integration);
+      this.bots = getRepository(Bot);
     });
   }
 
@@ -30,6 +32,8 @@ export class Database {
   keys: Repository<ApiKey>;
 
   integrations: Repository<Integration>;
+
+  bots: Repository<Bot>;
 }
 
 export default new Database();

@@ -8,7 +8,7 @@ const checkStatus = (response: Response): Response|undefined => {
     return undefined;
   }
 
-  throw new ExternalHttpError(response.url);
+  throw new ExternalHttpError(response);
 };
 
 export default checkStatus;

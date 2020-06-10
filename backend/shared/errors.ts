@@ -5,6 +5,7 @@
 // TODO: Add different error handling based on production or development
 // "Unfriendly" error messages.
 import { NextFunction, Request, Response } from "express";
+import { Response as FetchResponse } from "node-fetch";
 
 function errorHandler (error: any, _req: Request, res: Response, _next: NextFunction) {
   if (error instanceof SyntaxError) {
@@ -61,16 +62,16 @@ const errors = {
 };
 
 export class ExternalHttpError extends Error {
-  constructor (url: string, ...params: ConstructorParameters<typeof Error>) {
+  constructor (response: FetchResponse, ...params: ConstructorParameters<typeof Error>) {
     super(...params);
 
     Error.captureStackTrace(this, ExternalHttpError);
 
     this.name = "ExternalHttpError";
-    this.url = url;
+    this.response = response;
   }
 
-  url: string;
+  response: FetchResponse;
 }
 
 export {

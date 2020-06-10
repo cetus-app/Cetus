@@ -10,7 +10,7 @@ export default class GroupRepository extends Repository<Group> {
   }
 
   getFullGroup (groupId: string) {
-    return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys"] });
+    return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
   }
 
   getGroupByRoblox (robloxGroupId: number) {
