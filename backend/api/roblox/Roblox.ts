@@ -72,9 +72,8 @@ export default class Roblox {
   }
 
   static async getIdFromUsername (username: string): Promise<number | undefined> {
-    const url = `${BASE_API_URL}/users/get-by-username?username=${username}`;
     try {
-      const data = await fetch(url).then(checkStatus).then(res => res && res.json());
+      const data = await fetch(`${BASE_API_URL}/users/get-by-username?username=${username}`).then(checkStatus).then(res => res && res.json());
 
       if (data) {
         if (data.Id) return data.Id;
@@ -86,7 +85,7 @@ export default class Roblox {
       throw new Error();
     } catch (e) {
       console.error(e);
-      throw new ExternalHttpError(url, "Error while getting ID from username");
+      throw new Error("Error while getting ID from username");
     }
   }
 
