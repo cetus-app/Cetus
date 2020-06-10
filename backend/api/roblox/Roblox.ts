@@ -2,6 +2,7 @@ import realFetch, { Response } from "node-fetch";
 
 import { cetusGroupId, redisPrefixes } from "../../constants";
 import database from "../../database";
+import { Group } from "../../entities";
 import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
@@ -27,6 +28,12 @@ export class InvalidRobloxCookie extends Error {
 }
 
 export default class Roblox {
+  constructor (group: Group) {
+    this.group = group;
+  }
+
+  private group: Group;
+
   private cookie: string;
 
   private csrfToken: string;
@@ -148,7 +155,7 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
   const group = await database.groups.getGroup(groupId);
   if (!group) throw new Error(`Group ${groupId} not found`);
 
-  client = new Roblox();
+  client = new Roblox(group);
 
   return client.login(group.bot.cookie).then(() => {
     // Client was just defined
