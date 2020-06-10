@@ -130,6 +130,21 @@ export default class Roblox {
 
 
   static async getUserGroups (userId: number): Promise<UserRobloxGroup[] | undefined> {
+    const key = redisPrefixes.userGroupsCache + userId;
+    const cached = await redis.get(key);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+    const groups = await this.fetchUserGroups(userId);
+    if (groups) {
+      // One hour cache time
+      await redis.set(key, JSON.stringify(groups), "EX", 60 * 60);
+      return groups;
+    }
+    return undefined;
+  }
+
+  static async fetchUserGroups (userId: number): Promise<UserRobloxGroup[] | undefined> {
     const url = `${BASE_API_URL}/users/${userId}/groups`;
     const data = await fetch(url).then(checkStatus).then(res => res && res.json());
 
@@ -142,6 +157,14 @@ export default class Roblox {
     }
 
     return undefined;
+  }
+
+  static async isMember (groupId: number, userId: number): Promise<boolean> {
+    const groups = await this.getUserGroups(userId);
+    if (!groups) return false;
+
+    const groupIds = groups.map(g => g.id);
+    return groupIds.includes(groupId);
   }
 }
 
