@@ -18,4 +18,8 @@ export default class UserRepository extends Repository<User> {
   getUser (userId: string) {
     return this.findOne({ id: userId });
   }
+
+  getUserByRId (robloxId: number): Promise<User | undefined> {
+    return this.findOne({ robloxId });
+  }
 }
