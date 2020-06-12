@@ -41,5 +41,5 @@ export default class Group {
   owner: User;
 
   @ManyToOne(() => Bot)
-  bot: Bot;
+  bot?: Bot;
 }

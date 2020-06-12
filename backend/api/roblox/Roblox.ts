@@ -1,5 +1,5 @@
 import { max, min } from "class-validator";
-import realFetch, { Response } from "node-fetch";
+import realFetch, { Headers, RequestInit, Response } from "node-fetch";
 
 import { cetusGroupId, redisPrefixes } from "../../constants";
 import database from "../../database";
@@ -56,20 +56,18 @@ export default class Roblox {
 
   async authHttp (url: string, opts: RequestInit = {}): Promise<Response> {
     const newOpts = opts;
+    newOpts.headers = new Headers(opts.headers);
 
-    if (!newOpts.headers) newOpts.headers = {};
-
-    // No idea why TypeScript won't use that type without casting
-    if (this.cookie) (newOpts.headers as Record<string, string>).cookie = `.ROBLOSECURITY=${this.cookie}`;
+    if (this.cookie) newOpts.headers.append("Cookie", `.ROBLOSECURITY=${this.cookie}`);
 
     if (!this.csrfToken) {
-      const res = await fetch(`${GROUPS_API_URL}/v1/groups/${cetusGroupId}/audit-log`).then(checkStatus);
+      const res = await fetch(`${GROUPS_API_URL}/v1/groups/${cetusGroupId}/audit-log`, { headers: newOpts.headers }).then(checkStatus);
       if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
 
       this.csrfToken = res.headers.get("x-csrf-token") || "";
     }
 
-    (newOpts.headers as Record<string, string>)["x-csrf-token"] = this.csrfToken;
+    newOpts.headers.append("x-csrf-token", this.csrfToken);
 
     return fetch(url, newOpts);
   }
@@ -224,10 +222,12 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
   let client = clients.get(groupId);
   if (client) return client;
 
-  const group = await database.groups.getGroup(groupId);
+  const group = await database.groups.getGroupWithCookie(groupId);
   if (!group) throw new Error(`Group ${groupId} not found`);
 
   client = new Roblox(group);
+
+  if (!group.bot || group.bot.dead) throw new Error(`Group does not have active bot`);
 
   return client.login(group.bot.cookie).then(() => {
     // Client was just defined
@@ -235,8 +235,9 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
     return client!;
   }).catch(async e => {
     if (e instanceof InvalidRobloxCookie) {
-      group.bot.dead = true;
-      await database.bots.save(group.bot);
+      // Litterally a condition for this
+      group.bot!.dead = true;
+      await database.bots.save(group.bot!);
       throw new Error(`Group ${groupId} has invalid cookie`);
     }
 
