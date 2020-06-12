@@ -8,7 +8,7 @@ function defaultSetter () {
   throw new Error("Failed to set group context; No context setter provided.");
 }
 
-const GroupContext = createContext<[FullGroup | null, Function|undefined]>([null, defaultSetter]);
+const GroupContext = createContext<[FullGroup | null, Function]>([null, defaultSetter]);
 
 export const GroupProvider = GroupContext.Provider;
 export const GroupConsumer = GroupContext.Consumer;

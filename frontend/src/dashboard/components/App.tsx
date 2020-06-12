@@ -13,6 +13,7 @@ const App: FunctionComponent = () => {
 
   useEffect(() => {
     setLoading(true);
+
     fetch(`${process.env.BACKEND_URL}/account`).then(async res => {
       setUser(await res.json());
 

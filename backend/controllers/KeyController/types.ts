@@ -1,5 +1,5 @@
 import {
-  IsAlphanumeric,
+  IsAscii,
   IsDate, IsString, IsUUID, MaxLength, MinLength
 } from "class-validator";
 
@@ -11,7 +11,7 @@ export class ApiKeyRequest {
 
   @IsString()
   @MaxLength(30)
-  @IsAlphanumeric()
+  @IsAscii()
   name: string;
 }
 

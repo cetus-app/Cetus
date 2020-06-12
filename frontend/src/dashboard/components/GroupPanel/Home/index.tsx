@@ -2,6 +2,7 @@
 import React, { FunctionComponent } from "react";
 
 import GroupInfo from "./GroupInfo";
+import TokenManager from "./TokenManager";
 
 interface GroupHomeProps {
 
@@ -11,7 +12,7 @@ export const GroupHome: FunctionComponent<GroupHomeProps> = props => (
   <div>
     <GroupInfo />
     <h2 className="subtitle">Using your group</h2>
-    <p className="indented-text">
+    <div className="indented-text">
       There are lots of ways to get started interacting with your group. Why not:
       <div className="content">
         <ul>
@@ -26,20 +27,8 @@ export const GroupHome: FunctionComponent<GroupHomeProps> = props => (
           </li>
         </ul>
       </div>
-    </p>
-    <div className="level">
-      <div className="level-left">
-        <div className="level-item">
-          <h2 className="subtitle">Authentication tokens</h2>
-        </div>
-      </div>
-
-      <div className="level-right">
-        <div className="level-item">
-          <button className="button is-primary">Add token</button>
-        </div>
-      </div>
     </div>
+   <TokenManager/>
 
 
   </div>

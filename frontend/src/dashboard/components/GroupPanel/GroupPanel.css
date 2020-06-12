@@ -24,3 +24,19 @@
     padding-left: 1em;
     padding-right: 1em;
 }
+.token-manager .box {
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+.token-manager .wrap {
+    word-wrap: break-word;
+    pointer-events: bounding-box;
+    height: 100%;
+}
+
+.token-manager .clickable {
+    cursor: pointer;
+}
+.add-key-form {
+    padding-bottom: 0.5rem;
+}
