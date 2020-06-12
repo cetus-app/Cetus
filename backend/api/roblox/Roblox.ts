@@ -11,8 +11,16 @@ import {
   FullRobloxRole, RobloxGroup, RobloxUser, UserRobloxGroup
 } from "../../types";
 
-const fetch = (url: string, opt?: any) => {
-  console.log(`${(opt && opt.method) || "GET"} ${url}`);
+const fetch = (url: string, opt?: RequestInit) => {
+  const newOpt = opt || {};
+
+  console.log(`${newOpt.method || "GET"} ${url}`);
+
+  if (newOpt.body) {
+    newOpt.headers = new Headers(newOpt.headers);
+    newOpt.headers.append("Content-Type", "application/json");
+  }
+
   return realFetch(url, opt);
 };
 
@@ -61,10 +69,17 @@ export default class Roblox {
     if (this.cookie) newOpts.headers.append("Cookie", `.ROBLOSECURITY=${this.cookie}`);
 
     if (!this.csrfToken) {
-      const res = await fetch(`${GROUPS_API_URL}/v1/groups/${cetusGroupId}/audit-log`, { headers: newOpts.headers }).then(checkStatus);
-      if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
+      try {
+        const res = await fetch(`${BASE_API_URL}/sign-out/v1`, {
+          method: "POST",
+          headers: newOpts.headers
+        }).then(checkStatus);
 
-      this.csrfToken = res.headers.get("x-csrf-token") || "";
+        if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
+      } catch (e) {
+        if (e instanceof ExternalHttpError && e.response.status === 403 && e.response.statusText.toLowerCase().includes("token validation failed")) this.csrfToken = e.response.headers.get("x-csrf-token") || "";
+        else throw e;
+      }
     }
 
     newOpts.headers.append("x-csrf-token", this.csrfToken);
@@ -190,7 +205,7 @@ export default class Roblox {
   }
 
   async setRank (userId: number, rank: number): Promise<void> {
-    if (!min(rank, 0) || !max(rank, 255)) throw new TypeError("User ID must not be smaller than 0 or larger than 255");
+    if (!min(rank, 0) || !max(rank, 255)) throw new TypeError("Rank must not be smaller than 0 or larger than 255");
 
     const roles = await Roblox.getRoles(this.group.robloxId);
     if (!roles) throw new Error(`Unknown error occurred while getting roles in group ${this.group.robloxId}`);
