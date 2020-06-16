@@ -13,6 +13,14 @@ export default class GroupRepository extends Repository<Group> {
     return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
   }
 
+  getGroupWithCookie (groupId: string): Promise<Group | undefined> {
+    return this.createQueryBuilder("group")
+      .leftJoinAndSelect("group.bot", "bot")
+      .addSelect("bot.cookie")
+      .where("group.id = :groupId", { groupId })
+      .getOne();
+  }
+
   getGroupByRoblox (robloxGroupId: number) {
     return this.findOne({ robloxId: robloxGroupId }, { relations: ["owner"] });
   }
