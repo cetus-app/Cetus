@@ -42,7 +42,10 @@ app.use(cookieParser());
 
 useExpressServer(app, options);
 
-const schemas = validationMetadatasToSchemas({ classTransformerMetadataStorage: defaultMetadataStorage });
+const schemas = validationMetadatasToSchemas({
+  classTransformerMetadataStorage: defaultMetadataStorage,
+  refPointerPrefix: "#/components/schemas/"
+});
 const metadataStorage = getMetadataArgsStorage();
 
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });

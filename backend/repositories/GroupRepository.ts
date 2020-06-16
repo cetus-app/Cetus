@@ -24,4 +24,11 @@ export default class GroupRepository extends Repository<Group> {
   getGroupByRoblox (robloxGroupId: number) {
     return this.findOne({ robloxId: robloxGroupId }, { relations: ["owner"] });
   }
+
+  getInactiveBotGroups (): Promise<Group[]> {
+    return this.find({
+      where: { botActive: false },
+      relations: ["bot"]
+    });
+  }
 }

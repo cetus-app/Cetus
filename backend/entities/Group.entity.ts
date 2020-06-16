@@ -7,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
@@ -26,6 +27,12 @@ export default class Group {
 
   @Column()
   robloxId: number;
+
+  @Column("boolean", { default: false })
+  // Partial index as per https://stackoverflow.com/a/42972924/6090379
+  // Few groups will have `false`
+  @Index({ where: "\"botActive\" = FALSE" })
+  botActive: boolean;
 
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
