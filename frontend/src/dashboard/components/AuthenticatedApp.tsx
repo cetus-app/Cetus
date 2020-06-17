@@ -4,6 +4,8 @@ import {
 } from "react-router-dom";
 
 import UserContext from "../context/UserContext";
+import Admin from "./Admin/Admin";
+import BotQueue from "./Admin/BotQueue";
 import GroupMenu from "./GroupMenu";
 import GroupSelector from "./GroupMenu/GroupSelector";
 import UnlinkedSelector from "./GroupMenu/UnlinkedSelector";
@@ -40,6 +42,14 @@ const AuthenticatedApp: FunctionComponent = () => {
 
         <Route path="/groups/:groupId">
           <GroupPanel />
+        </Route>
+
+        <Route path="/admin" exact>
+          <Admin />
+        </Route>
+
+        <Route path="/admin/bot-queue">
+          <BotQueue />
         </Route>
 
         <Route path="*">

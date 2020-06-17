@@ -28,6 +28,8 @@ export class PartialGroup {
 
   robloxId: number;
 
+  botActive: boolean;
+
   created: Date;
 
   robloxInfo: RobloxGroup;
