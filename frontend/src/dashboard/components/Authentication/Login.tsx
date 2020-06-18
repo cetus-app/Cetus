@@ -67,7 +67,7 @@ export const Login: FunctionComponent<LoginProps> = ({ toRegister, setUser }) =>
       </Formik>
     </div>
     <div className="has-text-centered">
-      <button type="button" className="button is-text" onClick={toRegister}>Already got an account?</button>
+      <button type="button" className="button is-text" onClick={toRegister}>Need to make an account?</button>
     </div>
   </div>
 

@@ -35,7 +35,7 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = () => {
       <Fragment>
         {
           groups.length === 0
-            ? "There are no groups to show"
+            ? "There are no groups to show. Click the 'Add group' button to add one!"
             : groups.map(g => (
               <GroupButton
                 imgUrl={g.robloxInfo ? g.robloxInfo.emblemUrl : "https://jdrf.org.uk/wp-content/uploads/2017/06/placeholder-image.jpg"}

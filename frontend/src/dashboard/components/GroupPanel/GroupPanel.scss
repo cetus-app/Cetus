@@ -1,3 +1,4 @@
+@import 'src/index';
 .group-img {
     height: 100%;
     border-radius: 4px;
@@ -8,8 +9,11 @@
 }
 .sidebar {
     min-height: 100vh;
-    background-color: #C4C4C4;
+    background-color: $dark-background;
+    color: $dark-background-text;
     position: relative;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 .ownertext {
     margin-top: -1.25em
@@ -20,10 +24,7 @@
 .panel-right-column {
     padding-right: 2em;
 }
-.sidebar {
-    padding-left: 1em;
-    padding-right: 1em;
-}
+
 .token-manager .box {
     margin-bottom: 0.5rem;
     cursor: pointer;

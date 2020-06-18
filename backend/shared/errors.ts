@@ -7,14 +7,14 @@
 import { NextFunction, Request, Response } from "express";
 import { Response as FetchResponse } from "node-fetch";
 
-function errorHandler (error: any, _req: Request, res: Response, _next: NextFunction) {
+function errorHandler (error: any, _req: Request, res: Response, _next: NextFunction):any {
   if (error instanceof SyntaxError) {
     // do your own thing here 👍
     res.status(400).send(errorGenerator(400, "Bad JSON."));
   } else {
     console.error(`Error catch`, error);
     res.status(error.status || 500);
-    res.send(errorGenerator(500, error.message));
+    return res.send(errorGenerator(500, error.message));
   }
 }
 

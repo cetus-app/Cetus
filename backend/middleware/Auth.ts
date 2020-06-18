@@ -33,7 +33,6 @@ export default class AuthMiddleware implements ExpressMiddlewareInterface {
       await authRepository.remove(auth);
       return next();
     }
-
     req.user = auth.user;
     return next();
   }

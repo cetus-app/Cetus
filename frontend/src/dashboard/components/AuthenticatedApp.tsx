@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useContext } from "react";
 import {
-  BrowserRouter, Redirect, Route, Switch, useParams
+  BrowserRouter, Link, Redirect, Route, Switch
 } from "react-router-dom";
 
 import UserContext from "../context/UserContext";
@@ -20,7 +20,11 @@ const AuthenticatedApp: FunctionComponent = () => {
     <BrowserRouter basename="/dashboard">
       <Switch>
         <Route exact path="/">
-          <div className="has-text-centered">{user.email}</div>
+          <div className="has-text-centered">
+            {user.email}<br />
+            <Link to="/groups">Groups menu</Link>
+          </div>
+
         </Route>
         <Route path="/groups" exact>
           <GroupMenu
@@ -30,11 +34,11 @@ const AuthenticatedApp: FunctionComponent = () => {
           </GroupMenu>
         </Route>
 
-        <Route path="/groups/unlinked">
+        <Route path="/groups/unlinked" exact>
           <GroupMenu
             title="Available groups"
             subtitle="Below are all of the groups owned by you which we found on your profile. Click one to link it to our service. ">
-            <UnlinkedSelector handleSelected={console.log} />
+            <UnlinkedSelector />
           </GroupMenu>
         </Route>
 
@@ -52,7 +56,3 @@ const AuthenticatedApp: FunctionComponent = () => {
 };
 
 export default AuthenticatedApp;
-const GroupId = () => {
-  const { id } = useParams();
-  return <h1>Group - {id}</h1>;
-};

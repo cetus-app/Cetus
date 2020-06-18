@@ -72,7 +72,7 @@ export const TokenManager: FunctionComponent<TokenManagerProps> = props => {
 
             <div className="level-right">
               <div className="level-item">
-                <button type="button" className="button is-primary" onClick={() => setShown(true)}>Add token</button>
+                <button type="button" className="button is-info" onClick={() => setShown(true)}>Add token</button>
               </div>
             </div>
           </div>
