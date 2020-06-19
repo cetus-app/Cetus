@@ -21,15 +21,17 @@ const BotQueue: FunctionComponent = () => {
   }
 
   return (
-    <section className="section bot-queue">
-      <h1 className="title is-size-3 is-size-2-fullhd">Bot queue (inactive bots)</h1>
+    <section className="section columns is-centered bot-queue">
+      <div className="column is-10">
+        <h1 className="title">Bot queue (inactive bots)</h1>
 
-      <div className="columns is-multiline">
-        {queue?.map(item => (
-          <div key={item.group.id} className="column is-4 is-3-widescreen">
-            <QueueItem item={item} />
-          </div>
-        ))}
+        <div className="columns is-multiline">
+          {queue?.map(item => (
+            <div key={item.group.id} className="column is-6 is-one-third-desktop is-3-widescreen">
+              <QueueItem item={item} />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
