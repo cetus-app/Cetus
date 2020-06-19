@@ -1,11 +1,12 @@
 import React, { FunctionComponent, useContext } from "react";
 import {
-  BrowserRouter, Redirect, Route, Switch, useParams
+  BrowserRouter, Redirect, Route, Switch
 } from "react-router-dom";
 
 import UserContext from "../context/UserContext";
 import Admin from "./Admin/Admin";
-import BotQueue from "./Admin/BotQueue";
+import BotManagement from "./Admin/Bots/Manage";
+import BotQueue from "./Admin/Bots/Queue";
 import GroupMenu from "./GroupMenu";
 import GroupSelector from "./GroupMenu/GroupSelector";
 import UnlinkedSelector from "./GroupMenu/UnlinkedSelector";
@@ -48,7 +49,11 @@ const AuthenticatedApp: FunctionComponent = () => {
           <Admin />
         </Route>
 
-        <Route path="/admin/bot-queue">
+        <Route path="/admin/bots/manage">
+          <BotManagement />
+        </Route>
+
+        <Route path="/admin/bots/queue">
           <BotQueue />
         </Route>
 
@@ -62,7 +67,3 @@ const AuthenticatedApp: FunctionComponent = () => {
 };
 
 export default AuthenticatedApp;
-const GroupId = () => {
-  const { id } = useParams();
-  return <h1>Group - {id}</h1>;
-};

@@ -7,13 +7,19 @@ export interface Bot {
 
   username?: string;
 
-  cookieUpdated: Date;
+  cookieUpdated: string;
 
   dead: boolean;
 }
 
-export class QueueItem {
+export interface QueueItem {
   group: PartialGroup;
 
   bot: Bot;
+}
+
+export interface UpdateBotBody {
+  cookie?: string;
+
+  dead?: boolean;
 }

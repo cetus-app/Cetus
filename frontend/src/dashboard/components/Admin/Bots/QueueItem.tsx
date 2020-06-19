@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 
-import { QueueItem as QueueItemType } from "../../api/types/Bot";
+import { QueueItem as QueueItemType } from "../../../api/types/Bot";
 
 
 export interface QueueItemProps {
@@ -8,7 +8,7 @@ export interface QueueItemProps {
 }
 
 const QueueItem: FunctionComponent<QueueItemProps> = ({ item: { bot, group } }) => (
-  <div className="card queue-item">
+  <div className="card bot-queue-item">
     <div className="card-image">
       <figure className="image is-96x96">
         <img src={group.robloxInfo.emblemUrl} alt="Group emblem" />

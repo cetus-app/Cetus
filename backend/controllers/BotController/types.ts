@@ -30,3 +30,13 @@ export class QueueItem {
   @ValidateNested()
   bot: Bot;
 }
+
+export class UpdateBotBody {
+  @IsString()
+  @IsOptional()
+  cookie?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  dead?: boolean;
+}

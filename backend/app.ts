@@ -10,13 +10,21 @@ import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
 
 import controllers from "./controllers";
+import { PermissionLevel } from "./entities/User.entity";
 import middlewares from "./middleware";
 import { name, version } from "./package.json";
+import { Action } from "./types";
 
 const options: RoutingControllersOptions = {
   controllers,
   middlewares,
-  authorizationChecker: action => !!action.request.user,
+  authorizationChecker: ({ request: { user } }: Action, roles: PermissionLevel[]) => {
+    if (!user) return false;
+
+    if (roles.length === 0) return true;
+
+    return roles.includes(user.permissionLevel);
+  },
   currentUserChecker: action => action.request.user,
   cors: {
     origin: process.env.frontendUrl,

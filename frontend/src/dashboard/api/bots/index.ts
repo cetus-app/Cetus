@@ -1,2 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
+export { default as bots } from "./bots";
+export { default as updateBot } from "./updateBot";
 export { default as queue } from "./queue";

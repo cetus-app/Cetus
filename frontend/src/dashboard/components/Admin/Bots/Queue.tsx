@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 
-import "./BotQueue.scss";
-import { queue as getQueue } from "../../api/bots";
-import { QueueItem as QueueItemType } from "../../api/types/Bot";
+import "./Queue.scss";
+import { queue as getQueue } from "../../../api/bots";
+import { QueueItem as QueueItemType } from "../../../api/types/Bot";
 import QueueItem from "./QueueItem";
 
 const BotQueue: FunctionComponent = () => {
@@ -26,7 +26,7 @@ const BotQueue: FunctionComponent = () => {
         <h1 className="title">Bot queue (inactive bots)</h1>
 
         <div className="columns is-multiline">
-          {queue?.map(item => (
+          {queue.map(item => (
             <div key={item.group.id} className="column is-6 is-one-third-desktop is-3-widescreen">
               <QueueItem item={item} />
             </div>
