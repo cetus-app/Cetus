@@ -26,7 +26,7 @@ const BotItem: FunctionComponent<BotProps> = ({
 
       <div className="content">
         {/* TODO: better date format */}
-        <p>The bot is marked as {dead ? "dead" : "functioning"}. Its cookie was last updated {new Date(cookieUpdated).toLocaleString()}.</p>
+        <p>The bot is marked as <b>{dead ? "dead" : "functioning"}</b>. Its cookie was last updated {new Date(cookieUpdated).toLocaleString()}.</p>
 
         <p>
           {
