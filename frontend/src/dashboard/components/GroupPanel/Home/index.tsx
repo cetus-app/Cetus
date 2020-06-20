@@ -8,7 +8,7 @@ interface GroupHomeProps {
 
 }
 
-export const GroupHome: FunctionComponent<GroupHomeProps> = props => (
+const GroupHome: FunctionComponent<GroupHomeProps> = props => (
   <div>
     <GroupInfo />
     <h2 className="subtitle">Using your group</h2>

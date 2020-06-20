@@ -1,4 +1,4 @@
-@import 'src/index';
+@import '../../../index';
 .group-img {
     height: 100%;
     border-radius: 4px;
@@ -11,7 +11,6 @@
     min-height: 100vh;
     background-color: $dark-background;
     color: $dark-background-text;
-    position: relative;
     padding-left: 1em;
     padding-right: 1em;
 }
@@ -40,4 +39,18 @@
 }
 .add-key-form {
     padding-bottom: 0.5rem;
+}
+.integration-button-box {
+    padding: 1rem;
+
+    .fa-discord {
+        color: #7289DA;
+    }
+
+    .fa-robot {
+        color: #94D1BE;
+    }
+    .fa-shield-alt {
+        color: #A29C9B;
+    }
 }

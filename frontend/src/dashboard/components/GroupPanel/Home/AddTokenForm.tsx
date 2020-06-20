@@ -24,7 +24,6 @@ export const AddTokenForm: FunctionComponent<AddTokenFormProps> = ({ groupId, ha
     })}
     onSubmit={async (values, { setErrors, setFieldError }) => {
       try {
-        console.log(values.name);
         const name = values.name ? values.name : "Unnamed token";
         const resp = await addKey(groupId, name);
         handleKeyAdd(resp);

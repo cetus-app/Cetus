@@ -1,9 +1,8 @@
 import { PartialGroup } from "./Group";
 
 export enum IntegrationType {
-  promotionCentre = "PROMOTION_CENTRE",
   discordBot = "DISCORD_BOT",
-  rankingAPI = "RANKING_API",
+  api = "API",
   antiAdminAbuse = "ANTI_ADMIN_ABUSE"
 }
 
@@ -13,4 +12,6 @@ export default class Integration {
   type: IntegrationType;
 
   group: PartialGroup;
+
+  meta?: string[]
 }
