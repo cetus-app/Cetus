@@ -2,7 +2,7 @@
 import React, { FunctionComponent } from "react";
 
 import GroupInfo from "./GroupInfo";
-import TokenManager from "./TokenManager";
+import TokenMgr from "./TokenManager";
 
 interface GroupHomeProps {
 
@@ -28,7 +28,7 @@ export const GroupHome: FunctionComponent<GroupHomeProps> = props => (
         </ul>
       </div>
     </div>
-   <TokenManager/>
+    <TokenMgr />
 
 
   </div>

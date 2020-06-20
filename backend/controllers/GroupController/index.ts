@@ -112,12 +112,24 @@ export default class Groups {
       if (!groups) {
         throw new InternalServerError("Failed to get user's Roblox groups");
       }
+      // Check for already linked groups
+      const ids = groups.map((group: UnlinkedGroup) => (group.id));
+
+      const linked = await database.groups.getGroupsByRoblox(ids);
       for (const group of groups) {
+        let isLinked = false;
+        for (const item of linked) {
+          if (item.robloxId === group.id) {
+            isLinked = true;
+            break;
+          }
+        }
         // We don't get group.owner but if rank is 255, they must own it.
-        if (group.rank === 255) {
+        if (group.rank === 255 && !isLinked) {
           linkable.push(group);
         }
       }
+
       return linkable;
     }
     throw new BadRequestError("You must verify your Roblox account before you can do that.");

@@ -31,4 +31,14 @@ export default class GroupRepository extends Repository<Group> {
       relations: ["bot"]
     });
   }
+  
+  // Used to check for existing links
+  getGroupsByRoblox (robloxIds: number[]) {
+    // Turns an array of ids into an array of objects for TypeORM
+    const query = robloxIds.map(id => ({ robloxId: id }));
+    return this.find({
+      where: query,
+      select: ["robloxId", "id"]
+    });
+  }
 }

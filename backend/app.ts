@@ -1,5 +1,5 @@
 // Express app
-import { RewriteFrames } from "@sentry/integrations";
+import { RewriteFrames, Transaction } from "@sentry/integrations";
 import * as Sentry from "@sentry/node";
 import { defaultMetadataStorage } from "class-transformer/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
@@ -38,10 +38,11 @@ global.sentryRoot = __dirname || process.cwd();
 if (process.env.sentryToken) {
   Sentry.init({
     dsn: process.env.sentryToken,
-    integrations: [new RewriteFrames({ root: global.sentryRoot })],
+    integrations: [new RewriteFrames({ root: global.sentryRoot }), new Transaction()],
     release: `${name}@${version}`
   });
 }
+
 
 const app = express();
 
@@ -63,5 +64,6 @@ app.use("/docs", swaggerServe, setup(openApiSpec));
 app.get("/swagger.json", (_req, res) => {
   res.send(openApiSpec);
 });
+
 
 export default app;

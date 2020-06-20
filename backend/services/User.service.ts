@@ -53,7 +53,7 @@ export default class UserService {
       maxAge: authLife,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
+      sameSite: "lax"
     });
     return {
       email: user.email,

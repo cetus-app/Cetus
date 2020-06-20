@@ -9,6 +9,7 @@ import { InputChange } from "../../types";
 import BlurbVerification from "./BlurbVerification";
 import GameVerification from "./GameVerification";
 import StartVerification from "./StartVerification";
+import { Link } from "react-router-dom";
 
 const Verify: FunctionComponent = () => {
   const [error, setError] = useState("");
@@ -72,7 +73,10 @@ const Verify: FunctionComponent = () => {
           && <GameVerification username={username} code={verification.code.toString()} onClick={() => handleVerify(false)} />}
 
         {completed && (
-          <div>Your Roblox account ({username}) is now verified in the Cetus system. You can now register and set up your groups!</div>
+          <div>Your Roblox account ({username}) is now verified in the Cetus system. You can now register and set up your groups!
+            {/* Temp? Maybe a more of an "onboarding sequence" would be helpful here? */}
+            <Link to="/groups">Set up groups</Link>
+          </div>
         )}
 
         {error && (
