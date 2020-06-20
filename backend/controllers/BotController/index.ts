@@ -1,19 +1,22 @@
 import {
-  Authorized, Body, Get, JsonController, NotFoundError, Param, Patch
+  Authorized, BadRequestError, Body, Get, JsonController, NotFoundError, Param, Patch, Post
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
+import { Bot } from "../../entities";
 import { PermissionLevel } from "../../entities/User.entity";
-import { Bot, QueueItem, UpdateBotBody } from "./types";
+import {
+  AddBotBody, Bot as BotDTO, QueueItem, UpdateBotBody
+} from "./types";
 
 @JsonController("/bots")
 export default class Bots {
   @Get("/")
-  @ResponseSchema(Bot, { isArray: true })
+  @ResponseSchema(BotDTO, { isArray: true })
   @Authorized(PermissionLevel.admin)
-  async bots (): Promise<Bot[]> {
+  async bots (): Promise<BotDTO[]> {
     const bots = await database.bots.find();
 
     const promises = bots.map(b => Roblox.getUsernameFromId(b.robloxId));
@@ -26,10 +29,33 @@ export default class Bots {
     }));
   }
 
-  @Patch("/:id")
-  @ResponseSchema(Bot)
+  @Post()
+  @ResponseSchema(BotDTO)
   @Authorized(PermissionLevel.admin)
-  async updateBot (@Param("id") id: string, @Body() { cookie, dead }: UpdateBotBody): Promise<Bot> {
+  async addBot (@Body() { robloxId, cookie }: AddBotBody): Promise<BotDTO> {
+    const existing = await database.bots.findOne({ robloxId });
+    if (existing) throw new BadRequestError(`Bot with ID ${robloxId} already exists`);
+
+    const username = await Roblox.getUsernameFromId(robloxId);
+    if (!username) throw new BadRequestError("Roblox ID invalid");
+
+    const bot = new Bot();
+    bot.robloxId = robloxId;
+    bot.cookie = cookie;
+    bot.cookieUpdated = new Date();
+
+    await database.bots.save(bot);
+
+    return {
+      ...bot,
+      username
+    };
+  }
+
+  @Patch("/:id")
+  @ResponseSchema(BotDTO)
+  @Authorized(PermissionLevel.admin)
+  async updateBot (@Param("id") id: string, @Body() { cookie, dead }: UpdateBotBody): Promise<BotDTO> {
     const bot = await database.bots.findOne(id);
     if (!bot) throw new NotFoundError();
 
