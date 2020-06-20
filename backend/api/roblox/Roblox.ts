@@ -87,6 +87,33 @@ export default class Roblox {
     return fetch(url, newOpts);
   }
 
+  static async getUsernameFromId (id: number): Promise<string | undefined> {
+    const key = redisPrefixes.idToUsernameCache + id;
+    const cached = await redis.get(key);
+    if (cached) return cached;
+
+    const username = await this.fetchUsernameFromId(id);
+
+    if (username) {
+      await redis.set(key, username, "EX", 60 * 60 * 2);
+      return username;
+    }
+
+    return undefined;
+  }
+
+  static fetchUsernameFromId (id: number): Promise<string | undefined> {
+    return fetch(`${BASE_API_URL}/users/${id}`).then(checkStatus).then(res => res && res.json())
+      .then(data => data?.Username)
+      .catch(e => {
+        // Roblox responds with 400 for invalid IDs or deleted users
+        if (e instanceof ExternalHttpError && e.response.status === 400) return undefined;
+
+        console.error(`Error while fetching username from ID ${id}`, e);
+        return undefined;
+      });
+  }
+
   static async getIdFromUsername (username: string): Promise<number | undefined> {
     try {
       const data = await fetch(`${BASE_API_URL}/users/get-by-username?username=${username}`).then(checkStatus).then(res => res && res.json());

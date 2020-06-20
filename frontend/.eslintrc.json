@@ -25,6 +25,7 @@
     "class-methods-use-this": "off",
     "no-useless-constructor": "off",
     "no-plusplus": "off",
+    "no-console": "off",
     "max-classes-per-file": "off",
     "import/extensions": "off",
     "import/no-extraneous-dependencies": "off",

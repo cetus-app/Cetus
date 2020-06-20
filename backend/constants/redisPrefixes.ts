@@ -3,7 +3,8 @@ const REDIS_PREFIXES = {
   emailVerification: "emailVerification-",
   groupCache: "groupCache-",
   userGroupsCache: "userGroupsCache-",
-  groupRolesCache: "groupRolesCache-"
+  groupRolesCache: "groupRolesCache-",
+  idToUsernameCache: "idToUsernameCache-"
 };
 
 export default REDIS_PREFIXES;

@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import {
-  IsDate, IsNumber, IsPositive, IsUUID
+  IsBoolean, IsDate, IsNumber, IsPositive, IsUUID
 } from "class-validator";
 
 import { ApiKey, Integration, User } from "../../entities";
@@ -13,6 +13,9 @@ export class PartialGroup implements Partial<Group> {
 
   @IsPositive()
   robloxId: number;
+
+  @IsBoolean()
+  botActive: boolean;
 
   @IsDate()
   created: Date;

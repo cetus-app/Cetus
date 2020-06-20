@@ -9,7 +9,7 @@ import { Action } from "../types";
 const CurrentGroup = (integrations: IntegrationType[] = []) => createParamDecorator({
   // Doesn't throw when `value` returns `undefined` for some reason (thus throwing errors manually)
   required: true,
-  value: async ({ request: req }: Action): Promise<Group | undefined> => {
+  value: async ({ request: req }: Action): Promise<Group> => {
     const header = req.header("authorization");
     if (!header || !header.startsWith("Bearer")) throw new UnauthorizedError();
 

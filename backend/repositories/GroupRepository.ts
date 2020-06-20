@@ -25,6 +25,13 @@ export default class GroupRepository extends Repository<Group> {
     return this.findOne({ robloxId: robloxGroupId }, { relations: ["owner"] });
   }
 
+  getInactiveBotGroups (): Promise<Group[]> {
+    return this.find({
+      where: { botActive: false },
+      relations: ["bot"]
+    });
+  }
+  
   // Used to check for existing links
   getGroupsByRoblox (robloxIds: number[]) {
     // Turns an array of ids into an array of objects for TypeORM

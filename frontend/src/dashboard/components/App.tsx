@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 
+import "../assets/scss/dashboard.scss";
 import { fetch } from "../api";
 import { FullUser } from "../api/types";
 import { UserProvider } from "../context/UserContext";
