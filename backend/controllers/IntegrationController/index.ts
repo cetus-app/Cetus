@@ -17,7 +17,7 @@ import {
 export default class Integrations {
   @Get("/global/meta")
   @Authorized()
-  getMetas (): any {
+  getMetas (): typeof integrationMeta {
     return integrationMeta;
   }
 

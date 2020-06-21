@@ -1,22 +1,22 @@
 import React, { FunctionComponent } from "react";
 
-import Integration from "../../../api/types/Integration";
-
+import { IntegrationInfo } from "../../../api/types";
 
 interface IntegrationButtonProps {
-  integration: Integration
+  meta: IntegrationInfo,
+  handleClick: Function,
+  inactive?: boolean
 }
 
-const IntegrationButton: FunctionComponent<IntegrationButtonProps> = ({ integration }) => {
-  const { meta } = integration;
-  const [
+const IntegrationButton: FunctionComponent<IntegrationButtonProps> = ({ meta, handleClick, inactive }) => {
+  const {
     name = "Unnamed",
-    desc = "No description provided.",
+    shortDesc = "No description provided.",
     icon = "fas fa-rocket"
-  ] = meta || [];
+  } = meta || {};
   return (
     <div className="column is-4">
-      <div className="box integration-button-box">
+      <div className={`box integration-button-box ${inactive ? "is-inactive" : ""}`} role="button" onClick={() => handleClick()} onKeyPress={() => handleClick()} tabIndex={0}>
         <article className="media">
           <div className="media-left">
             <figure className="icon is-large">
@@ -26,7 +26,7 @@ const IntegrationButton: FunctionComponent<IntegrationButtonProps> = ({ integrat
           <div className="media-content">
             <div className="content">
               <span className="is-size-5">{name}</span>
-              <p>{desc}</p>
+              <p>{shortDesc}</p>
             </div>
           </div>
         </article>

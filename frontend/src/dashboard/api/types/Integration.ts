@@ -6,12 +6,22 @@ export enum IntegrationType {
   antiAdminAbuse = "ANTI_ADMIN_ABUSE"
 }
 
-export default class Integration {
+export class PartialIntegration {
   id: string;
 
   type: IntegrationType;
 
   group: PartialGroup;
 
-  meta?: string[]
+  meta?: IntegrationInfo
 }
+export interface IntegrationInfo {
+  name: string,
+  shortDesc: string,
+  icon: string,
+  longDesc: string,
+  // Used in client only
+  type?: string
+}
+
+export type IntegrationMeta = {[key in IntegrationType]: IntegrationInfo}
