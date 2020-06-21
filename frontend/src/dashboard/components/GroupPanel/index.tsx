@@ -10,8 +10,9 @@ import { GroupProvider } from "../../context/GroupContext";
 import "../../assets/scss/GroupPanel.scss";
 import NoMatch from "../NoMatch";
 import GroupHome from "./Home";
-import Integrations from "./Integrations";
+import Integrations from "./IntegrationSelector";
 import SideBar from "./Sidebar";
+import IntegrationEditor from "./IntegrationEditor";
 
 interface GroupPanelProps {
 
@@ -56,8 +57,11 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             <Route path={path} exact>
               <GroupHome />
             </Route>
-            <Route path={`${path}/integrations`}>
+            <Route path={`${path}/integrations`} exact>
               <Integrations />
+            </Route>
+            <Route path={`${path}/integrations/:integrationId`}>
+              <IntegrationEditor />
             </Route>
             <Route path={path}>
               <NoMatch />

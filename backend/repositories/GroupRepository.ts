@@ -14,12 +14,6 @@ export default class GroupRepository extends Repository<Group> {
   async getFullGroup (groupId: string): Promise<FullGroup|undefined> {
     const group: FullGroup|undefined = await this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
     if (!group || !group.integrations) return group;
-    // Append integration metas
-    for (const integration of group.integrations) {
-      if (integrationMeta[integration.type]) {
-        integration.meta = integrationMeta[integration.type];
-      }
-    }
     return group;
   }
 

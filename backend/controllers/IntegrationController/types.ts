@@ -18,10 +18,6 @@ export class PartialIntegration {
 
   @IsEnum(IntegrationType)
   type: IntegrationType;
-
-  // We never actually validate this
-  @IsString({ each: true })
-  meta?: string[]
 }
 export class AddIntegrationBody {
   @IsEnum(IntegrationType)

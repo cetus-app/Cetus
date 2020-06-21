@@ -12,8 +12,6 @@ export class PartialIntegration {
   type: IntegrationType;
 
   group: PartialGroup;
-
-  meta?: IntegrationInfo
 }
 export interface IntegrationInfo {
   name: string,
