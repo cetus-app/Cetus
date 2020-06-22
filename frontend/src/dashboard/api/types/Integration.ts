@@ -19,7 +19,8 @@ export interface IntegrationInfo {
   icon: string,
   longDesc: string,
   // Used in client only
-  type?: string
+  type?: string,
+  cost: number
 }
 
 export type IntegrationMeta = {[key in IntegrationType]: IntegrationInfo}

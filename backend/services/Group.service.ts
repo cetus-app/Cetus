@@ -12,7 +12,7 @@ export default class GroupService {
   }
 
   // Returns either the group or throws an error if the user does not have access
-  async canAccessGroup (groupId: Group["id"], user?: User): Promise<FullGroup> {
+  async canAccessGroup (groupId: Group["id"], user?: User): Promise<Group> {
     const usr = this.request.user || user;
     const grp = await database.groups.getFullGroup(groupId);
     if (!grp) {

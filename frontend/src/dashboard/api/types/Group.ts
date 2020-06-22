@@ -1,6 +1,6 @@
 
-import ApiKey from "./ApiKey";
-import Integration from "./Integration";
+import { ApiKey } from "./ApiKey";
+import { PartialIntegration } from "./Integration";
 import { PartialUser } from "./User";
 
 interface GroupBase {
@@ -51,8 +51,7 @@ export class FullGroup extends PartialGroup {
   // Make this a DTO too?
   keys: ApiKey[];
 
-  // Make this a DTO?
-  integrations: Integration[];
+  integrations: PartialIntegration[];
 
   owner: PartialUser;
 }

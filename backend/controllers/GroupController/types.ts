@@ -6,7 +6,7 @@ import {
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
 import { RobloxGroup } from "../../types";
-import {PartialIntegration} from "../IntegrationController/types";
+import { PartialIntegration } from "../IntegrationController/types";
 
 export class PartialGroup implements Partial<Group> {
   @IsUUID("4")

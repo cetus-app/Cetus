@@ -17,7 +17,7 @@ export default class RankingV1 {
   async setRank (
     @Params() { uRbxId }: UserRobloxIdParam,
     @Body() { rank }: SetRankBody,
-    @CurrentGroup([IntegrationType.rankingAPI]) group: Group
+    @CurrentGroup([IntegrationType.api]) group: Group
   ): Promise<SetRankResponse> {
     const user = await database.users.getUserByRId(uRbxId);
 

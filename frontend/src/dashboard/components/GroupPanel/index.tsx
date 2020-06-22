@@ -10,9 +10,9 @@ import { GroupProvider } from "../../context/GroupContext";
 import "../../assets/scss/GroupPanel.scss";
 import NoMatch from "../NoMatch";
 import GroupHome from "./Home";
+import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
 import SideBar from "./Sidebar";
-import IntegrationEditor from "./IntegrationEditor";
 
 interface GroupPanelProps {
 

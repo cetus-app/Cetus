@@ -1,6 +1,8 @@
 import React, { Fragment, FunctionComponent, useState } from "react";
 
 import "./Verification.css";
+import { Link } from "react-router-dom";
+
 import {
   ApiError, check, startVerification, verifyBlurb
 } from "../../api";
@@ -9,7 +11,6 @@ import { InputChange } from "../../types";
 import BlurbVerification from "./BlurbVerification";
 import GameVerification from "./GameVerification";
 import StartVerification from "./StartVerification";
-import { Link } from "react-router-dom";
 
 const Verify: FunctionComponent = () => {
   const [error, setError] = useState("");

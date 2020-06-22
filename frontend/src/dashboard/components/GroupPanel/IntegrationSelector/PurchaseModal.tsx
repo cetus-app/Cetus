@@ -17,8 +17,7 @@ const PurchaseModal: FunctionComponent<PurchaseModalProps> = ({ meta, close, gro
     name = "Unnamed",
     shortDesc = "No description provided.",
     longDesc = "Long desc.",
-    // @ts-ignore TODO: Add cost field?
-    cost = "5",
+    cost,
     icon,
     type
   } = meta;

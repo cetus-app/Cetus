@@ -1,7 +1,5 @@
 import { EntityRepository, Repository } from "typeorm";
 
-import { FullGroup, PartialGroup } from "../controllers/GroupController/types";
-import { integrationMeta, PartialIntegration } from "../controllers/IntegrationController/types";
 import Group from "../entities/Group.entity";
 
 
@@ -11,10 +9,8 @@ export default class GroupRepository extends Repository<Group> {
     return this.findOne({ id: groupId });
   }
 
-  async getFullGroup (groupId: string): Promise<FullGroup|undefined> {
-    const group: FullGroup|undefined = await this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
-    if (!group || !group.integrations) return group;
-    return group;
+  getFullGroup (groupId: string): Promise<Group|undefined> {
+    return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
   }
 
   getGroupWithCookie (groupId: string): Promise<Group | undefined> {
@@ -25,7 +21,7 @@ export default class GroupRepository extends Repository<Group> {
       .getOne();
   }
 
-  getGroupByRoblox (robloxGroupId: number): Promise<PartialGroup|undefined> {
+  getGroupByRoblox (robloxGroupId: number): Promise<Group|undefined> {
     return this.findOne({ robloxId: robloxGroupId }, { relations: ["owner"] });
   }
 
