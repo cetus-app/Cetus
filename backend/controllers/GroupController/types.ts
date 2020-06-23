@@ -6,6 +6,7 @@ import {
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
 import { RobloxGroup } from "../../types";
+import { PartialIntegration } from "../IntegrationController/types";
 
 export class PartialGroup implements Partial<Group> {
   @IsUUID("4")
@@ -30,7 +31,7 @@ export class FullGroup extends PartialGroup {
 
   // Make this a DTO?
   @Type(() => Integration)
-  integrations: Integration[];
+  integrations: PartialIntegration[];
 
   @Type(() => User)
   owner: User;

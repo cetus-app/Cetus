@@ -11,9 +11,8 @@ import {
 import Group from "./Group.entity";
 
 export enum IntegrationType {
-  promotionCentre = "PROMOTION_CENTRE",
   discordBot = "DISCORD_BOT",
-  rankingAPI = "RANKING_API",
+  api = "API",
   antiAdminAbuse = "ANTI_ADMIN_ABUSE"
 }
 

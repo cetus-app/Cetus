@@ -145,7 +145,6 @@ export default class Groups {
                   @Req() request: Request): Promise<FullGroup> {
     // Get specific group
     const group = await request.groupService.canAccessGroup(id);
-    console.log("went ok");
     const robloxInfo = await Roblox.getGroup(group.robloxId);
     const toSend:FullGroup = { ...group };
     toSend.robloxInfo = robloxInfo;

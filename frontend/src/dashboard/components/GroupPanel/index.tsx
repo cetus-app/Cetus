@@ -1,12 +1,17 @@
 // Allows Groups to be edited and contains all group editor related stuff
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Redirect, useParams } from "react-router-dom";
+import {
+  Redirect, Route, Switch, useParams, useRouteMatch
+} from "react-router-dom";
 
 import { getGroup } from "../../api/groups";
 import { FullGroup } from "../../api/types";
 import { GroupProvider } from "../../context/GroupContext";
-import "./GroupPanel.scss";
+import "../../assets/scss/GroupPanel.scss";
+import NoMatch from "../NoMatch";
 import GroupHome from "./Home";
+import IntegrationEditor from "./IntegrationEditor";
+import Integrations from "./IntegrationSelector";
 import SideBar from "./Sidebar";
 
 interface GroupPanelProps {
@@ -15,6 +20,7 @@ interface GroupPanelProps {
 
 const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
   const { groupId } = useParams();
+  const { path } = useRouteMatch();
   const [group, setGroup] = useState<FullGroup|null>(null);
   const [error, setError] = useState<string|undefined>();
 
@@ -47,7 +53,21 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
           <SideBar />
         </div>
         <div className="column panel-right-column">
-          <GroupHome />
+          <Switch>
+            <Route path={path} exact>
+              <GroupHome />
+            </Route>
+            <Route path={`${path}/integrations`} exact>
+              <Integrations />
+            </Route>
+            <Route path={`${path}/integrations/:integrationId`}>
+              <IntegrationEditor />
+            </Route>
+            <Route path={path}>
+              <NoMatch />
+            </Route>
+          </Switch>
+
         </div>
       </div>
     </GroupProvider>

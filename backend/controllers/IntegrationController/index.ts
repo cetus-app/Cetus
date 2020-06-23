@@ -7,18 +7,25 @@ import { ResponseSchema } from "routing-controllers-openapi";
 
 import database from "../../database";
 import { Integration } from "../../entities";
+import { IntegrationType } from "../../entities/Integration.entity";
 import {
-  AddIntegrationBody, GroupIdParam, IdParam, PartialIntegration
+  AddIntegrationBody, GroupIdParam, IdParam, integrationMeta, PartialIntegration
 } from "./types";
+
 
 @JsonController("/integrations")
 export default class Integrations {
+  @Get("/global/meta")
+  @Authorized()
+  getMetas (): typeof integrationMeta {
+    return integrationMeta;
+  }
+
   @Get("/:groupId")
   @ResponseSchema(PartialIntegration)
   @Authorized()
   async getEnabled (@Params() { groupId }: GroupIdParam, @Req() { groupService }: Request): Promise<PartialIntegration[]> {
     const group = await groupService.canAccessGroup(groupId);
-
     return group.integrations;
   }
 

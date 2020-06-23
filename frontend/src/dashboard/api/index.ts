@@ -5,3 +5,4 @@ export * from "./groups";
 export * from "./keys";
 export { default as fetch } from "./base";
 export * from "./authentication";
+export * from "./integrations";
