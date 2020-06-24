@@ -1,4 +1,4 @@
-import { IsEnum, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsUUID } from "class-validator";
 
 import { IntegrationType } from "../../entities/Integration.entity";
 
@@ -46,12 +46,5 @@ export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
     icon: "fas fa-shield-alt",
     longDesc: "Group defender gives you peace of mind. It consists of advanced software, running on our servers. It works by monitoring your group audit logs and detecting suspicious actions or users exceed the limits you set.\n\nWhat else can it do?\nGroup defender can detect, report and revert admin abuse to allow your group to continue functioning - with minimal disruption.",
     cost: 3
-  },
-  [IntegrationType.api]: {
-    name: "API Access",
-    shortDesc: "Enable access to the API for your Group for external use.",
-    icon: "fas fa-robot",
-    longDesc: "API desc: this is free, and comes with your group.",
-    cost: 0
   }
 };

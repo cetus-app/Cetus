@@ -12,7 +12,6 @@ import Group from "./Group.entity";
 
 export enum IntegrationType {
   discordBot = "DISCORD_BOT",
-  api = "API",
   antiAdminAbuse = "ANTI_ADMIN_ABUSE"
 }
 
