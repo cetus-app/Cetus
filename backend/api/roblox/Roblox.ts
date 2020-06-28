@@ -77,14 +77,29 @@ export default class Roblox {
 
         if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
       } catch (e) {
-        if (e instanceof ExternalHttpError && e.response.status === 403 && e.response.statusText.toLowerCase().includes("token validation failed")) this.csrfToken = e.response.headers.get("x-csrf-token") || "";
+        if (e instanceof ExternalHttpError && Roblox.csrfFailed(e.response)) this.csrfToken = e.response.headers.get("x-csrf-token") || "";
         else throw e;
       }
     }
 
-    newOpts.headers.append("x-csrf-token", this.csrfToken);
+    newOpts.headers.set("x-csrf-token", this.csrfToken);
 
-    return fetch(url, newOpts);
+    return fetch(url, newOpts).then(res => {
+      if (Roblox.csrfFailed(res)) {
+        const header = res.headers.get("x-csrf-token");
+        if (!header) throw new ExternalHttpError(res, "CSRF token validation failed, but was unable to retrieve new token");
+
+        this.csrfToken = header;
+
+        return this.authHttp(url, opts);
+      }
+
+      return res;
+    });
+  }
+
+  static csrfFailed (res: Response): boolean {
+    return res.status === 403 && res.statusText.toLowerCase().includes("token validation failed");
   }
 
   static async getUsernameFromId (id: number): Promise<string | undefined> {
