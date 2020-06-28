@@ -59,7 +59,32 @@ export default class Roblox {
       throw e;
     }
 
+    // 24 hours
+    // I *think* errors thrown from `refreshCookie` will be caught in `getGroupCLient`
+    setInterval(() => this.refreshCookie(), 1000 * 60 * 60 * 24);
+
     return undefined;
+  }
+
+  async refreshCookie (): Promise<string> {
+    try {
+      const res = await this.authHttp("https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate").then(checkStatus);
+
+      const cookies = res?.headers.get("set-cookie");
+
+      // Definitely not from Noblox source
+      const cookie = cookies?.match(/\.ROBLOSECURITY=(.*?);/)?.[1];
+
+      if (!cookie) throw new Error("Failed to retrieve new cookie");
+
+      this.cookie = cookie;
+
+      return cookie;
+    } catch (e) {
+      // Roblox responds with bad request for invalid authentication on this endpoint
+      if (e instanceof ExternalHttpError && e.response.status === 400) throw new InvalidRobloxCookie("Current cookie is invalid");
+      throw e;
+    }
   }
 
   async authHttp (url: string, opts: RequestInit = {}): Promise<Response> {
@@ -284,7 +309,7 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
 
   client = new Roblox(group);
 
-  if (!group.bot || group.bot.dead) throw new Error(`Group does not have active bot`);
+  if (!group.bot || group.bot.dead) throw new Error(`Group ${groupId} does not have active bot`);
 
   return client.login(group.bot.cookie).then(() => {
     // Client was just defined
