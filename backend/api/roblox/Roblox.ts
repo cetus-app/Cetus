@@ -59,16 +59,25 @@ export default class Roblox {
       throw e;
     }
 
+    setInterval(() => this.refreshCookie().catch(async e => {
+      if (e instanceof InvalidRobloxCookie) {
+        // Clients are not instantiated without an active bot
+        this.group.bot!.dead = true;
+        await database.bots.save(this.group.bot!);
+        throw new Error(`Group ${this.group.id} has invalid cookie`);
+      }
+
+      throw e;
     // 24 hours
-    // I *think* errors thrown from `refreshCookie` will be caught in `getGroupCLient`
-    setInterval(() => this.refreshCookie(), 1000 * 60 * 60 * 24);
+    }), 1000 * 60 * 60 * 24);
+
 
     return undefined;
   }
 
   async refreshCookie (): Promise<string> {
     try {
-      const res = await this.authHttp("https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate").then(checkStatus);
+      const res = await this.authHttp("https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate", { method: "POST" }).then(checkStatus);
 
       const cookies = res?.headers.get("set-cookie");
 
@@ -307,9 +316,9 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
   const group = await database.groups.getGroupWithCookie(groupId);
   if (!group) throw new Error(`Group ${groupId} not found`);
 
-  client = new Roblox(group);
-
   if (!group.bot || group.bot.dead) throw new Error(`Group ${groupId} does not have active bot`);
+
+  client = new Roblox(group);
 
   return client.login(group.bot.cookie).then(() => {
     // Client was just defined
