@@ -59,7 +59,41 @@ export default class Roblox {
       throw e;
     }
 
+    setInterval(() => this.refreshCookie().catch(async e => {
+      if (e instanceof InvalidRobloxCookie) {
+        // Clients are not instantiated without an active bot
+        this.group.bot!.dead = true;
+        await database.bots.save(this.group.bot!);
+        throw new Error(`Group ${this.group.id} has invalid cookie`);
+      }
+
+      throw e;
+    // 24 hours
+    }), 1000 * 60 * 60 * 24);
+
+
     return undefined;
+  }
+
+  async refreshCookie (): Promise<string> {
+    try {
+      const res = await this.authHttp("https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate", { method: "POST" }).then(checkStatus);
+
+      const cookies = res?.headers.get("set-cookie");
+
+      // Definitely not from Noblox source
+      const cookie = cookies?.match(/\.ROBLOSECURITY=(.*?);/)?.[1];
+
+      if (!cookie) throw new Error("Failed to retrieve new cookie");
+
+      this.cookie = cookie;
+
+      return cookie;
+    } catch (e) {
+      // Roblox responds with bad request for invalid authentication on this endpoint
+      if (e instanceof ExternalHttpError && e.response.status === 400) throw new InvalidRobloxCookie("Current cookie is invalid");
+      throw e;
+    }
   }
 
   async authHttp (url: string, opts: RequestInit = {}): Promise<Response> {
@@ -77,14 +111,29 @@ export default class Roblox {
 
         if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
       } catch (e) {
-        if (e instanceof ExternalHttpError && e.response.status === 403 && e.response.statusText.toLowerCase().includes("token validation failed")) this.csrfToken = e.response.headers.get("x-csrf-token") || "";
+        if (e instanceof ExternalHttpError && Roblox.csrfFailed(e.response)) this.csrfToken = e.response.headers.get("x-csrf-token") || "";
         else throw e;
       }
     }
 
-    newOpts.headers.append("x-csrf-token", this.csrfToken);
+    newOpts.headers.set("x-csrf-token", this.csrfToken);
 
-    return fetch(url, newOpts);
+    return fetch(url, newOpts).then(res => {
+      if (Roblox.csrfFailed(res)) {
+        const header = res.headers.get("x-csrf-token");
+        if (!header) throw new ExternalHttpError(res, "CSRF token validation failed, but was unable to retrieve new token");
+
+        this.csrfToken = header;
+
+        return this.authHttp(url, opts);
+      }
+
+      return res;
+    });
+  }
+
+  static csrfFailed (res: Response): boolean {
+    return res.status === 403 && res.statusText.toLowerCase().includes("token validation failed");
   }
 
   static async getUsernameFromId (id: number): Promise<string | undefined> {
@@ -267,9 +316,9 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
   const group = await database.groups.getGroupWithCookie(groupId);
   if (!group) throw new Error(`Group ${groupId} not found`);
 
-  client = new Roblox(group);
+  if (!group.bot || group.bot.dead) throw new Error(`Group ${groupId} does not have active bot`);
 
-  if (!group.bot || group.bot.dead) throw new Error(`Group does not have active bot`);
+  client = new Roblox(group);
 
   return client.login(group.bot.cookie).then(() => {
     // Client was just defined

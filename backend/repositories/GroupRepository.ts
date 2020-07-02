@@ -9,7 +9,7 @@ export default class GroupRepository extends Repository<Group> {
     return this.findOne({ id: groupId });
   }
 
-  getFullGroup (groupId: string) {
+  getFullGroup (groupId: string): Promise<Group|undefined> {
     return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
   }
 
@@ -21,7 +21,7 @@ export default class GroupRepository extends Repository<Group> {
       .getOne();
   }
 
-  getGroupByRoblox (robloxGroupId: number) {
+  getGroupByRoblox (robloxGroupId: number): Promise<Group|undefined> {
     return this.findOne({ robloxId: robloxGroupId }, { relations: ["owner"] });
   }
 

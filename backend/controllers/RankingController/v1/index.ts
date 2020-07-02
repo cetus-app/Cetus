@@ -7,7 +7,6 @@ import Roblox, { getGroupClient } from "../../../api/roblox/Roblox";
 import database from "../../../database";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
-import { IntegrationType } from "../../../entities/Integration.entity";
 import { SetRankBody, SetRankResponse, UserRobloxIdParam } from "./types";
 
 @JsonController("/v1/ranking")
@@ -17,7 +16,7 @@ export default class RankingV1 {
   async setRank (
     @Params() { uRbxId }: UserRobloxIdParam,
     @Body() { rank }: SetRankBody,
-    @CurrentGroup([IntegrationType.rankingAPI]) group: Group
+    @CurrentGroup() group: Group
   ): Promise<SetRankResponse> {
     const user = await database.users.getUserByRId(uRbxId);
 

@@ -10,10 +10,20 @@ import {
 
 import Group from "./Group.entity";
 
+interface BaseIntegrationConfig {
+  apiKey: string;
+}
+
+interface DiscordBotConfig extends BaseIntegrationConfig {
+  guildId: string;
+}
+
+interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
+  actionsPerMin: number;
+}
+
 export enum IntegrationType {
-  promotionCentre = "PROMOTION_CENTRE",
   discordBot = "DISCORD_BOT",
-  rankingAPI = "RANKING_API",
   antiAdminAbuse = "ANTI_ADMIN_ABUSE"
 }
 
@@ -28,6 +38,9 @@ export default class Integration {
     enum: IntegrationType
   })
   type: IntegrationType;
+
+  @Column({ type: "jsonb" })
+  config: BaseIntegrationConfig;
 
   @ManyToOne(() => Group, grp => grp.integrations, { nullable: false })
   group: Group;

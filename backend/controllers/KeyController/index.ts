@@ -8,15 +8,12 @@ import {
   Params, Post, Req
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
-// TODO:
-//  Move canAccessGroup to group service
-//  Finish off the stuff here & add group ownership validation
-//  OR: Move getGroup to group repository?
-//  Move to a branch
+
 
 import database from "../../database";
 import { User } from "../../entities";
 import ApiKey from "../../entities/ApiKey.entity";
+import Group from "../../entities/Group.entity";
 import generateToken from "../../shared/util/generateToken";
 import { ApiKeyRequest, ApiKeyResponse, DeleteKeyRequest } from "./types";
 
