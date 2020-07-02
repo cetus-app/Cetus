@@ -2,6 +2,7 @@ import AccountController from "./AccountController";
 import BotController from "./BotController";
 import GroupController from "./GroupController";
 import IntegrationController from "./IntegrationController";
+import InternalController from "./InternalController";
 import KeyController from "./KeyController";
 import RankingV1Controller from "./RankingController/v1";
 import SampleController from "./Sample.controller";
@@ -15,7 +16,8 @@ export default [
   KeyController,
   IntegrationController,
   RankingV1Controller,
-  BotController
+  BotController,
+  InternalController
 ];
 
 export {
@@ -26,5 +28,6 @@ export {
   KeyController,
   IntegrationController,
   RankingV1Controller,
-  BotController
+  BotController,
+  InternalController
 };
