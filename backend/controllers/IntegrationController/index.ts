@@ -44,6 +44,7 @@ export default class Integrations {
     const integration = new Integration();
     integration.type = type;
     integration.group = group;
+    integration.config = {};
     await database.integrations.save(integration);
 
     // Remove group from response

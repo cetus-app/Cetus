@@ -11,15 +11,18 @@ import {
 import Group from "./Group.entity";
 
 interface BaseIntegrationConfig {
-  apiKey: string;
 }
 
 interface DiscordBotConfig extends BaseIntegrationConfig {
   guildId: string;
 }
 
-interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
-  actionsPerMin: number;
+export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
+  actionCount: number;
+  actionTime: number;
+  webhook?: string;
+  // 0 = Do not demote; Anything above that = Demote.
+  demotionRank: number
 }
 
 export enum IntegrationType {
