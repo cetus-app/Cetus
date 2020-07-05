@@ -7,6 +7,8 @@ import {
 } from "routing-controllers";
 
 import Discord, { BASE_OAUTH2_URL } from "../../api/discord/Discord";
+import database from "../../database";
+import { DiscordBotConfig, IntegrationType } from "../../entities/Integration.entity";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import generateToken from "../../shared/util/generateToken";
 import { DiscordOAuth2CallbackQuery } from "./types";
@@ -48,7 +50,8 @@ export default class AuthController {
   }
 
   @Get("/callback/discord")
-  @Redirect(`${frontendUrl}/auth/discord?bot=:bot&success=:success`)
+  // @Redirect(`${frontendUrl}/auth/discord?bot=:bot&success=:success`)
+  @Redirect(frontendUrl!)
   async discordCallback (
     @QueryParams() {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -89,30 +92,57 @@ export default class AuthController {
       throw new ForbiddenError("Invalid state token");
     }
 
+    const key = await database.keys.findOne({
+      where: { token: stateParts[1] },
+      relations: ["group", "group.integrations", "group.owner"]
+    });
+
+    if (!key) {
+      throw new ForbiddenError();
+    }
+
+    const integration = await key.group.integrations.find(i => i.type === IntegrationType.discordBot);
+
+    if (!integration) {
+      throw new ForbiddenError();
+    }
+
     const { guild: { id } } = await Discord.getToken(discordClientId, discordClientSecret, code, redirect, scope);
+
+    const config = integration.config as DiscordBotConfig;
+
+    // Handle guild transfers in the future, for now forbid any guild that isn't the one already set
+    // Cannot use guild ID from query parameters because they cannot be trusted
+    if (!!config.guildId && config.guildId !== id) {
+      // TODO: Send request to bot to leave the guild it just joined (will join after Discord receives token request)
+      // Could skip this as well and let bot handle leaving any guild without set API key
+      throw new ForbiddenError();
+    }
 
     const data = {
       guildId: id,
       key: stateParts[1]
     };
 
-    try {
-      await fetch(`${discordBotUrl}/configure/set-key`, {
-        method: "POST",
-        headers: {
-          authorization: discordBotApiKey,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }).then(checkStatus);
-    } catch (e) {
-      throw new InternalServerError("Discord bot was added to guild but not configured");
-    }
+    return fetch(`${discordBotUrl}/configure/set-key`, {
+      method: "POST",
+      headers: {
+        authorization: discordBotApiKey,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    }).then(checkStatus).then(async () => {
+      config.guildId = id;
+      integration.config = config;
+      await database.integrations.save(integration);
 
-    return {
-      bot: true,
-      success: true
-    };
+      return {
+        bot: true,
+        success: true
+      };
+    }).catch(() => {
+      throw new InternalServerError("Discord bot was added to guild but not configured");
+    });
   }
 }
