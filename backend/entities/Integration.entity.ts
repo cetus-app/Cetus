@@ -10,15 +10,13 @@ import {
 
 import Group from "./Group.entity";
 
-interface BaseIntegrationConfig {
-  apiKey: string;
-}
+export interface BaseIntegrationConfig {}
 
-interface DiscordBotConfig extends BaseIntegrationConfig {
+export interface DiscordBotConfig extends BaseIntegrationConfig {
   guildId: string;
 }
 
-interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
+export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
   actionsPerMin: number;
 }
 

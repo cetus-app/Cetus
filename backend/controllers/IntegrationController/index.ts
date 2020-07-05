@@ -7,7 +7,6 @@ import { ResponseSchema } from "routing-controllers-openapi";
 
 import database from "../../database";
 import { Integration } from "../../entities";
-import { IntegrationType } from "../../entities/Integration.entity";
 import {
   AddIntegrationBody, GroupIdParam, IdParam, integrationMeta, PartialIntegration
 } from "./types";
@@ -44,6 +43,7 @@ export default class Integrations {
     const integration = new Integration();
     integration.type = type;
     integration.group = group;
+    integration.config = {};
     await database.integrations.save(integration);
 
     // Remove group from response
