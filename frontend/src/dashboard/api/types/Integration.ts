@@ -9,7 +9,7 @@ export enum IntegrationType {
 export interface BaseIntegrationConfig {}
 
 export interface DiscordBotConfig extends BaseIntegrationConfig {
-  guildId: string;
+  guildId?: string;
 }
 
 export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {

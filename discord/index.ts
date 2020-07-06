@@ -14,7 +14,7 @@ createConnection().then(() => {
   server.listen(port, () => console.log(`App listening on port ${port}`));
 });
 
-const client = new CetusClient(process.env.BOT_TOKEN);
+const client = new CetusClient(process.env.BOT_TOKEN, undefined, { prefix: "!" });
 
 client.on("ready", () => console.log(`Logged in as ${client.user.username}#${client.user.discriminator}`));
 

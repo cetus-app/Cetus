@@ -12,6 +12,11 @@ export class GroupIdParam {
   groupId: string;
 }
 
+export class IntegrationTypeParam {
+  @IsEnum(IntegrationType)
+  type: IntegrationType;
+}
+
 export class PartialIntegration {
   @IsUUID("4")
   id: string;

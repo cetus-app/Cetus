@@ -1,10 +1,10 @@
-import { Client, ClientOptions } from "eris";
+import { ClientOptions, CommandClient, CommandClientOptions } from "eris";
 
 import { messageCreate } from "./events";
 
-export default class CetusClient extends Client {
-  constructor (token: string, options?: ClientOptions) {
-    super(token, options);
+export default class CetusClient extends CommandClient {
+  constructor (token: string, options?: ClientOptions, commandOptions?: CommandClientOptions) {
+    super(token, options, commandOptions);
 
     this.registerEvents();
   }
