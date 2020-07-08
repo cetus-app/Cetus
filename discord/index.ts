@@ -14,7 +14,13 @@ createConnection().then(() => {
   server.listen(port, () => console.log(`App listening on port ${port}`));
 });
 
-const client = new CetusClient(process.env.BOT_TOKEN, undefined, { prefix: "!" });
+const client = new CetusClient(process.env.BOT_TOKEN, undefined, {
+  prefix: "!",
+  defaultCommandOptions: {
+    cooldownExclusions: { guildIDs: [process.env.devGuildId || ""] },
+    cooldownReturns: 2
+  }
+});
 
 client.on("ready", () => console.log(`Logged in as ${client.user.username}#${client.user.discriminator}`));
 
