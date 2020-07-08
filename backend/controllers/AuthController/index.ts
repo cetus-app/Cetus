@@ -3,7 +3,7 @@ import btoa from "btoa";
 import { Request, Response } from "express";
 import fetch from "node-fetch";
 import {
-  BadRequestError, Controller, CookieParam, ForbiddenError, Get, InternalServerError, QueryParam, QueryParams, Redirect, Req, Res
+  Controller, CookieParam, ForbiddenError, Get, InternalServerError, QueryParam, QueryParams, Redirect, Req, Res
 } from "routing-controllers";
 
 import Discord, { BASE_OAUTH2_URL } from "../../api/discord/Discord";
@@ -16,7 +16,8 @@ import { DiscordOAuth2CallbackQuery } from "./types";
 const {
   discordClientId, discordClientSecret, backendUrl, frontendUrl, discordBotUrl, discordBotApiKey
 } = process.env;
-const scope = "bot";
+const scope = "identify email";
+const botScope = "bot";
 const redirect = `${backendUrl}/auth/callback/discord`;
 
 @Controller("/auth")
@@ -27,10 +28,6 @@ export default class AuthController {
   async discordRedirect (@QueryParam("groupKey") groupKey: string, @Res() res: Response, @Req() { secure }: Request): Promise<string> {
     if (!discordClientId || !discordClientSecret) {
       throw new InternalServerError("Fatal configuration error");
-    }
-
-    if (!groupKey) {
-      throw new BadRequestError();
     }
 
     const token = await generateToken(25);
@@ -45,8 +42,16 @@ export default class AuthController {
       secure
     });
 
+    // Standard OAuth2 flow
+    if (!groupKey) {
+      const plainState = encodeURIComponent(token);
+
+      return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${scope}&response_type=code&state=${plainState}&redirect_uri=${redirect}`;
+    }
+
+    // Bot join OAuth2 flow
     // Overriden instead of template because routing controllers complains about port not having a replacement (in redirect URI: "http://someurl:1234")
-    return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${scope}&permissions=67584&response_type=code&state=${state}&redirect_uri=${redirect}`;
+    return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${botScope}&permissions=67584&response_type=code&state=${state}&redirect_uri=${redirect}`;
   }
 
   @Get("/callback/discord")
@@ -70,14 +75,41 @@ export default class AuthController {
       };
     }
 
+    // Standard OAuth2 flow
     if (!guild_id) {
-      // We only care about bot joining for now, normal Discord login is later
+      if (state !== cookieState) {
+        throw new ForbiddenError("Invalid state token");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { access_token } = await Discord.getToken(discordClientId, discordClientSecret, code, redirect, scope);
+      const { id, email, verified } = await Discord.getMe(access_token);
+      if (!email || !verified) {
+        throw new ForbiddenError();
+      }
+
+      const user = await database.users.findOne({ email });
+
+      if (user && !user.emailVerified) user.emailVerified = true;
+
+      // Handle new users by Discord later; figure out password setting
+      if (!user) {
+        // user = new User();
+        // user.email = email;
+        // user.emailVerified = true;
+        throw new ForbiddenError();
+      }
+
+      user.discordId = id;
+      await database.users.save(user);
+
       return {
         bot: false,
-        success: false
+        success: true
       };
     }
 
+    // Bot join OAuth2 flow
     let parsedState: string;
     try {
       parsedState = atob(state);
@@ -107,20 +139,23 @@ export default class AuthController {
       throw new ForbiddenError();
     }
 
-    const { guild: { id } } = await Discord.getToken(discordClientId, discordClientSecret, code, redirect, scope);
+    const { guild } = await Discord.getToken(discordClientId, discordClientSecret, code, redirect, botScope);
+    if (!guild) {
+      throw new ForbiddenError();
+    }
 
     const config = integration.config as DiscordBotConfig;
 
     // Handle guild transfers in the future, for now forbid any guild that isn't the one already set
     // Cannot use guild ID from query parameters because they cannot be trusted
-    if (!!config.guildId && config.guildId !== id) {
+    if (!!config.guildId && config.guildId !== guild.id) {
       // TODO: Send request to bot to leave the guild it just joined (will join after Discord receives token request)
       // Could skip this as well and let bot handle leaving any guild without set API key
       throw new ForbiddenError();
     }
 
     const data = {
-      guildId: id,
+      guildId: guild.id,
       key: stateParts[1]
     };
 
@@ -133,7 +168,7 @@ export default class AuthController {
       },
       body: JSON.stringify(data)
     }).then(checkStatus).then(async () => {
-      config.guildId = id;
+      config.guildId = guild.id;
       integration.config = config;
       await database.integrations.save(integration);
 

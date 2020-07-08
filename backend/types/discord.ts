@@ -11,5 +11,14 @@ export interface DiscordOAuth2TokenResponse {
   expires_in: number;
   refresh_token: string;
   scope: string;
-  guild: DiscordOAuth2BotGuild;
+  guild?: DiscordOAuth2BotGuild;
+}
+
+// More properties here, but we do not need them yet
+export interface DiscordUser {
+  id: string;
+  username: string;
+  discriminator: string;
+  email?: string;
+  verified?: boolean;
 }
