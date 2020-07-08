@@ -3,6 +3,7 @@ import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 import { checkStatus } from ".";
 import database from "../database";
+import GuildNotConfiguredError from "../shared/GuildNotConfiguredError";
 
 export interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: {
@@ -30,7 +31,7 @@ export default baseFetch;
 
 export const authFetch = async (url: RequestInfo, guildId: string, options: RequestInit = {}): Promise<Response> => {
   const guildConfig = await database.guilds.findOne(guildId);
-  if (!guildConfig || !guildConfig.groupKey) throw new Error(`Missing configuration/API key for guild ${guildId}`);
+  if (!guildConfig || !guildConfig.groupKey) throw new GuildNotConfiguredError(guildId, `Missing configuration/API key for guild ${guildId}`);
 
   const headers = { Authorization: `Bearer ${guildConfig.groupKey}` };
 
