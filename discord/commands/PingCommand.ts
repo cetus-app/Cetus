@@ -1,10 +1,11 @@
 import { CommandGeneratorFunction } from "eris";
 
 import { CetusCommand } from ".";
+import CetusClient from "../CetusClient";
 
 export default class PingCommand extends CetusCommand {
-  public constructor () {
-    super("ping", { aliases: ["ping", "pong"] });
+  public constructor (client: CetusClient) {
+    super("ping", { aliases: ["ping", "pong"] }, client);
   }
 
   public run: CommandGeneratorFunction = msg => {
