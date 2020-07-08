@@ -220,7 +220,6 @@ export default class Roblox {
     return fetch(url).then(checkStatus).then(res => res && res.json());
   }
 
-
   static async getUserGroups (userId: number): Promise<UserRobloxGroup[] | undefined> {
     const key = redisPrefixes.userGroupsCache + userId;
     const cached = await redis.get(key);
@@ -278,6 +277,13 @@ export default class Roblox {
   static async fetchRoles (groupId: number): Promise<FullRobloxRole[] | undefined> {
     const data = await fetch(`${GROUPS_API_URL}/v1/groups/${groupId}/roles`).then(checkStatus).then(res => res && res.json());
     return data?.roles;
+  }
+
+  static async getUserGroup (userId: number, groupId: number): Promise<UserRobloxGroup | undefined> {
+    const groups = await this.getUserGroups(userId);
+    if (!groups) return undefined;
+
+    return groups.find(g => g.id === groupId);
   }
 
   async setRank (userId: number, rank: number): Promise<void> {
