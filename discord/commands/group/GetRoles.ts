@@ -1,10 +1,10 @@
 import {
-  CommandGeneratorFunction, EmbedField, Member, Role
+  CommandGeneratorFunction, EmbedField, EmbedOptions, Role
 } from "eris";
 
 import { CetusCommand } from "..";
 import CetusClient from "../../CetusClient";
-import { getIntegration } from "../../api";
+import { getIntegration, getRank } from "../../api";
 import { getLink } from "../../api/aquarius";
 import { AQUARIUS_URL } from "../../constants";
 
@@ -19,41 +19,57 @@ export default class GetRolesCommand extends CetusCommand {
     }, client);
   }
 
-  private addRole (member: Member, role: Role): Promise<{ added: boolean, role: Role }> {
-    return member.addRole(role.id).then(() => ({
-      added: true,
-      role
-    }));
-  }
-
-  private removeRole (member: Member, role: Role): Promise<{ added: boolean, role: Role }> {
-    return member.removeRole(role.id).then(() => ({
-      added: false,
-      role
-    }));
-  }
-
-  private mapRoles (data: { added: boolean, role: Role }[]): { added: string[], removed: string[] } {
-    const added = data.filter(x => x.added).map(x => x.role.name);
-    const removed = data.filter(x => !x.added).map(x => x.role.name);
-
-    return {
-      added,
-      removed
-    };
-  }
-
   public run: CommandGeneratorFunction = async msg => {
-    const { guildID, member } = msg;
+    await msg.channel.sendTyping();
 
-    const embedFields: EmbedField[] = [];
+    const addRoles: Role[] = [];
+
+    const removeRoles: Role[] = [];
+
+    let unusualConfig: boolean = false;
+
+    // "Helper" functions
+    const hasEntry = (add: boolean, role: Role): boolean => {
+      const roles = add ? addRoles : removeRoles;
+
+      return !!roles.find(r => r.id === role.id);
+    };
+
+    const addRole = (role: Role): void => {
+      if (hasEntry(true, role)) return;
+
+      // Do not remove role if it somehow ends up in both arrays
+      if (hasEntry(false, role)) {
+        unusualConfig = true;
+        const i = removeRoles.findIndex(r => r.id === role.id);
+        removeRoles.splice(i, 1);
+      }
+
+      addRoles.push(role);
+    };
+
+    const removeRole = (role: Role): void => {
+      if (hasEntry(false, role)) return;
+
+      removeRoles.push(role);
+    };
+
+    const mapRoles = (): { added: string[], removed: string[] } => {
+      const added = addRoles.map(r => r.name);
+      const removed = removeRoles.map(r => r.name);
+
+      return {
+        added,
+        removed
+      };
+    };
+
+    const { guildID, member } = msg;
 
     const link = await getLink(member!.id);
 
     // Command is guild only
-    const { config: { unverifiedRoleId, verifiedRoleId } } = await getIntegration(guildID!);
-
-    const promises: Promise<{ added: boolean, role: Role }>[] = [];
+    const { config: { binds, unverifiedRoleId, verifiedRoleId } } = await getIntegration(guildID!);
 
     if (unverifiedRoleId) {
       const role = member!.guild.roles.get(unverifiedRoleId);
@@ -61,12 +77,10 @@ export default class GetRolesCommand extends CetusCommand {
       // TODO: Handle invalid role ID
       // if (!role) {}
 
-      const roleFn = link ? this.removeRole : this.addRole;
-
       if (role) {
-        const doAction = link ? member!.roles.includes(role.id) : !member!.roles.includes(role.id);
+        if (link && member!.roles.includes(role.id)) removeRole(role);
 
-        if (doAction) promises.push(roleFn(member!, role));
+        if (!link && !member!.roles.includes(role.id)) addRole(role);
       }
     }
 
@@ -76,17 +90,44 @@ export default class GetRolesCommand extends CetusCommand {
       // TODO: Handle invalid role ID
       // if (!role) {}
 
-      const roleFn = link ? this.addRole : this.removeRole;
-
       if (role) {
-        const doAction = link ? !member!.roles.includes(role.id) : member!.roles.includes(role.id);
+        if (link && !member!.roles.includes(role.id)) addRole(role);
 
-        if (doAction) promises.push(roleFn(member!, role));
+        if (!link && member!.roles.includes(role.id)) removeRole(role);
       }
     }
 
-    const data = await Promise.all(promises);
-    const { added, removed } = this.mapRoles(data);
+    if (link) {
+      const { rank, role: groupRole } = await getRank(guildID!, link.robloxId);
+
+      if (rank > 0) {
+        if (binds.length > 0) {
+          for (const bind of binds) {
+            const role = member!.guild.roles.get(bind.roleId);
+
+            if (!role) {
+              // TODO: Handle invalid role ID
+            } else {
+              const eligible = bind.exclusive ? rank === bind.rank : rank >= bind.rank;
+
+              if (eligible && !member!.roles.includes(role.id)) addRole(role);
+
+              if (!eligible && member!.roles.includes(role.id)) removeRole(role);
+            }
+          }
+        }
+
+        const namedRole = member!.guild.roles.find(r => r.name.toLowerCase() === groupRole.toLowerCase());
+        if (namedRole && !member!.roles.includes(namedRole.id)) addRole(namedRole);
+      }
+    }
+
+    addRoles.forEach(r => member!.addRole(r.id));
+    removeRoles.forEach(r => member!.removeRole(r.id));
+
+    const embedFields: EmbedField[] = [];
+
+    const { added, removed } = mapRoles();
 
     if (added.length > 0) {
       embedFields.push({
@@ -106,11 +147,19 @@ export default class GetRolesCommand extends CetusCommand {
 
     const embedFn = link ? this.client.generateEmbed : this.client.generateWarningEmbed;
 
-    const embed = embedFn.call(this.client, {
-      description: `You are not verified, go to ${AQUARIUS_URL}/discord to link your Roblox account`,
-      url: `${AQUARIUS_URL}/discord`,
-      fields: embedFields
-    });
+    const options: EmbedOptions = { fields: embedFields };
+
+    if (!link) {
+      options.description = `You are not verified, go to ${AQUARIUS_URL}/discord to link your Roblox account.`;
+      options.url = `${AQUARIUS_URL}/discord`;
+    } else if (embedFields.length > 0) {
+      options.description = "Your account is linked and your roles are now being set. See below for a list of added and removed roles.";
+      if (!unusualConfig) options.description += "\n\n***Warning:** An unusual configuration was detected in this group's rank binds. A situation in which one or more roles were to be added **and** removed occurred. The role(s) were added.*";
+    } else {
+      options.description = "Your account is linked but your roles are already set correctly! :)";
+    }
+
+    const embed = embedFn.call(this.client, options);
 
     return { embed };
   }

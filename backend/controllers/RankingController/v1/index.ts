@@ -4,8 +4,10 @@ import {
 import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox, { getGroupClient } from "../../../api/roblox/Roblox";
+import { redisPrefixes } from "../../../constants";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
+import { redis } from "../../../shared";
 import {
   GetRankResponse, SetRankBody, SetRankResponse, UserRobloxIdParam
 } from "./types";
@@ -43,10 +45,15 @@ export default class RankingV1 {
 
     const client = await getGroupClient(group.id);
 
-    return client.setRank(uRbxId, rank).then(() => ({
-      success: true,
-      message: "User's rank is updated"
-    })).catch(e => {
+    return client.setRank(uRbxId, rank).then(async () => {
+      // Invalidate cache
+      await redis.del(redisPrefixes.userGroupsCache + uRbxId);
+
+      return {
+        success: true,
+        message: "User's rank is updated"
+      };
+    }).catch(e => {
       console.error(e);
 
       return {
