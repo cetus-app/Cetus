@@ -12,6 +12,8 @@ import { AuditLog } from "./types";
 // new todo list
 // Set integration config and test if it works
 // Test detection/demotion
+// TODO: Move 'take action' to a seperate function which has its own debounce 'built in' to prevent race conditions/duplicates.
+  // Or: Refactor to return an array instead of using function event things
 // Add reversion
 // Test reversion
 // Add Integration config!
@@ -99,22 +101,27 @@ async function handleLog (integration: Integration, log: AuditLog): Promise<any>
   const userTotal = totals.get(key);
   if (userTotal) {
     // Check if it's expired
-    if ((Date.now() - userTotal.since) > config.actionTime) {
+    if (((Date.now() - userTotal.since)) > config.actionTime * 60000) {
       totals.set(key, {
         num: 1,
         since: Date.now()
       });
+      console.log("Reset expired");
     } else {
       // Preserves since and just makes sure there isn't any other issues (Clones the object)
       const newTotal = { ...userTotal };
       newTotal.num += 1;
       // We've already checked it's not expired - take action!
       if (newTotal.num > config.actionCount) {
+        console.log("ACTIVATION");
+        // Should prevent re-activations for actions just after this. Bit hacky but it should work
+        totals.set(key, {
+          num: -5,
+          since: Date.now()
+        });
         let demoted;
         try {
-          demoted = false;
-
-          //demoted = await demote(log.actor, integration);
+          demoted = await demote(log.actor, integration);
         } catch (e) {
           demoted = false;
         }
@@ -136,15 +143,12 @@ async function handleLog (integration: Integration, log: AuditLog): Promise<any>
         } catch (e) {
           console.error(e);
         }
-        // Should prevent re-activations for actions just after this. Bit hacky but it should work
-        totals.set(key, {
-          num: -5,
-          since: Date.now()
-        });
       }
+      console.log(`New total: ${newTotal.num}`);
       totals.set(key, newTotal);
     }
   } else {
+    console.log("None foudnd!");
     totals.set(key, {
       num: 1,
       since: Date.now()

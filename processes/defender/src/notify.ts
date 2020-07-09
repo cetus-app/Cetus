@@ -33,7 +33,7 @@ export async function notify (integration: Integration, notifcationType: Notifca
           embeds: [
             {
               title: `Failed to run: Insufficient permissions`,
-              description: `Our systems have attempted to scan our Audit logs for evidence of admin abuse, but were unable to due to a permission error. \nPlease re-rank the bot as soon as possible\nUser id: ${integration.group.bot && integration.group.bot.robloxId}`,
+              description: `Our systems have attempted to scan our Audit logs for evidence of admin abuse, but were unable to due to a permission error. \nPlease re-rank the bot as soon as possible\nUser id: ${integration.group.bot && integration.group.bot.robloxId} \nGroup id: ${integration.group.robloxId}`,
               fields: [
                 {
                   name: "Confused or need help?",
@@ -53,11 +53,12 @@ export async function notify (integration: Integration, notifcationType: Notifca
         await sendWebhook(config.webhook, {
           username: "Cetus Group Defender",
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          avatar_url: "https://i.imgur.com/mWKgCd4.png",
+          avatar_url: "https://i.imgur.com/hoPA0ZZ.png",
           content: "@-here Warning: Possible admin abuse detected.",
           embeds: [
             {
               title: `A user has exceeded your action thresholds`,
+              thumbnail: { url: `https://verify.nezto.re/api/roblox/${userId}/image` },
               description: `**Username**: ${username}\n**User id**:${userId}\n**Attacker demoted**: ${demoted ? "Yes" : "No"}\n:warning:\`${reverted}\` actions were reverted.`,
               fields: [
                 {

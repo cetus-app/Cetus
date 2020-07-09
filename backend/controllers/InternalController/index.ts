@@ -97,6 +97,8 @@ export default class Internal {
       toSend.buttonUrl = `https://www.roblox.com/groups/${group.robloxId}/-`;
     } else if (type === NotifcationType.scanError) {
       // Set Group.botActive to false.
+      group.botActive = false;
+      await database.groups.save(group);
       if (!group.bot || !group.bot.robloxId) {
         throw new Error("No bot or no bot id - what?");
       }

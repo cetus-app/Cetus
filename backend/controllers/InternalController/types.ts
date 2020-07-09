@@ -1,10 +1,9 @@
 import {
-  Allow, IsDefined, IsEnum, IsUUID
+  Allow, IsEnum, IsUUID
 } from "class-validator";
 
 import { Bot } from "../../entities";
 import Group from "../../entities/Group.entity";
-import Integration from "../../entities/Integration.entity";
 import { PartialGroup } from "../GroupController/types";
 
 export class InternalGroup extends PartialGroup {
