@@ -22,6 +22,8 @@ async function getRoleId (groupId: number, cookie: string, rankId: number) {
 
 export async function demote (actor: AuditLogActor, integration: Integration) {
   const config = integration.config as AntiAdminAbuseConfig;
+  // do not 'demote' up the way
+  if (actor.rank <= config.demotionRank) return false;
   const { group: { bot, robloxId: groupId } } = integration;
   if (!bot) throw new Error("No group bot - this shouldn't happen.");
   // Get role id

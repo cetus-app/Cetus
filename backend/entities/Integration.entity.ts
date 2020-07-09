@@ -10,10 +10,10 @@ import {
 
 import Group from "./Group.entity";
 
-interface BaseIntegrationConfig {
+export interface BaseIntegrationConfig {
 }
-
-interface DiscordBotConfig extends BaseIntegrationConfig {
+// Validators in IntegrationController/types must also be updated if changing these.
+export interface DiscordBotConfig extends BaseIntegrationConfig {
   guildId: string;
 }
 
@@ -23,6 +23,7 @@ export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
   webhook?: string;
   // 0 = Do not demote; Anything above that = Demote.
   demotionRank: number
+  revert: boolean
 }
 
 export enum IntegrationType {
@@ -43,7 +44,7 @@ export default class Integration {
   type: IntegrationType;
 
   @Column({ type: "jsonb" })
-  config: BaseIntegrationConfig;
+  config: AntiAdminAbuseConfig|DiscordBotConfig;
 
   @ManyToOne(() => Group, grp => grp.integrations, { nullable: false })
   group: Group;

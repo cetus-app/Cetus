@@ -9,6 +9,15 @@ import { demote, revert } from "./src/takeAction";
 import { getScannable } from "./src/util";
 import { AuditLog } from "./types";
 
+// new todo list
+// Set integration config and test if it works
+// Test detection/demotion
+// Add reversion
+// Test reversion
+// Add Integration config!
+// Add check that new 'demoted' rank is lower than current rank
+//   why? could be abused. by someone to up their perms (though not atm because its owner-only)
+
 const { url, token, scanInterval = "300000" } = process.env;
 if (!url || !token || !scanInterval) {
   console.error(`Cannot start: Missing URL or Auth env variable!`);
@@ -101,10 +110,11 @@ async function handleLog (integration: Integration, log: AuditLog): Promise<any>
       newTotal.num += 1;
       // We've already checked it's not expired - take action!
       if (newTotal.num > config.actionCount) {
-        // TODO: Notify
         let demoted;
         try {
-          demoted = await demote(log.actor, integration);
+          demoted = false;
+
+          //demoted = await demote(log.actor, integration);
         } catch (e) {
           demoted = false;
         }

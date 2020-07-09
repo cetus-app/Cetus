@@ -10,18 +10,16 @@ import Integration, { AntiAdminAbuseConfig } from "../../../backend/entities/Int
 import sendWebhook from "./webhook";
 
 const { url, token } = process.env;
-// new todo list
-// Set integration config and test if it works
-// Test detection/demotion
-// Add revertion
-// Test revertion
-// Add Integration config!
 
+const sent = new Set();
 export async function notify (integration: Integration, notifcationType: NotifcationType.scanError, data?: never): Promise<void>
 export async function notify (integration: Integration, notifcationType: NotifcationType.activation, data: Activation): Promise<void>
 export async function notify (integration: Integration, notifcationType: NotifcationType.webhookError, data: WebhookError): Promise<void>
 export async function notify (integration: Integration, notifcationType: NotifcationType, data: any): Promise<void> {
   // Try webhook. Does not send for webhook failure, obviously.
+  const sentKey = `${integration.id}-${notifcationType}`;
+  // We only halt for non-activations (e.g already sent errors)
+  if (sent.has(sentKey) && notifcationType !== NotifcationType.activation) return;
   const config = integration.config as AntiAdminAbuseConfig;
   if (config.webhook) {
     const configUrl = `https://cetus.app/dashboard/groups/${integration.group.id}/integrations/${integration.id}`;
@@ -93,6 +91,9 @@ export async function notify (integration: Integration, notifcationType: Notifca
 
   // Send email
   await sendMesage(integration, notifcationType, data);
+  if (notifcationType !== NotifcationType.activation) {
+    sent.add(sentKey);
+  }
 }
 
 async function sendMesage (integration: Integration, notifcationType: NotifcationType, data?: WebhookError|Activation) {
@@ -104,7 +105,10 @@ async function sendMesage (integration: Integration, notifcationType: Notifcatio
   };
   await fetch(`${url}/internal/defender-notify`, {
     method: "POST",
-    headers: { authorization: token },
+    headers: {
+      authorization: token,
+      "content-type": "application/json"
+    },
     body: JSON.stringify(body)
   });
 }

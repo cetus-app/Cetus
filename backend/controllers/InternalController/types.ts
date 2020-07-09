@@ -1,6 +1,9 @@
-import { IsUUID } from "class-validator";
+import {
+  Allow, IsDefined, IsEnum, IsUUID
+} from "class-validator";
 
 import { Bot } from "../../entities";
+import Group from "../../entities/Group.entity";
 import Integration from "../../entities/Integration.entity";
 import { PartialGroup } from "../GroupController/types";
 
@@ -26,12 +29,13 @@ export interface WebhookError {
   message: string,
   status: number
 }
-// no validation because it's internal anyway and we'd need to duplicate our interfaces into classes, and it isn't worth it.
 export class NotificationBody {
+  @IsEnum(NotifcationType)
   type: NotifcationType;
 
+  @Allow()
   data?: WebhookError|Activation;
 
   @IsUUID("4")
-  groupId: Integration["id"];
+  groupId: Group["id"];
 }
