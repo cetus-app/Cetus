@@ -1,5 +1,6 @@
 import GetRolesCommand from "./GetRoles";
+import NicknameCommand from "./Nickname";
 
-export { GetRolesCommand };
+export { GetRolesCommand, NicknameCommand };
 
-export default [GetRolesCommand];
+export default [GetRolesCommand, NicknameCommand];

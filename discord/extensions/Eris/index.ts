@@ -5,5 +5,7 @@ declare module "eris" {
     computeGroupRoles (): Promise<{ verified: boolean, add: Role[], remove: Role[], unusualConfig: boolean }>;
 
     setGroupRoles (): Promise<{ verified: boolean, added: Role[], removed: Role[], unusualConfig: boolean }>;
+
+    computeGroupNickname (): Promise<string | undefined>;
   }
 }

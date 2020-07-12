@@ -4,7 +4,7 @@ import {
 
 import { CetusCommand } from "..";
 import CetusClient from "../../CetusClient";
-import { AQUARIUS_URL } from "../../constants";
+import { AQUARIUS_VERIFY_URL } from "../../constants";
 
 export default class GetRolesCommand extends CetusCommand {
   public constructor (client: CetusClient) {
@@ -52,8 +52,8 @@ export default class GetRolesCommand extends CetusCommand {
     const options: EmbedOptions = { fields: embedFields };
 
     if (!verified) {
-      options.description = `You are not verified, go to ${AQUARIUS_URL}/discord to link your Roblox account.`;
-      options.url = `${AQUARIUS_URL}/discord`;
+      options.description = `You are not verified, go to ${AQUARIUS_VERIFY_URL} to link your Roblox account.`;
+      options.url = AQUARIUS_VERIFY_URL;
     } else if (embedFields.length > 0) {
       options.description = "Your account is linked and your roles are now being set. See below for a list of added and removed roles.";
       if (unusualConfig) options.description += "\n\n***Warning:** An unusual configuration was detected in this group's rank binds. A situation in which one or more roles were to be added **and** removed occurred. The role(s) were added.*";
