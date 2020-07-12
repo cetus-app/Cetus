@@ -2,7 +2,6 @@ import { CommandGeneratorFunction } from "eris";
 
 import { CetusCommand } from "..";
 import CetusClient from "../../CetusClient";
-import { AQUARIUS_VERIFY_URL } from "../../constants";
 
 export default class NicknameCommand extends CetusCommand {
   public constructor (client: CetusClient) {
@@ -24,13 +23,7 @@ export default class NicknameCommand extends CetusCommand {
     const nick = await msg.member.computeGroupNickname();
 
     if (!nick) {
-      return {
-        embed: this.client.generateErrorEmbed({
-          title: "Not verified",
-          description: `You are not verified, go to ${AQUARIUS_VERIFY_URL} to link your Roblox account.`,
-          url: AQUARIUS_VERIFY_URL
-        })
-      };
+      return { embed: this.client.generateNotVerifiedEmbed() };
     }
 
     if (nick === msg.member.nick) {
