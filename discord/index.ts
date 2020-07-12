@@ -1,5 +1,6 @@
 import { createConnection } from "typeorm";
 
+import "./extensions/Eris";
 import CetusClient from "./CetusClient";
 import server from "./server";
 
@@ -18,6 +19,7 @@ const client = new CetusClient(process.env.BOT_TOKEN, undefined, {
   prefix: "!",
   defaultCommandOptions: {
     cooldownExclusions: { guildIDs: [process.env.devGuildId || ""] },
+    cooldownMessage: "Chill, you have used this command too often.",
     cooldownReturns: 2
   }
 });
