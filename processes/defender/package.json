@@ -1,0 +1,35 @@
+{
+  "name": "cetus-group-defender",
+  "version": "1.0.0",
+  "description": "Internal - The Cetus Group defender integration process.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
+    "start:prod": "node dist",
+    "build": "rimraf dist && tsc"
+  },
+  "author": "CETUS",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@types/node-fetch": "^2.5.7",
+    "dotenv": "^8.2.0",
+    "ioredis": "^4.16.3",
+    "redis": "^3.0.2",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.4",
+    "@typescript-eslint/eslint-plugin": "^3.5.0",
+    "@typescript-eslint/parser": "^2.31.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "rimraf": "^3.0.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3",
+    "@types/ioredis": "^4.16.0"
+  }
+}
