@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { type } from "os";
 import { ForbiddenError, NotFoundError } from "routing-controllers";
 
 import { FullGroup } from "../controllers/GroupController/types";
@@ -12,9 +13,10 @@ export default class GroupService {
   }
 
   // Returns either the group or throws an error if the user does not have access
-  async canAccessGroup (groupId: Group["id"], user?: User): Promise<Group> {
+  // Can also have a group passed if we've already fetched it and want to check if they have access
+  async canAccessGroup (group: Group["id"]|Group, user?: User): Promise<Group> {
     const usr = this.request.user || user;
-    const grp = await database.groups.getFullGroup(groupId);
+    const grp = typeof group !== "string" ? group : await database.groups.getFullGroup(group);
     if (!grp) {
       throw new NotFoundError("Group not found");
     }

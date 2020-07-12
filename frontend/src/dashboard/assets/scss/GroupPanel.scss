@@ -7,6 +7,9 @@
 .group-info {
     padding: 1em;
 }
+.sidebar-container {
+  max-height: 100vh;
+}
 .sidebar {
     min-height: 100vh;
     background-color: $dark-background;

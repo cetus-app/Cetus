@@ -6,6 +6,8 @@
 // "Unfriendly" error messages.
 import { NextFunction, Request, Response } from "express";
 import { Response as FetchResponse } from "node-fetch";
+import {ValidationError} from "class-validator";
+import {BadRequestError} from "routing-controllers";
 
 function errorHandler (error: any, _req: Request, res: Response, _next: NextFunction):any {
   if (error instanceof SyntaxError) {
@@ -74,6 +76,14 @@ export class ExternalHttpError extends Error {
   response: FetchResponse;
 }
 
+export class CustomValidationError extends BadRequestError {
+  constructor (errs: ValidationError[]) {
+    super("Invalid body, check 'errors' property for more info.");
+    this.errors = errs;
+  }
+
+  errors: ValidationError[];
+}
 export {
   errorHandler, errorGenerator, errors, errorCatch
 };
