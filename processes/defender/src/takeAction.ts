@@ -2,8 +2,10 @@
 // Includes logic to demote offenders and revert malicious actions.
 
 import Integration, { AntiAdminAbuseConfig } from "../../../backend/entities/Integration.entity";
-import { AuditLogActor } from "../types";
-import { makeRequest } from "./util";
+import {
+  ActionTypeRequest, AuditLog, AuditLogActor, ChangeRankAction
+} from "../types";
+import { getLogs, makeRequest } from "./util";
 
 async function getRoleId (groupId: number, cookie: string, rankId: number) {
   const url = `https://groups.roblox.com/v1/groups/${groupId}/roles`;
@@ -24,12 +26,10 @@ export async function demote (actor: AuditLogActor, integration: Integration) {
   const config = integration.config as AntiAdminAbuseConfig;
   // do not 'demote' up the way
   if (actor.rank <= config.demotionRank) return false;
-  const { group: { bot, robloxId: groupId } } = integration;
+  const { group: { bot } } = integration;
   if (!bot) throw new Error("No group bot - this shouldn't happen.");
-  // Get role id
-  const roleId = await getRoleId(groupId, bot.cookie, config.demotionRank);
   // Demote
-  return setRank(integration, actor.id, roleId);
+  return setRank(integration, actor.id, config.demotionRank);
 }
 
 export async function setRank (integration: Integration, userId: number, rankId: number): Promise<boolean> {
@@ -39,7 +39,8 @@ export async function setRank (integration: Integration, userId: number, rankId:
   if (userId === bot.robloxId) {
     throw new Error("Cannot demote the bot user.");
   }
-  const roleId = await getRoleId(groupId, bot.cookie, rankId);
+  // If its > 255 its a rolesetid.
+  const roleId = rankId > 255 ? rankId : await getRoleId(groupId, bot.cookie, rankId);
 
   const csrfUrl = "https://api.roblox.com/sign-out/v1";
   const csrfRes = await makeRequest(csrfUrl, bot.cookie, { method: "POST" });
@@ -78,7 +79,39 @@ export async function setRank (integration: Integration, userId: number, rankId:
   }
 }
 
-export async function revert(_actor: AuditLogActor, _integration: Integration): Promise<number> {
-  // TODO: Implement
-  return 0;
+export async function revert (actor: AuditLogActor, integration: Integration): Promise<number> {
+  if (!integration.group.bot) throw new Error("No bot!");
+
+  // We can revert a max of 100 change ranks. At a later date, I could add cursor/page support.
+  // The likelihood of someone managing to do 100 before we detect it is pretty small.
+  // We'll also only revert change ranks done within the last 2 hours.
+  const logs = await getLogs(integration.group.robloxId, integration.group.bot.cookie, {
+    userId: actor.id,
+    limit: 100,
+    actionType: ActionTypeRequest.changeRank
+  });
+  const earliest = Date.now() - 7200000;
+  const revertable = logs.logs.filter((log: AuditLog) => log.created.getTime() > earliest);
+  // Attempt to revert
+  const promises = [];
+  for (const toUndo of revertable) {
+    // We know this will be the case
+    if (toUndo.actor.id === actor.id) {
+      const {
+        oldRoleSetId, targetId, oldRoleSetName, targetName
+      } = toUndo.action as ChangeRankAction;
+
+      promises.push((setRank(integration, targetId, oldRoleSetId)));
+      console.log(`Attempted to rank ${targetId} (${targetName}) to ${oldRoleSetId} (${oldRoleSetName})`);
+    }
+  }
+  promises.map(p => p.catch(e => e));
+  const resp = await Promise.all(promises);
+  let successful = 0;
+  for (let counter = 0; counter < resp.length; counter++) {
+    if (resp[counter] === true) {
+      successful++;
+    }
+  }
+  return successful;
 }

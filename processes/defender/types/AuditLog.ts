@@ -128,5 +128,6 @@ export interface GetLogsOptions {
   limit?: 10|25|50|100,
   // sortOrder; Roblox specifies it but doesn't actually follow it
   cursor?: string,
-  actionType?: ActionTypeRequest
+  actionType?: ActionTypeRequest,
+  userId?: number
 }
