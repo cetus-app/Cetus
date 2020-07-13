@@ -1,6 +1,6 @@
 import { Member, Role } from "eris";
 
-import { getIntegration, getRank } from "../../../api";
+import { getRank } from "../../../api";
 import { getLink } from "../../../api/aquarius";
 
 Member.prototype.computeGroupRoles = async function computeGroupRoles () {
@@ -36,7 +36,7 @@ Member.prototype.computeGroupRoles = async function computeGroupRoles () {
     removeRoles.push(role);
   };
 
-  const { config: { binds, unverifiedRoleId, verifiedRoleId } } = await getIntegration(this.guild.id);
+  const { binds, unverifiedRoleId, verifiedRoleId } = await this.guild.getConfigs();
   const link = await getLink(this.id);
 
   if (unverifiedRoleId) {

@@ -1,4 +1,5 @@
 export * from "./brand";
+export * from "./configMappings";
 export { default as REDIS_PREFIXES } from "./redisPrefixes";
 
 export const AQUARIUS_URL = "https://verify.nezto.re";

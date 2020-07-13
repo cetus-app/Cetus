@@ -1,5 +1,5 @@
 import { ApiError } from "..";
-import InvalidApiKeyError from "../../shared/InvalidApiKeyError";
+import { InvalidApiKeyError } from "../../shared";
 import { authFetch } from "../fetch";
 import { UserMembership } from "../types";
 

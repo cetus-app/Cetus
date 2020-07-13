@@ -1,7 +1,7 @@
 import { User } from "@sentry/node";
 import { Request } from "express";
 import {
-  Authorized, BadRequestError, Body, CurrentUser, Delete, Get, JsonController, NotFoundError, OnUndefined, Params, Post, Req
+  Authorized, BadRequestError, Body, CurrentUser, Delete, Get, JsonController, NotFoundError, OnUndefined, Params, Patch, Post, Req
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
@@ -12,7 +12,7 @@ import {
   AntiAdminAbuseConfig, BaseIntegrationConfig, defaultAntiAdminAbuseConfig, defaultDiscordConfig, DiscordBotConfig, IntegrationType
 } from "../../entities/Integration.entity";
 import {
-  AddIntegrationBody, GroupIdParam, IdParam, integrationMeta, IntegrationTypeParam, PartialIntegration
+  AddIntegrationBody, GroupIdParam, IdParam, integrationMeta, IntegrationTypeParam, PartialIntegration, UpdateIntegrationBody
 } from "./types";
 
 
@@ -82,6 +82,30 @@ export default class Integrations {
     delete integration.group;
 
     return integration;
+  }
+
+  @Patch("/type/:type")
+  @OpenAPI({ description: "Used by integrations to update their own configuration" })
+  @ResponseSchema(PartialIntegration)
+  async updateType (
+    @Params() { type }: IntegrationTypeParam,
+    @Body() { config }: UpdateIntegrationBody,
+    @CurrentGroup() group: Group
+  ): Promise<PartialIntegration> {
+    const integration = await database.integrations.findOne({
+      type,
+      group: { id: group.id }
+    });
+
+    if (!integration) throw new NotFoundError();
+
+    return database.integrations.save({
+      id: integration.id,
+      config: {
+        ...integration.config,
+        ...config
+      }
+    });
   }
 
   @Delete("/:id")

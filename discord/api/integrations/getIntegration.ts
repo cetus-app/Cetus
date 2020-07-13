@@ -1,6 +1,6 @@
 import { ApiError, authFetch } from "..";
 import { REDIS_PREFIXES } from "../../constants";
-import InvalidApiKeyError from "../../shared/InvalidApiKeyError";
+import { InvalidApiKeyError } from "../../shared";
 import { getObject, setObject } from "../../shared/redis";
 import { DiscordIntegration } from "../types";
 

@@ -1,6 +1,6 @@
 import { ApiError, fetch } from "..";
 import { AQUARIUS_API_URL, REDIS_PREFIXES } from "../../constants";
-import { getObject, setObject } from "../../shared/redis";
+import { getObject, setObject } from "../../shared";
 
 export interface AquariusLink {
     discordId: string;
