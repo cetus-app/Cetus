@@ -11,13 +11,16 @@ export default class ConfigurationCommand extends CetusCommand {
       caseInsensitive: true,
       cooldown: 1000 * 2,
       description: "Change configuration for group",
-      guildOnly: true
+      guildOnly: true,
+      requirements: { permissions: { administrator: true } }
     }, client);
   }
 
   public run: CommandGeneratorFunction = async (msg, args) => {
     // `guildOnly` option should prevent this
     if (!msg.member) throw new Error("This command can only be ran in guilds");
+
+    await msg.channel.sendTyping();
 
     // LIST KEYS
     if (args.length === 0) {

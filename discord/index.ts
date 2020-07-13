@@ -20,7 +20,8 @@ const client = new CetusClient(process.env.BOT_TOKEN, undefined, {
   defaultCommandOptions: {
     cooldownExclusions: { guildIDs: [process.env.devGuildId || ""] },
     cooldownMessage: "Chill, you have used this command too often.",
-    cooldownReturns: 2
+    cooldownReturns: 2,
+    permissionMessage: "You are not allowed to use that command!"
   }
 });
 
