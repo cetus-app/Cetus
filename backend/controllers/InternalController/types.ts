@@ -1,6 +1,4 @@
-import {
-  Allow, IsEnum, IsUUID
-} from "class-validator";
+import { Allow, IsEnum, IsUUID } from "class-validator";
 
 import { Bot } from "../../entities";
 import Group from "../../entities/Group.entity";

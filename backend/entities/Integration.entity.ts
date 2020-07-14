@@ -23,7 +23,8 @@ export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
   webhook?: string;
   // 0 = Do not demote; Anything above that = Demote.
   demotionRank: number
-  revert: boolean
+  revert: boolean,
+  enabled: boolean
 }
 
 export enum IntegrationType {

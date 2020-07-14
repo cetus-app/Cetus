@@ -41,7 +41,7 @@ export default class Internal {
   @ResponseSchema(InternalGroup, { isArray: true })
   async getScannable (): Promise<Integration[]> {
     // Based on https://kscerbiakas.lt/typeorm-nested-relationships/
-    return database.integrations.createQueryBuilder("integration")
+    const dbRes = await database.integrations.createQueryBuilder("integration")
       .leftJoinAndSelect("integration.group", "group")
       .leftJoinAndSelect("group.bot", "bot")
       .addSelect("bot.cookie")
@@ -49,6 +49,11 @@ export default class Internal {
       .andWhere("bot.dead = :no", { no: false })
       .andWhere("group.botActive = :yes", { yes: true })
       .getMany();
+    // Checks for config.enabled as DB can't really interact with JSON fields
+    return dbRes.filter(i => {
+      const config = i.config as AntiAdminAbuseConfig;
+      return config.enabled;
+    });
   }
 
   // Takes notifications from Group Defender and emails the user appropriately.

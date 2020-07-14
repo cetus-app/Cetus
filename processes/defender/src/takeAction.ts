@@ -26,6 +26,7 @@ export async function demote (actor: AuditLogActor, integration: Integration) {
   const config = integration.config as AntiAdminAbuseConfig;
   // do not 'demote' up the way
   if (actor.rank <= config.demotionRank) return false;
+  if (config.demotionRank === 0) return false;
   const { group: { bot } } = integration;
   if (!bot) throw new Error("No group bot - this shouldn't happen.");
   // Demote

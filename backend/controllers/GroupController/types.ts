@@ -6,6 +6,7 @@ import {
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
 import { RobloxGroup } from "../../types";
+import { Bot } from "../BotController/types";
 import { PartialIntegration } from "../IntegrationController/types";
 
 export class PartialGroup implements Partial<Group> {
@@ -35,6 +36,9 @@ export class FullGroup extends PartialGroup {
 
   @Type(() => User)
   owner: User;
+
+  @Type(() => Bot)
+  bot: Bot
 }
 
 // Issue regarding validation of id in params: https://github.com/typestack/routing-controllers/issues/348

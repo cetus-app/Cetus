@@ -9,7 +9,6 @@ import { demote, revert } from "./src/takeAction";
 import { getScannable } from "./src/util";
 import { AuditLog, AuditLogActor } from "./types";
 
-
 const { url, token, scanInterval = "300000" } = process.env;
 if (!url || !token || !scanInterval) {
   console.error(`Cannot start: Missing URL or Auth env variable!`);
@@ -110,8 +109,10 @@ async function checkTotals () {
 
       let reverted: number = 0;
       try {
-        // eslint-disable-next-line no-await-in-loop
-        reverted = await revert(actor, integration);
+        if (config.revert) {
+          // eslint-disable-next-line no-await-in-loop
+          reverted = await revert(actor, integration);
+        }
       } catch (e) {
         reverted = 0;
       }

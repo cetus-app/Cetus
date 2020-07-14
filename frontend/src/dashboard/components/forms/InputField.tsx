@@ -1,5 +1,5 @@
 import { FieldHookConfig, useField } from "formik";
-import React, { FunctionComponent } from "react";
+import React, { Fragment, FunctionComponent } from "react";
 
 export interface CustomInputFieldProps {
   label: string;
@@ -7,11 +7,18 @@ export interface CustomInputFieldProps {
 
 export type InputFieldProps = FieldHookConfig<string | number> & CustomInputFieldProps;
 
-const InputField: FunctionComponent<InputFieldProps> = ({ label, ...props }) => {
+const InputField: FunctionComponent<InputFieldProps> = ({ label, ...props }) => (
+  <div className="field">
+    <Input label={label} {...props} />
+  </div>
+);
+
+export const Input: FunctionComponent<InputFieldProps> = ({ label, ...props }) => {
   const [field, { touched, error }] = useField(props);
 
   return (
-    <div className="field">
+    <Fragment>
+
       <label className="label">{label}</label>
 
       <div className="control">
@@ -22,7 +29,8 @@ const InputField: FunctionComponent<InputFieldProps> = ({ label, ...props }) => 
       </div>
 
       {touched && error ? <p className="help is-danger">{error}</p> : null}
-    </div>
+    </Fragment>
+
   );
 };
 

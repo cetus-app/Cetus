@@ -4,10 +4,10 @@
 
 // TODO: Add different error handling based on production or development
 // "Unfriendly" error messages.
+import { ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";
 import { Response as FetchResponse } from "node-fetch";
-import {ValidationError} from "class-validator";
-import {BadRequestError} from "routing-controllers";
+import { BadRequestError } from "routing-controllers";
 
 function errorHandler (error: any, _req: Request, res: Response, _next: NextFunction):any {
   if (error instanceof SyntaxError) {

@@ -57,6 +57,9 @@ export class AntiAbuseConfigBody {
 
   @IsBoolean()
   revert: boolean
+
+  @IsBoolean()
+  enabled: boolean
 }
 
 export class DiscordBotConfigBody {
@@ -74,7 +77,8 @@ export const integrationDefault: {[key in IntegrationType]: (DiscordBotConfig|An
     actionTime: 5,
     demotionRank: 1,
     actionCount: 20,
-    revert: false
+    revert: false,
+    enabled: true
   }
 };
 
