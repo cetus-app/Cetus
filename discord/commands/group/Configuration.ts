@@ -1,4 +1,4 @@
-import { CommandGeneratorFunction } from "eris";
+import { CommandGeneratorFunction, Guild, MessageContent } from "eris";
 
 import { CetusCommand } from "..";
 import CetusClient from "../../CetusClient";
@@ -14,6 +14,79 @@ export default class ConfigurationCommand extends CetusCommand {
       guildOnly: true,
       requirements: { permissions: { administrator: true } }
     }, client);
+  }
+
+  private async getConfig (friendlyKey: string, guild: Guild): Promise<MessageContent> {
+    const { key, type } = CONFIG_MAPPINGS[friendlyKey] || {};
+
+    if (!key) {
+      return {
+        embed: this.client.generateErrorEmbed({
+          title: "Invalid key",
+          description: `Could not get value for setting \`${friendlyKey}\``
+        })
+      };
+    }
+
+    const id = await guild.getConfig(key);
+    const value = id ? guild.getConfigValue(type, "id", id) : undefined;
+
+    return {
+      embed: this.client.generateEmbed({
+        title: `Value for setting \`${friendlyKey}\``,
+        description: !value ? `This setting is not set. Use \`config set ${friendlyKey} {value}\` to set it.` : undefined,
+        fields: value && [
+          {
+            name: "Key",
+            value: friendlyKey,
+            inline: true
+          },
+          {
+            name: "Type",
+            value: type.name,
+            inline: true
+          },
+          {
+            name: "Value",
+            value: value.name,
+            inline: true
+          }
+        ]
+      })
+    };
+  }
+
+  private async setConfig (friendlyKey: string, value: string, guild: Guild): Promise<MessageContent> {
+    const { key, type } = CONFIG_MAPPINGS[friendlyKey] || {};
+
+    if (!key) {
+      return {
+        embed: this.client.generateErrorEmbed({
+          title: "Invalid key",
+          description: `\`${friendlyKey}\` is not a valid key`
+        })
+      };
+    }
+
+    const actualValue = guild.getConfigValue(type, "name", value);
+
+    if (!actualValue) {
+      return {
+        embed: this.client.generateErrorEmbed({
+          title: "Invalid value",
+          description: `Could not find a ${type.name} with name \`${value}\``
+        })
+      };
+    }
+
+    await guild.setConfig(key, actualValue.id);
+
+    return {
+      embed: this.client.generateEmbed({
+        title: "Value updated",
+        description: `Value for \`${friendlyKey}\` was updated to \`${actualValue.name}\``
+      })
+    };
   }
 
   public run: CommandGeneratorFunction = async (msg, args) => {
@@ -52,44 +125,7 @@ export default class ConfigurationCommand extends CetusCommand {
       }
 
       const [, friendlyKey] = args;
-
-      const { key, type } = CONFIG_MAPPINGS[friendlyKey] || {};
-
-      if (!key) {
-        return {
-          embed: this.client.generateErrorEmbed({
-            title: "Invalid key",
-            description: `Could not get value for setting \`${friendlyKey}\``
-          })
-        };
-      }
-
-      const id = await msg.member.guild.getConfig(key);
-      const value = id ? msg.member.guild.getConfigValue(type, "id", id) : undefined;
-
-      return {
-        embed: this.client.generateEmbed({
-          title: `Value for setting \`${friendlyKey}\``,
-          description: !value ? `This setting is not set. Use \`config set ${friendlyKey} {value}\` to set it.` : undefined,
-          fields: value && [
-            {
-              name: "Key",
-              value: friendlyKey,
-              inline: true
-            },
-            {
-              name: "Type",
-              value: type.name,
-              inline: true
-            },
-            {
-              name: "Value",
-              value: value.name,
-              inline: true
-            }
-          ]
-        })
-      };
+      return this.getConfig(friendlyKey, msg.member.guild);
     }
 
     // SET VALUE
@@ -103,47 +139,22 @@ export default class ConfigurationCommand extends CetusCommand {
         };
       }
 
-      // Take into account values with spaces (use rest of array)
-      const value = args.slice(2, args.length).join(" ");
-
       const [, friendlyKey] = args;
-
-      const { key, type } = CONFIG_MAPPINGS[friendlyKey] || {};
-
-      if (!key) {
-        return {
-          embed: this.client.generateErrorEmbed({
-            title: "Invalid key",
-            description: `\`${friendlyKey}\` is not a valid key`
-          })
-        };
-      }
-
-      const actualValue = msg.member.guild.getConfigValue(type, "name", value);
-
-      if (!actualValue) {
-        return {
-          embed: this.client.generateErrorEmbed({
-            title: "Invalid value",
-            description: `Could not find a ${type.name} with name \`${value}\``
-          })
-        };
-      }
-
-      await msg.member.guild.setConfig(key, actualValue.id);
-
-      return {
-        embed: this.client.generateEmbed({
-          title: "Value updated",
-          description: `Value for \`${friendlyKey}\` was updated to \`${actualValue.name}\``
-        })
-      };
+      // Take values with spaces into account (use rest of array)
+      const value = args.slice(2, args.length).join(" ");
+      return this.setConfig(friendlyKey, value, msg.member.guild);
     }
 
     return {
       embed: this.client.generateErrorEmbed({
         title: "Invalid operation",
-        description: "An invalid operation or an incorrect amount of arguments were supplied. Valid operations are listed below"
+        description: "An invalid operation or an incorrect amount of arguments were supplied. Valid operations are listed below",
+        fields: [
+          {
+            name: "Valid operations",
+            value: ["get", "set"].join("\n")
+          }
+        ]
       })
     };
   }
