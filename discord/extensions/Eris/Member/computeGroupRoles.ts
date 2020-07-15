@@ -42,26 +42,25 @@ Member.prototype.computeGroupRoles = async function computeGroupRoles () {
   if (unverifiedRoleId) {
     const role = this.guild.roles.get(unverifiedRoleId);
 
-    // TODO: Handle invalid role ID
-    // if (!role) {}
-
     if (role) {
       if (link && this.roles.includes(role.id)) removeRole(role);
 
       if (!link && !this.roles.includes(role.id)) addRole(role);
+    } else {
+      // `await` unnecessary; can happen while other things happen
+      this.guild.handleInvalidConfig("unverifiedRoleId", "unverified", Role);
     }
   }
 
   if (verifiedRoleId) {
     const role = this.guild.roles.get(verifiedRoleId);
 
-    // TODO: Handle invalid role ID
-    // if (!role) {}
-
     if (role) {
       if (link && !this.roles.includes(role.id)) addRole(role);
 
       if (!link && this.roles.includes(role.id)) removeRole(role);
+    } else {
+      this.guild.handleInvalidConfig("verifiedRoleId", "verified", Role);
     }
   }
 
@@ -73,14 +72,14 @@ Member.prototype.computeGroupRoles = async function computeGroupRoles () {
         for (const bind of binds) {
           const role = this.guild.roles.get(bind.roleId);
 
-          if (!role) {
-            // TODO: Handle invalid role ID
-          } else {
+          if (role) {
             const eligible = bind.exclusive ? rank === bind.rank : rank >= bind.rank;
 
             if (eligible && !this.roles.includes(role.id)) addRole(role);
 
             if (!eligible && this.roles.includes(role.id)) removeRole(role);
+          } else {
+            this.guild.handleInvalidBindRole(bind);
           }
         }
       }

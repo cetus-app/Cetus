@@ -9,7 +9,12 @@ export interface ConfigMapping {
   type: ConfigDiscordType;
 }
 
-export const CONFIG_MAPPINGS: { [name: string ]: ConfigMapping} = {
+export interface ConfigMappings {
+  unverified: ConfigMapping;
+  verified: ConfigMapping;
+}
+
+export const CONFIG_MAPPINGS: ConfigMappings = {
   unverified: {
     key: "unverifiedRoleId",
     type: Role

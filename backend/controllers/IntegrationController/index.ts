@@ -101,10 +101,7 @@ export default class Integrations {
 
     return database.integrations.save({
       id: integration.id,
-      config: {
-        ...integration.config,
-        ...config
-      }
+      config
     });
   }
 

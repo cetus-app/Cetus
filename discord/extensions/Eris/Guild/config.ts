@@ -15,7 +15,11 @@ Guild.prototype.getConfig = async function getConfig (key) {
 };
 
 Guild.prototype.setConfigs = async function setConfigs (newConfig) {
-  await updateIntegration(this.id, newConfig);
+  const existing = await this.getConfigs();
+  await updateIntegration(this.id, {
+    ...existing,
+    ...newConfig
+  });
 };
 
 Guild.prototype.setConfig = async function setConfig (key, value) {

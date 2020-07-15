@@ -66,24 +66,39 @@ export default class BindsCommand extends CetusCommand {
 
     const exclusive = exclusiveStr.toLowerCase() === "yes";
 
+    const binds = await guild.getConfig("binds");
+    const existing = binds.find(b => b.rank === rank && b.roleId === role.id && b.exclusive === exclusive);
+    if (existing) {
+      throw new InvalidCommandArgument("bind", existing, "An identical bind already exists.");
+    }
+
     return [rank, role, exclusive];
   }
 
   private async listBinds (guild: Guild): Promise<MessageContent> {
     const binds = await guild.getConfig("binds");
 
+    // To keep indexes in order and valid for deletion
+    // (for example 2 binds; first one deleted -> only second shows, but with number 2 -> cannot delete 2 because it now has number 1)
+    let invalidCount = 0;
+
     const friendlyBinds: string[] = binds.reduce<string[]>((accumulator, { rank, roleId, exclusive }, index) => {
       const role = guild.roles.get(roleId);
 
-      // Handle invalid role ID
-      // if (!role) {}
-
       if (role) {
+        // Every bind *after* invalid has number reduced by `invalidCount` (see above)
         accumulator.push(`
-          **${(index + 1).toString()}**. Rank: ${rank.toString()}
+          **${(index + 1 - invalidCount).toString()}**. Rank: ${rank.toString()}
           Role: ${role.name}
           Exclusive: ${exclusive ? "Yes" : "No"}
         `);
+      } else {
+        invalidCount++;
+        guild.handleInvalidBindRole({
+          rank,
+          roleId,
+          exclusive
+        });
       }
 
       return accumulator;
