@@ -7,7 +7,7 @@ export default class ApiError extends Error {
     this.name = "ApiError";
     this.response = response;
 
-    // Set the prototype explicitly.
+    // Set the prototype explicitly
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 

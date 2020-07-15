@@ -5,7 +5,7 @@ export default class GuildNotConfiguredError extends Error {
     this.name = "GuildNotConfiguredError";
     this.guildId = guildId;
 
-    // Set the prototype explicitly.
+    // Set the prototype explicitly
     Object.setPrototypeOf(this, GuildNotConfiguredError.prototype);
   }
 

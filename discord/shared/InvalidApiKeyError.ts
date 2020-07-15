@@ -5,7 +5,7 @@ export default class InvalidApiKeyError extends Error {
     this.name = "InvalidApiKeyError";
     this.guildId = guildId;
 
-    // Set the prototype explicitly.
+    // Set the prototype explicitly
     Object.setPrototypeOf(this, InvalidApiKeyError.prototype);
   }
 

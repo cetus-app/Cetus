@@ -113,8 +113,10 @@ export default class ConfigurationCommand extends CetusCommand {
       };
     }
 
+    const operation = args[0].toLowerCase();
+
     // GET VALUE
-    if (args[0].toLowerCase() === "get") {
+    if (operation === "get") {
       if (args.length < 2) {
         return {
           embed: this.client.generateErrorEmbed({
@@ -129,7 +131,7 @@ export default class ConfigurationCommand extends CetusCommand {
     }
 
     // SET VALUE
-    if (args[0].toLowerCase() === "set") {
+    if (operation === "set") {
       if (args.length < 3) {
         return {
           embed: this.client.generateErrorEmbed({
