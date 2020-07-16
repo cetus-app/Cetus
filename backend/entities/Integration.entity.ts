@@ -10,17 +10,26 @@ import {
 
 import Group from "./Group.entity";
 
-interface BaseIntegrationConfig {
-  apiKey: string;
+export interface BaseIntegrationConfig {}
+
+export interface DiscordBotConfig extends BaseIntegrationConfig {
+  guildId?: string;
+  verifiedRoleId?: string;
+  unverifiedRoleId?: string;
+  binds: {
+    roleId: string;
+    rank: number;
+    exclusive: boolean;
+  }[]
 }
 
-interface DiscordBotConfig extends BaseIntegrationConfig {
-  guildId: string;
-}
+export const defaultDiscordConfig: DiscordBotConfig = { binds: [] };
 
-interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
+export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
   actionsPerMin: number;
 }
+
+export const defaultAntiAdminAbuseConfig: AntiAdminAbuseConfig = { actionsPerMin: 20 };
 
 export enum IntegrationType {
   discordBot = "DISCORD_BOT",

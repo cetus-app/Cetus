@@ -1,4 +1,6 @@
-import { IsEnum, IsUUID } from "class-validator";
+import {
+  IsBoolean, IsDefined, IsEnum, IsObject, IsOptional, IsString, IsUUID, ValidateNested
+} from "class-validator";
 
 import { IntegrationType } from "../../entities/Integration.entity";
 
@@ -12,6 +14,11 @@ export class GroupIdParam {
   groupId: string;
 }
 
+export class IntegrationTypeParam {
+  @IsEnum(IntegrationType)
+  type: IntegrationType;
+}
+
 export class PartialIntegration {
   @IsUUID("4")
   id: string;
@@ -22,6 +29,43 @@ export class PartialIntegration {
 export class AddIntegrationBody {
   @IsEnum(IntegrationType)
   type: IntegrationType;
+}
+
+export class UpdateIntegrationBody {
+  @IsDefined()
+  @IsObject()
+  config: AntiAbuseConfigBody|DiscordBotConfigBody
+}
+
+export class AntiAbuseConfigBody {}
+
+export class DiscordBotConfigBody {
+  @IsString()
+  @IsOptional()
+  guildId?: string;
+
+  @IsString()
+  @IsOptional()
+  verifiedRoleId?: string;
+
+  @IsString()
+  @IsOptional()
+  unverifiedRoleId?: string;
+
+  @ValidateNested({ each: true })
+  @IsOptional()
+  binds?: DiscordBotConfigBindsBody[]
+}
+
+export class DiscordBotConfigBindsBody {
+  @IsString()
+  roleId: string;
+
+  @IsString()
+  rank: number;
+
+  @IsBoolean()
+  exclusive: boolean;
 }
 
 // Separated out for clarity

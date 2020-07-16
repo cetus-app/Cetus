@@ -7,6 +7,8 @@ export interface PartialUser {
 
   robloxId?: number;
 
+  discordId?: string;
+
   created: Date
 }
 

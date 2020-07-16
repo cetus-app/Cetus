@@ -11,7 +11,7 @@ interface StartVerificationProps {
 const StartVerification: FunctionComponent<StartVerificationProps> = ({ username, onUsernameChange, onClick }) => (
   <Fragment>
     <h1 className="title has-text-black">Hi there!</h1>
-    <p>To get started, you will need to link your Roblox account. Please enter your username below.</p>
+    <p>To proceed, you will need to link your Roblox account. Please enter your username below.</p>
 
     <br />
 

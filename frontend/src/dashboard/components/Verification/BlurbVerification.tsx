@@ -20,8 +20,8 @@ const BlurbVerification: FunctionComponent<BlurbVerificationProps> = ({ username
       <div className="content has-text-left">
         <i>
           In order to verify your account, do the following:
-          Go to your Roblox <a href="https://www.roblox.com/my/account#!/info" target="_blank" rel="noopener noreferrer">settings</a>&#32;
-          in the upper right corner of the Roblox website.
+          Go to your Roblox <a href="https://www.roblox.com/my/account#!/info" target="_blank" rel="noopener noreferrer">settings</a>
+          &nbsp;in the upper right corner of the Roblox website.
           Under personal, paste the code below anywhere in the text (bio) box.
           Remember to press the save button further down that page.
         </i>

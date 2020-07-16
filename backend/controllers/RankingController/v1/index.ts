@@ -1,16 +1,33 @@
 import {
-  Body, JsonController, Params, Post
+  Body, Get, JsonController, Params, Post
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox, { getGroupClient } from "../../../api/roblox/Roblox";
-import database from "../../../database";
+import { redisPrefixes } from "../../../constants";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
-import { SetRankBody, SetRankResponse, UserRobloxIdParam } from "./types";
+import { redis } from "../../../shared";
+import {
+  GetRankResponse, SetRankBody, SetRankResponse, UserRobloxIdParam
+} from "./types";
 
 @JsonController("/v1/ranking")
 export default class RankingV1 {
+  @Get("/:uRbxId")
+  @ResponseSchema(GetRankResponse)
+  async getRank (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<GetRankResponse> {
+    const userGroup = await Roblox.getUserGroup(uRbxId, group.robloxId);
+
+    const rank = userGroup?.rank || 0;
+    const role = userGroup?.role || "Guest";
+
+    return {
+      rank,
+      role
+    };
+  }
+
   @Post("/setRank/:uRbxId")
   @ResponseSchema(SetRankResponse)
   async setRank (
@@ -18,17 +35,7 @@ export default class RankingV1 {
     @Body() { rank }: SetRankBody,
     @CurrentGroup() group: Group
   ): Promise<SetRankResponse> {
-    const user = await database.users.getUserByRId(uRbxId);
-
-    // We know `robloxId` is defined, because we just fetched user by it. TypeScript does not know unfortunately ¯\_(ツ)_/¯
-    if (!user || !user.robloxId) {
-      return {
-        success: false,
-        message: "No verified user found"
-      };
-    }
-
-    const isMember = await Roblox.isMember(group.robloxId, user.robloxId);
+    const isMember = await Roblox.isMember(group.robloxId, uRbxId);
     if (!isMember) {
       return {
         success: false,
@@ -38,10 +45,15 @@ export default class RankingV1 {
 
     const client = await getGroupClient(group.id);
 
-    return client.setRank(uRbxId, rank).then(() => ({
-      success: true,
-      message: "User's rank is updated"
-    })).catch(e => {
+    return client.setRank(uRbxId, rank).then(async () => {
+      // Invalidate cache
+      await redis.del(redisPrefixes.userGroupsCache + uRbxId);
+
+      return {
+        success: true,
+        message: "User's rank is updated"
+      };
+    }).catch(e => {
       console.error(e);
 
       return {

@@ -1,4 +1,5 @@
 import AccountController from "./AccountController";
+import AuthController from "./AuthController";
 import BotController from "./BotController";
 import GroupController from "./GroupController";
 import IntegrationController from "./IntegrationController";
@@ -17,7 +18,8 @@ export default [
   IntegrationController,
   RankingV1Controller,
   BotController,
-  InternalController
+  InternalController,
+  AuthController
 ];
 
 export {
@@ -29,5 +31,6 @@ export {
   IntegrationController,
   RankingV1Controller,
   BotController,
-  InternalController
+  InternalController,
+  AuthController
 };
