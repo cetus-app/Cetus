@@ -1,5 +1,6 @@
 
 import { ApiKey } from "./ApiKey";
+import { Bot } from "./Bot";
 import { PartialIntegration } from "./Integration";
 import { PartialUser } from "./User";
 
@@ -54,4 +55,6 @@ export class FullGroup extends PartialGroup {
   integrations: PartialIntegration[];
 
   owner: PartialUser;
+
+  bot: Bot
 }

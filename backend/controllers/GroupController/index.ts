@@ -11,7 +11,8 @@ import {
   NotFoundError,
   Params,
   Patch,
-  Post, Req
+  Post,
+  Req
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
@@ -19,6 +20,7 @@ import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
 import { UserRobloxGroup } from "../../types";
+import { Bot } from "../BotController/types";
 import {
   AddGroupBody, FullGroup, IdParam, PartialGroup, UnlinkedGroup
 } from "./types";
@@ -145,9 +147,22 @@ export default class Groups {
                   @Req() request: Request): Promise<FullGroup> {
     // Get specific group
     const group = await request.groupService.canAccessGroup(id);
-    const robloxInfo = await Roblox.getGroup(group.robloxId);
+    let p;
+    if (group && group.bot) {
+      p = Roblox.getUsernameFromId(group.bot.robloxId);
+      p.catch(console.error);
+    }
+    const groupInfoPromise = Roblox.getGroup(group.robloxId);
+    const groupRobloxInfo = await groupInfoPromise;
+
     const toSend:FullGroup = { ...group };
-    toSend.robloxInfo = robloxInfo;
+
+    if (p && group.bot) {
+      const toSendBot:Bot = { ...group.bot };
+      toSendBot.username = await p || undefined;
+      toSend.bot = toSendBot;
+    }
+    toSend.robloxInfo = groupRobloxInfo;
     return toSend;
   }
 

@@ -1,8 +1,11 @@
+import { Type } from "class-transformer";
 import {
-  IsBoolean, IsDefined, IsEnum, IsObject, IsOptional, IsString, IsUUID, ValidateNested
+  IsBoolean,
+  IsDefined,
+  IsEnum, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUrl, IsUUID, Max, Min, ValidateNested
 } from "class-validator";
 
-import { IntegrationType } from "../../entities/Integration.entity";
+import { AntiAdminAbuseConfig, DiscordBotConfig, IntegrationType } from "../../entities/Integration.entity";
 
 export class IdParam {
   @IsUUID("4")
@@ -30,14 +33,39 @@ export class AddIntegrationBody {
   @IsEnum(IntegrationType)
   type: IntegrationType;
 }
-
-export class UpdateIntegrationBody {
+// TODO: Look at Schema for docs? (We custom validate but docs need schema)
+export class EditIntegrationBody {
   @IsDefined()
   @IsObject()
   config: AntiAbuseConfigBody|DiscordBotConfigBody
 }
 
-export class AntiAbuseConfigBody {}
+export class AntiAbuseConfigBody {
+  @IsUrl()
+  @IsOptional()
+  webhook?: string
+
+  @IsNumber()
+  @IsPositive()
+  actionCount: number;
+
+  // Min is 5 because we only scan once every 5 minutes.
+  @IsNumber()
+  @Min(5)
+  actionTime: number;
+
+  // 0 = Do not demote; Anything above that = Demote.
+  @IsNumber()
+  @Min(0)
+  @Max(200)
+  demotionRank: number
+
+  @IsBoolean()
+  revert: boolean
+
+  @IsBoolean()
+  enabled: boolean
+}
 
 export class DiscordBotConfigBody {
   @IsString()
@@ -53,19 +81,43 @@ export class DiscordBotConfigBody {
   unverifiedRoleId?: string;
 
   @ValidateNested({ each: true })
-  @IsOptional()
-  binds?: DiscordBotConfigBindsBody[]
+  @Type(() => DiscordBotConfigBindsBody)
+  binds: DiscordBotConfigBindsBody[]
 }
 
 export class DiscordBotConfigBindsBody {
   @IsString()
   roleId: string;
 
-  @IsString()
+  @IsNumber()
   rank: number;
 
   @IsBoolean()
   exclusive: boolean;
+}
+
+export const integrationConfig: {[key in IntegrationType]: (typeof DiscordBotConfigBody|typeof AntiAbuseConfigBody)} = {
+  [IntegrationType.discordBot]: DiscordBotConfigBody,
+  [IntegrationType.antiAdminAbuse]: AntiAbuseConfigBody
+};
+
+
+export const integrationDefault: {[key in IntegrationType]: (DiscordBotConfig|AntiAdminAbuseConfig)} = {
+  [IntegrationType.discordBot]: { binds: [] },
+  [IntegrationType.antiAdminAbuse]: {
+    actionTime: 5,
+    demotionRank: 1,
+    actionCount: 20,
+    revert: false,
+    enabled: true
+  }
+};
+
+
+export class UpdateIntegrationBody {
+  @IsDefined()
+  @IsObject()
+  config: AntiAbuseConfigBody|DiscordBotConfigBody
 }
 
 // Separated out for clarity

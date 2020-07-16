@@ -7,10 +7,10 @@ import UserContext from "../context/UserContext";
 import Admin from "./Admin/Admin";
 import BotManagement from "./Admin/Bots/Manage";
 import BotQueue from "./Admin/Bots/Queue";
-import GroupMenu from "./GroupMenu";
-import GroupSelector from "./GroupMenu/GroupSelector";
-import UnlinkedSelector from "./GroupMenu/UnlinkedSelector";
 import GroupPanel from "./GroupPanel";
+import GroupSelector from "./GroupSelector";
+import GroupMenu from "./GroupSelector/GroupMenu";
+import UnlinkedSelector from "./GroupSelector/UnlinkedSelector";
 import { NoMatch } from "./NoMatch";
 import Verify from "./Verification/Verification";
 
@@ -30,19 +30,19 @@ const AuthenticatedApp: FunctionComponent = () => {
 
         </Route>
         <Route path="/groups" exact>
-          <GroupMenu
+          <GroupSelector
             title="Linked groups"
             subtitle="Linked groups are groups which already have a bot deployed to them, and are ready to make use of group integrations.">
-            <GroupSelector />
-          </GroupMenu>
+            <GroupMenu />
+          </GroupSelector>
         </Route>
 
         <Route path="/groups/unlinked" exact>
-          <GroupMenu
+          <GroupSelector
             title="Available groups"
             subtitle="Below are all of the groups owned by you which we found on your profile. Click one to link it to our service. ">
             <UnlinkedSelector />
-          </GroupMenu>
+          </GroupSelector>
         </Route>
 
         <Route path="/groups/:groupId">

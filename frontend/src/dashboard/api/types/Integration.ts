@@ -2,28 +2,33 @@ import { PartialGroup } from "./Group";
 
 export enum IntegrationType {
   discordBot = "DISCORD_BOT",
-  api = "API",
   antiAdminAbuse = "ANTI_ADMIN_ABUSE"
 }
 
 export interface BaseIntegrationConfig {}
-
-export interface DiscordBotConfig extends BaseIntegrationConfig {
-  guildId?: string;
-}
-
-export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
-  actionsPerMin: number;
-}
 
 export class PartialIntegration {
   id: string;
 
   type: IntegrationType;
 
-  config: BaseIntegrationConfig;
-
   group: PartialGroup;
+
+  config: AntiAdminAbuseConfig | DiscordBotConfig;
+}
+
+export interface AntiAdminAbuseConfig {
+  actionCount: number;
+  actionTime: number;
+  webhook?: string;
+  // 0 = Do not demote; Anything above that = Demote.
+  demotionRank: number
+  revert: boolean,
+  enabled: boolean
+}
+
+export interface DiscordBotConfig extends BaseIntegrationConfig {
+  guildId?: string;
 }
 
 export interface IntegrationInfo {

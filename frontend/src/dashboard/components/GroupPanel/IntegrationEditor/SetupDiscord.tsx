@@ -2,15 +2,14 @@ import React, {
   Fragment, FunctionComponent, useContext, useState
 } from "react";
 
+import { IntegrationProps } from ".";
 import { ApiKey, DiscordBotConfig } from "../../../api/types";
 import GroupContext from "../../../context/GroupContext";
 import ApiKeyPicker from "../../shared/ApiKeyPicker";
 
-interface SetupDiscordProps {
-  config: DiscordBotConfig;
-}
+const SetupDiscord: FunctionComponent<IntegrationProps> = ({ integration }) => {
+  const { guildId } = integration.config as DiscordBotConfig;
 
-const SetupDiscord: FunctionComponent<SetupDiscordProps> = ({ config: { guildId } }) => {
   const [dropdownActive, setDropdownActive] = useState(false);
   const [selected, setSelected] = useState<ApiKey | null>(null);
   const [group] = useContext(GroupContext);

@@ -2,7 +2,7 @@ import { CommandGeneratorFunction, Guild, MessageContent } from "eris";
 
 import { CetusCommand } from "..";
 import CetusClient from "../../CetusClient";
-import { CONFIG_MAPPINGS } from "../../constants";
+import { CONFIG_MAPPINGS, ConfigMappings } from "../../constants";
 
 export default class ConfigurationCommand extends CetusCommand {
   public constructor (client: CetusClient) {
@@ -17,7 +17,8 @@ export default class ConfigurationCommand extends CetusCommand {
   }
 
   private async getConfig (friendlyKey: string, guild: Guild): Promise<MessageContent> {
-    const { key, type } = CONFIG_MAPPINGS[friendlyKey] || {};
+    // Casting because we validate that it exists
+    const { key, type } = CONFIG_MAPPINGS[friendlyKey as keyof ConfigMappings] || {};
 
     if (!key) {
       return {
@@ -57,7 +58,8 @@ export default class ConfigurationCommand extends CetusCommand {
   }
 
   private async setConfig (friendlyKey: string, value: string, guild: Guild): Promise<MessageContent> {
-    const { key, type } = CONFIG_MAPPINGS[friendlyKey] || {};
+    // Casting because we validate that it exists
+    const { key, type } = CONFIG_MAPPINGS[friendlyKey as keyof ConfigMappings] || {};
 
     if (!key) {
       return {

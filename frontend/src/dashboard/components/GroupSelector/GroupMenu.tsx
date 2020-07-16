@@ -12,7 +12,7 @@ interface GroupSelectorProps {
 }
 
 
-const GroupSelector: FunctionComponent<GroupSelectorProps> = () => {
+const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   const [groups, setGroups] = useState<undefined |PartialGroup[]>();
   const [redirect, setRedirect] = useState<undefined | PartialGroup["id"]>();
   const match = useRouteMatch();
@@ -55,4 +55,4 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = () => {
     </div>
   );
 };
-export default GroupSelector;
+export default GroupMenu;

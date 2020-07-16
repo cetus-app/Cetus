@@ -12,6 +12,7 @@ import Group from "./Group.entity";
 
 export interface BaseIntegrationConfig {}
 
+// Validators in IntegrationController/types must also be updated if changing these.
 export interface DiscordBotConfig extends BaseIntegrationConfig {
   guildId?: string;
   verifiedRoleId?: string;
@@ -23,13 +24,15 @@ export interface DiscordBotConfig extends BaseIntegrationConfig {
   }[]
 }
 
-export const defaultDiscordConfig: DiscordBotConfig = { binds: [] };
-
 export interface AntiAdminAbuseConfig extends BaseIntegrationConfig {
-  actionsPerMin: number;
+  actionCount: number;
+  actionTime: number;
+  webhook?: string;
+  // 0 = Do not demote; Anything above that = Demote.
+  demotionRank: number
+  revert: boolean,
+  enabled: boolean
 }
-
-export const defaultAntiAdminAbuseConfig: AntiAdminAbuseConfig = { actionsPerMin: 20 };
 
 export enum IntegrationType {
   discordBot = "DISCORD_BOT",
@@ -49,7 +52,7 @@ export default class Integration {
   type: IntegrationType;
 
   @Column({ type: "jsonb" })
-  config: BaseIntegrationConfig;
+  config: AntiAdminAbuseConfig|DiscordBotConfig;
 
   @ManyToOne(() => Group, grp => grp.integrations, { nullable: false })
   group: Group;

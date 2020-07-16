@@ -52,7 +52,7 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
         <div className="column is-one-fifth sidebar-container">
           <SideBar />
         </div>
-        <div className="column panel-right-column">
+        <div className="panel-right-column column">
           <Switch>
             <Route path={path} exact>
               <GroupHome />
