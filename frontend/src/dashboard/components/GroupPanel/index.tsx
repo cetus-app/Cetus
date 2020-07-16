@@ -49,7 +49,7 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
   return (
     <GroupProvider value={[group, setGroup]}>
       <div className="columns">
-        <div className="column is-one-fifth ">
+        <div className="column is-one-fifth sidebar-container">
           <SideBar />
         </div>
         <div className="column panel-right-column">
