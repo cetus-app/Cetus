@@ -33,3 +33,8 @@ $info: #2b9eb3;
 
 @import "bulma/bulma";
 
+
+// Bulma "extensions"
+.has-background-transparent {
+  background-color: transparent !important;
+}

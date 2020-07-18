@@ -1,0 +1,18 @@
+@import "../../index";
+
+.hero {
+  background-image: url("../assets/rocket_launch_.svg"), url("../assets/astronaut.svg"), linear-gradient(to bottom, #2b66b3, #308bcb, #51afdd, #7ed2ee, #b0f4ff);
+  background-repeat: no-repeat;
+  background-position: left -2% top 10%, right -5% top 50%;
+  background-size: 320px, 400px, 100%;
+}
+
+.navbar .navbar-brand img {
+  min-height: 56px;
+}
+
+.background-art {
+  position: absolute;
+  right: 0;
+  top: 120px;
+}
