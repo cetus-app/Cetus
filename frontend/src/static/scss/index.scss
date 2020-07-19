@@ -23,9 +23,13 @@ $dark-background-index: #3F3D56;
   line-height: 120%;
 }
 .section {
-  min-height: 40vh;
+  padding-top: 10vh;
+  padding-bottom: 10vh;
 }
 $offwhite: #f6f6f6;
 .section.dark {
   background-color: $offwhite
+}
+.underline-emphasis {
+  border-bottom: 3px solid $danger;
 }
