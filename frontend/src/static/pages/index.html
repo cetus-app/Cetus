@@ -5,6 +5,27 @@
   <title>Cetus | Home</title>
   <link rel="stylesheet" href="../../index.scss">
   <link rel="stylesheet" href="../scss/index.scss">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="../assets/Cetus.png"  type="image/icon">
+  <!-- Primary Meta Tags -->
+  <title>Cetus Group automation</title>
+  <meta name="title" content="Cetus Group automation">
+  <meta name="description" content="Automate your Roblox group or clan, take care of the tedious and prevent abuse.">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://metatags.io/">
+  <meta property="og:title" content="Cetus Group automation">
+  <meta property="og:description" content="Automate your Roblox group or clan, take care of the tedious and prevent abuse.">
+  <meta property="og:image" content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://metatags.io/">
+  <meta property="twitter:title" content="Cetus Group automation">
+  <meta property="twitter:description" content="Automate your Roblox group or clan, take care of the tedious and prevent abuse.">
+  <meta property="twitter:image" content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png">
+
 </head>
 <body>
 <!--
@@ -24,17 +45,19 @@
 -->
   <section class="hero is-medium">
     <div class="hero-head">
-      <nav class="navbar has-background-transparent">
+      <nav class="navbar is-transparent is-dark">
         <div class="navbar-brand">
           <a href="#" class="navbar-item">
-            <img src="https://t5.rbxcdn.com/91a424c259dbc1bb96cc1f822afad280" alt="Logo">
+            <img src="../assets/Cetus.png" alt="Logo">
           </a>
         </div>
-
         <div class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="#features">Features</a>
+          </div>
           <div class="navbar-end">
             <div class="navbar-item">
-              <a href="#" class="button is-primary">Go to web panel</a>
+              <a href="/dashboard" class="button is-primary">Go to web panel</a>
             </div>
           </div>
         </div>
@@ -45,10 +68,10 @@
         <div class="columns">
           <div class="column is-6">
             <h1 class="title is-size-1 has-text-light">Cetus</h1>
-            <h2 class="subtitle is-size-3 has-text-light">Roblox group and clan management.</h2>
+            <h2 class="subtitle is-size-3 has-text-light">Roblox group and clan management</h2>
           </div>
           <div class="column is-5 is-offset-1">
-            <img src="../assets/demo.png" class="demo"/>
+            <img src="../assets/demo.png" class="demo" alt="Demo image"/>
           </div>
         </div>
       </div>
@@ -92,7 +115,114 @@
 </section>
 
 
+<section class="section dark" id="features">
+  <div class="container">
+    <h2 class="title has-text-centered">Features</h2>
+    <p class="title has-text-centered is-6">We provide a powerful web dashboard interface to allow you to configure:</p>
+    <div class="columns is-centered">
+      <!-- Feature column -->
+      <div class="column is-3">
+        <div class="card">
+          <div class="card-image">
+              <img src="../assets/secure-server.svg" alt="GD Shield">
+            </div>
+          <div class="card-content">
+            <p class="subtitle is-4 has-text-centered">Group Defender</p>
+            <p class="is-size-6 has-text-centered">Know about abuse as soon as it happens, and deal with it.</p>
+            <hr>
+            <p class="is-size-6 is-bold">Group defender allows you to:</p>
+            <div class="content">
+              <ul>
+                <li>Automatically detect group abuse</li>
+                <li>Demote abusers to prevent further attacks</li>
+                <li>Receive alerts via. Email and discord webhooks</li>
+                <li>Revert abuse, restoring your group.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <script src="../index.ts"></script>
+      <!-- Feature column -->
+      <div class="column is-3">
+        <div class="card">
+          <div class="card-image">
+              <img src="../assets/cloud.svg" alt="Connection icon">
+          </div>
+          <div class="card-content">
+            <p class="subtitle is-4 has-text-centered">Group API</p>
+            <p class="is-size-6 has-text-centered">Interact with your Group from anywhere with ease.</p>
+            <hr>
+            <p class="is-size-6 is-bold">With Cetus you can:</p>
+            <div class="content">
+              <ul>
+                <li>Use our Lua SDK to interact with your group from in-game</li>
+                <li>Use of our prebuilt places to automate repetitive tasks</li>
+                <li>Build promotion centres based on gamepasses, group ranks and more.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature column -->
+      <div class="column is-3">
+        <div class="card">
+          <div class="card-image">
+            <img src="../assets/discord.svg" alt="Connection icon">
+          </div>
+          <div class="card-content">
+            <p class="subtitle is-4 has-text-centered">Discord bot</p>
+            <p class="is-size-6 has-text-centered">Verify your users, rank your users and more from Discord.</p>
+            <hr>
+            <p class="is-size-6 is-bold">Discord bot features</p>
+            <div class="content">
+              <ul>
+                <li>Verify your users, syncing roles and names.</li>
+                <li>Relieve shout notifications</li>
+                <li>Send shouts, rank users and more from the comfort of your server.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Testimonials or pricing or  something -->
+<svg class="flipped" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3f3d56" fill-opacity="1" d="M0,160L48,176C96,192,192,224,288,208C384,192,480,128,576,117.3C672,107,768,149,864,181.3C960,213,1056,235,1152,234.7C1248,235,1344,213,1392,202.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>
+<section class="section space-dark has-text-light">
+  <div class="has-text-centered">
+    <h2 class="title is-2 has-text-light">Ready to get started?</h2>
+    <button class="button is-primary">Open the Dashboard</button>
+  </div>
+
+
+</section>
+<footer class="footer has-text-light">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-3 is-offset-1">
+        <p class="is-size-6">Links</p>
+        <ul>
+          <li><a href="/terms">Terms and Conditions</a></li>
+          <li><a href="https://discord.gg/zDGMggX">Our Discord server</a></li>
+          <li><a href="https://github.com/cetus-app">Our Github</a></li>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="https://www.roblox.com/groups/6245155/Cetus">Roblox group</a></li>
+        </ul>
+      </div>
+      <div class="column is-6">
+        <p class="is-size-6">About us</p>
+        <p>Neztore and Eirikfa are experienced users of the Roblox API and have contributed to and authored various API wrappers and open source tools.</p>
+        <p>We created <a href="https://github.com/polaris-rbx">Polaris</a>, the Open Source Discord verification bot and associated projects.</p>
+      </div>
+    </div>
+    <p class="has-text-centered">© Cetus.app 2020</p>
+
+  </div>
+</footer>
+
+<script src="../index.ts"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 @import "../../index";
 $dark-background-index: #3F3D56;
+$dark-background-other: #232C33;
 .hero {
   background-color: $dark-background-index;
 }
@@ -32,4 +33,28 @@ $offwhite: #f6f6f6;
 }
 .underline-emphasis {
   border-bottom: 3px solid $danger;
+}
+#features {
+  .card {
+      img {
+        width: 70%;
+        height: auto;
+        margin-left: 15%;
+        margin-top: 1rem;
+      }
+  }
+}
+.space-dark {
+  background-color: $dark-background-index;
+  color: #fff;
+}
+.flipped {
+  transform: rotate(180deg);
+  display: block;
+}
+.spaced {
+  margin-top: 30vh;
+}
+.footer {
+  background-color: $dark-background-other;
 }
