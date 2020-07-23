@@ -146,7 +146,7 @@ export default class Groups {
                   }) { id }: IdParam,
                   @Req() request: Request): Promise<FullGroup> {
     // Get specific group
-    const group = await request.groupService.canAccessGroup(id);
+    const group = await request.groupService.canAccessGroup(id, false);
     let p;
     if (group && group.bot) {
       p = Roblox.getUsernameFromId(group.bot.robloxId);

@@ -7,7 +7,7 @@ module.exports = {
   database: process.env.db,
   // If it's development or dbSync is set
   synchronize: process.env.NODE_ENV === "development" || !!process.env.dbSync,
-  logging: false,
+  logging: ["error"],
   // JS because thats the file extension when they're compiled.
   entities: [
     process.env.NODE_ENV === "production" ? `${__dirname}/**/*.entity.js` : `${__dirname}/**/*.entity.ts`

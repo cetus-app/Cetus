@@ -23,7 +23,7 @@ const CurrentGroup = (integrations: IntegrationType[] = []) => createParamDecora
 
     const key = await qb.getOne();
 
-    if (!key) throw new UnauthorizedError();
+    if (!key || !key.group.subscription) throw new UnauthorizedError();
 
     if (integrations.length > 0) {
       const grpIntTypes = key.group.integrations.map(int => int.type);

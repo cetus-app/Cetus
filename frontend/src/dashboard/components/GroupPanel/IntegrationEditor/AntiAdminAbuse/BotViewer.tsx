@@ -6,7 +6,7 @@ interface BotViewerProps {
   group: FullGroup
 }
 
-export const BotViewer: FunctionComponent<BotViewerProps> = ({ group: { bot, botActive } }) => (
+export const BotViewer: FunctionComponent<BotViewerProps> = ({ group: { bot, botActive } }) => (!bot ? null : (
   <div className="bot-viewer">
     <div className="media">
       <figure className="media-left">
@@ -36,5 +36,5 @@ export const BotViewer: FunctionComponent<BotViewerProps> = ({ group: { bot, bot
     </div>
   </div>
 
-);
+));
 export default BotViewer;

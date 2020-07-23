@@ -12,6 +12,7 @@ import GroupSelector from "./GroupSelector";
 import GroupMenu from "./GroupSelector/GroupMenu";
 import UnlinkedSelector from "./GroupSelector/UnlinkedSelector";
 import { NoMatch } from "./NoMatch";
+import Subscribe from "./Subscribe";
 import Verify from "./Verification/Verification";
 
 const AuthenticatedApp: FunctionComponent = () => {
@@ -47,6 +48,10 @@ const AuthenticatedApp: FunctionComponent = () => {
 
         <Route path="/groups/:groupId">
           <GroupPanel />
+        </Route>
+
+        <Route path="/subscribe/:groupId">
+          <Subscribe />
         </Route>
 
         <Route path="/admin" exact>

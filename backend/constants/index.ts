@@ -5,3 +5,5 @@ export const hashRounds = 12;
 // Two weeks
 export const authLife = 1209600000;
 export const cetusGroupId = 6245155;
+
+export const stripeGroupPriceId = "price_1Gxbg7GqpYObsvKxxgtbaRb5";

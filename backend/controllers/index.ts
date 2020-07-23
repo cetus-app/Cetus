@@ -5,6 +5,7 @@ import GroupController from "./GroupController";
 import IntegrationController from "./IntegrationController";
 import InternalController from "./InternalController";
 import KeyController from "./KeyController";
+import PaymentController from "./PaymentController";
 import RankingV1Controller from "./RankingController/v1";
 import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
@@ -19,7 +20,8 @@ export default [
   RankingV1Controller,
   BotController,
   InternalController,
-  AuthController
+  AuthController,
+  PaymentController
 ];
 
 export {
@@ -32,5 +34,6 @@ export {
   RankingV1Controller,
   BotController,
   InternalController,
-  AuthController
+  AuthController,
+  PaymentController
 };

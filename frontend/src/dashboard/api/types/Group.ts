@@ -23,11 +23,16 @@ export interface RobloxGroup extends GroupBase{
   roles: RobloxRole[]
 }
 
+export enum Subscription {
+  basic = "BASIC"
+}
 
 export class PartialGroup {
   id: string;
 
   robloxId: number;
+
+  subscription?: Subscription;
 
   botActive: boolean;
 
@@ -56,5 +61,5 @@ export class FullGroup extends PartialGroup {
 
   owner: PartialUser;
 
-  bot: Bot
+  bot?: Bot
 }
