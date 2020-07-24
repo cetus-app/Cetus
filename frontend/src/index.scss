@@ -30,6 +30,7 @@ $menu-label-color: $grey;
 
 $primary: #feaa0b;
 $info: #2b9eb3;
+$blurple: #7289da;
 
 @import "bulma/bulma";
 
@@ -37,4 +38,8 @@ $info: #2b9eb3;
 // Bulma "extensions"
 .has-background-transparent {
   background-color: transparent !important;
+}
+.button.is-blurple {
+  background-color: $blurple;
+  color: #fff;
 }
