@@ -4,6 +4,7 @@ import React, { FunctionComponent } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 
 import "./GroupMenu.css";
+import {Greeting} from "./Greeting";
 
 interface GroupMenuProps {
   title: string,
@@ -13,7 +14,7 @@ interface GroupMenuProps {
 const GroupSelector: FunctionComponent<GroupMenuProps> = ({ children, title, subtitle }) => {
   const match = useRouteMatch();
   return (
-    <div className="columns is-centered main-top-space">
+    <div className="columns is-centered">
       <div className="column is-10">
         <div className="columns">
           <div className="column is-10">

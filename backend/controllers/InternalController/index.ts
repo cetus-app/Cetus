@@ -69,7 +69,7 @@ export default class Internal {
 
     // Defaults. Mostly overridden
     const toSend:ButtonEmailContent = {
-      buttonUrl: `${frontendUrl}/dashboard/groups/${group.id}/integrations`,
+      buttonUrl: `${frontendUrl}/dashboard/${group.id}/integrations`,
       buttonText: "View settings",
       subject: "Group defender notification",
       text: "No text",
