@@ -61,7 +61,7 @@ const openApiSpec = routingControllersToSpec(metadataStorage, options, { compone
 if (openApiSpec.paths) {
   const pathKeys: (keyof typeof openApiSpec.paths)[] = Object.keys(openApiSpec.paths);
   for (const pathKey of pathKeys) {
-    if (typeof pathKey === "string" && !pathKey.toLowerCase().includes("/public/")) {
+    if (typeof pathKey === "string" && !pathKey.toLowerCase().includes("/roblox/")) {
       delete openApiSpec.paths[pathKey];
     }
   }
