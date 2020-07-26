@@ -1,9 +1,10 @@
 import React, { FunctionComponent, useContext } from "react";
 import {
-  BrowserRouter, Link, Redirect, Route, Switch
+  BrowserRouter, Redirect, Route, Switch
 } from "react-router-dom";
 
 import UserContext from "../context/UserContext";
+import Account from "./Account";
 import Admin from "./Admin/Admin";
 import BotManagement from "./Admin/Bots/Manage";
 import BotQueue from "./Admin/Bots/Queue";
@@ -42,7 +43,9 @@ const AuthenticatedApp: FunctionComponent = () => {
             <UnlinkedSelector />
           </GroupSelector>
         </Route>
-
+        <Route path="/account">
+          <Account />
+        </Route>
         <Route path="/admin" exact>
           <Admin />
         </Route>
