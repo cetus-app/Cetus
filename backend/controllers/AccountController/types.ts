@@ -1,6 +1,6 @@
 import {
   IsAscii, IsBoolean, IsDate,
-  IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength
+  IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, IsUUID, MaxLength, MinLength
 } from "class-validator";
 
 export class UserAccessBody {
@@ -40,6 +40,18 @@ export class PartialUser {
 
   @IsDate()
   created: Date
+}
+// We never return the whole thing because the client doesn't need it.
+export class PartialRobloxUser {
+  @IsNumber()
+  @IsPositive()
+  id: number
+
+  @IsString()
+  username: string
+
+  @IsUrl()
+  image: string
 }
 
 export class FullUser extends PartialUser {

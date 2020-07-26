@@ -18,7 +18,8 @@ interface RegisterProps {
 export const Register: FunctionComponent<RegisterProps> = ({ toLogin, setUser }) => (
   <div>
     <div className="box auth-box">
-      <h1 className="title">Sign up</h1>
+      <h1 className="title has-text-centered">Create an account</h1>
+      <p>You need an account in order to take advantage of our service.</p>
       <Formik
         initialValues={{
           email: "",
@@ -30,17 +31,17 @@ export const Register: FunctionComponent<RegisterProps> = ({ toLogin, setUser })
           password: Yup.string()
             .min(6, "Your password must be at least 6 characters long.")
             .max(100, "Must be 100 characters or less")
-            .required("Required"),
+            .required("A password is required."),
           confirmPassword: Yup.string()
             .min(6, "Your password must be at least 6 characters long.")
             .max(100, "Must be 100 characters or less")
-            .required("Required"),
+            .required("You must confirm your password."),
           email: Yup.string()
             .email("Invalid email address")
-            .required("Required"),
+            .required("Please provide an email."),
           acceptedTerms: Yup.boolean()
             .required("Required")
-            .oneOf([true], "You must accept the terms and conditions.")
+            .oneOf([true], "You must accept our terms and conditions to continue!")
         })}
         onSubmit={async (values, { setErrors, setFieldError }) => {
           if (values.password !== values.confirmPassword) {
@@ -76,12 +77,12 @@ export const Register: FunctionComponent<RegisterProps> = ({ toLogin, setUser })
           </div>
 
           <div className="field">
-            <BasicInput label="Confirm password" type="password" name="confirmPassword" />
+            <BasicInput label="Confirm password" type="password" name="confirmPassword" helpText="Just to make sure we got it down right!"/>
           </div>
 
           <div className="field">
             <Checkbox name="acceptedTerms">
-              I agree to the <a href="/terms">Terms and conditions</a>.
+              I agree to the <a href="/terms" target="_blank">Terms and conditions</a>.
             </Checkbox>
           </div>
 

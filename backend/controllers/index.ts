@@ -5,7 +5,7 @@ import GroupController from "./GroupController";
 import IntegrationController from "./IntegrationController";
 import InternalController from "./InternalController";
 import KeyController from "./KeyController";
-import RankingV1Controller from "./RankingController/v1";
+import RankingV1Controller from "./RobloxController/v1";
 import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
 

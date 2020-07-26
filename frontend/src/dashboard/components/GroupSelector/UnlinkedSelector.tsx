@@ -41,7 +41,7 @@ const UnlinkedSelector: FunctionComponent = () => {
     return <p className="has-text-centered has-text-danger">Oops! Something went wrong: {error}</p>;
   }
   if (redirect) {
-    return <Redirect to={`/groups/${redirect}`} />;
+    return <Redirect to={`/${redirect}`} />;
   }
   if (groups) {
     return (
