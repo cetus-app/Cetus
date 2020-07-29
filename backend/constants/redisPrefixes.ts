@@ -1,6 +1,7 @@
 const REDIS_PREFIXES = {
   verification: "verification-",
   emailVerification: "emailVerification-",
+  passwordReset: "passwordReset-",
   groupCache: "groupCache-",
   userGroupsCache: "userGroupsCache-",
   groupRolesCache: "groupRolesCache-",

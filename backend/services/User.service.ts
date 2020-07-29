@@ -140,7 +140,7 @@ export default class UserService {
         lastSend: Date.now(),
         email: user.email
       };
-      await redis.set(key, JSON.stringify(values));
+      await redis.set(key, JSON.stringify(values), "EX", 60 * 60 * 12);
       return true;
     }
     return false;

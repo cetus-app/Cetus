@@ -1,6 +1,6 @@
 import {
   IsAscii, IsBoolean, IsDate,
-  IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, IsUUID, MaxLength, MinLength
+  IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, IsUUID, maxLength, MaxLength, MinLength
 } from "class-validator";
 
 export class UserAccessBody {
@@ -52,6 +52,35 @@ export class PartialRobloxUser {
 
   @IsUrl()
   image: string
+}
+// TODO: Move password to custom decorator?
+export class ChangePasswordBody {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(5)
+  password: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(5)
+  currentPassword: string
+}
+export class ForgotPasswordRequest {
+  @IsEmail()
+  @MaxLength(50)
+  email: string
+}
+
+export class FinishPasswordRequest {
+  @IsString()
+  @MinLength(50)
+  @MaxLength(50)
+  token: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(5)
+  password: string
 }
 
 export class FullUser extends PartialUser {
