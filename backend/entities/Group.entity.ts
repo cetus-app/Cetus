@@ -18,11 +18,6 @@ import Bot from "./Bot.entity";
 import Integration from "./Integration.entity";
 import User from "./User.entity";
 
-// Enum to open opportunities for expanding in the future
-export enum Subscription {
-  basic = "BASIC"
-}
-
 @Entity()
 export default class Group {
   // UUID V4
@@ -33,11 +28,10 @@ export default class Group {
   robloxId: number;
 
   @Column({
-    type: "enum",
-    nullable: true,
-    enum: Subscription
+    type: "text",
+    nullable: true
   })
-  subscription?: Subscription;
+  stripeSubscriptionId?: string;
 
   @Column("boolean", { default: false })
   // Partial index as per https://stackoverflow.com/a/42972924/6090379

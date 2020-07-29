@@ -57,15 +57,19 @@ const Subscribe: FunctionComponent = () => {
   const handleCheckout = async () => {
     setStripeLoading(true);
 
-    const { sessionId } = await createSession({
-      groupId,
-      integrations: Array.from(cart.keys())
-    });
+    try {
+      const { sessionId } = await createSession({
+        groupId,
+        integrations: Array.from(cart.keys())
+      });
 
-    const stripe = await stripePromise;
-    const { error: stripeError } = await stripe?.redirectToCheckout({ sessionId }) || {};
+      const stripe = await stripePromise;
+      const { error: stripeError } = await stripe?.redirectToCheckout({ sessionId }) || {};
+      throw stripeError;
+    } catch (e) {
+      setError(e?.message || "Error occurred. Contact support if the issue persists");
+    }
 
-    setError(stripeError?.message || "Error occurred. Contact support if the issue persists");
     setStripeLoading(false);
   };
 

@@ -24,7 +24,7 @@ export default class GroupService {
     }
 
     // Check permissions
-    if ((!checkSubscription || (checkSubscription && grp.subscription)) && grp.owner.id === usr.id) {
+    if ((!checkSubscription || grp.stripeSubscriptionId) && grp.owner.id === usr.id) {
       return grp;
     }
     throw new ForbiddenError("You do not have access to that group.");

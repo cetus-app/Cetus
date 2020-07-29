@@ -46,6 +46,12 @@ export default class Integration {
   id: string;
 
   @Column({
+    type: "text",
+    nullable: true
+  })
+  stripeItemId?: string;
+
+  @Column({
     type: "enum",
     enum: IntegrationType
   })

@@ -6,12 +6,12 @@ import {
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 import Stripe from "stripe";
+import { FindOneOptions } from "typeorm";
 
 import Roblox from "../../api/roblox/Roblox";
 import { stripeGroupPriceId } from "../../constants";
 import database from "../../database";
 import { Integration, User } from "../../entities";
-import { Subscription } from "../../entities/Group.entity";
 import { IntegrationType } from "../../entities/Integration.entity";
 import stripe from "../../shared/stripe";
 import { integrationDefault, integrationMeta } from "../IntegrationController/types";
@@ -29,7 +29,7 @@ export default class PaymentController {
     if (!user.emailVerified) throw new ForbiddenError("Email not verified");
 
     const group = await groupService.canAccessGroup(groupId, false);
-    if (group.subscription) throw new BadRequestError("Group already has a subscription");
+    if (group.stripeSubscriptionId) throw new BadRequestError("Group already has a subscription");
 
     const { name } = await Roblox.getGroup(group.robloxId) || {};
 
@@ -39,7 +39,11 @@ export default class PaymentController {
     }));
 
     const { id } = await stripe.checkout.sessions.create({
-      customer_email: user.email,
+      // Stripe only allows one of the two following
+      // Stripe complains if value is `null` (thus make sure to set it to `undefined` instead)
+      // `||` because `??` does not do anything for booleans
+      customer_email: (!user.stripeCustomerId && user.email) || undefined,
+      customer: user.stripeCustomerId ?? undefined,
       payment_method_types: ["card"],
       line_items: [
         {
@@ -82,7 +86,14 @@ export default class PaymentController {
 
     const session = event.data.object as Stripe.Checkout.Session;
 
-    const user = await database.users.findOne({ where: { email: session.customer_email } });
+    const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
+    // If user already has a customer ID, Stripe allows them to change their email.
+    // Thus we need to query by customer ID as well
+    // (it should never be null from Stripe, but going to assume it might be null for some reason).
+    const query: FindOneOptions<User>["where"] = customerId
+      ? [{ stripeCustomerId: customerId }, { email: session.customer_email }]
+      : { email: session.customer_email };
+    const user = await database.users.findOne({ where: query });
 
     if (!user) throw new BadRequestError("User not found");
     if (!user.emailVerified) throw new BadRequestError("Email not verified");
@@ -93,11 +104,16 @@ export default class PaymentController {
 
     const subscription = await stripe.subscriptions.retrieve(session.subscription as string, { expand: ["items.data.price.product"] });
 
+    if (customerId && (!user.stripeCustomerId || user.stripeCustomerId !== session.customer)) {
+      user.stripeCustomerId = customerId;
+      await database.users.save(user);
+    }
+
     const integrationPromises: Promise<Integration>[] = subscription.items.data
       // Filter out non-integration items (like the base group item)
       .filter(item => !!(item.price.product as Stripe.Product).metadata.type)
-      .map(item => {
-        const product = item.price.product as Stripe.Product;
+      .map(({ id, price }) => {
+        const product = price.product as Stripe.Product;
         const typeStr = product.metadata.type as keyof typeof IntegrationType;
         const type = IntegrationType[typeStr];
 
@@ -105,13 +121,14 @@ export default class PaymentController {
         integration.type = type;
         integration.config = integrationDefault[type];
         integration.group = group;
+        integration.stripeItemId = id;
 
         return database.integrations.save(integration);
       });
 
     const integrations = await Promise.all(integrationPromises);
 
-    group.subscription = Subscription.basic;
+    group.stripeSubscriptionId = subscription.id;
     group.integrations = integrations;
     await database.groups.save(group);
 
