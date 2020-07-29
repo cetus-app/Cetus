@@ -1,8 +1,9 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useContext, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { enableIntegration } from "../../../api";
 import { IntegrationInfo } from "../../../api/types";
+import GroupContext from "../../../context/GroupContext";
 
 interface PurchaseModalProps {
   meta: IntegrationInfo,
@@ -21,6 +22,7 @@ const PurchaseModal: FunctionComponent<PurchaseModalProps> = ({ meta, close, gro
     icon,
     type
   } = meta;
+  const [group, setGroup] = useContext(GroupContext);
   const [error, setError] = useState<undefined|string>();
   async function enable () {
     if (!type) {
@@ -30,9 +32,18 @@ const PurchaseModal: FunctionComponent<PurchaseModalProps> = ({ meta, close, gro
     }
     try {
       const res = await enableIntegration(groupId, type);
-      if (res.id) {
-        history.push(`${url}/${res.id}`);
-      }
+      if (!group) return;
+
+      const integrations = group.integrations.slice();
+      integrations.push(res);
+
+      const newGroup = {
+        ...group,
+        integrations
+      };
+      setGroup(newGroup);
+
+      history.push(`${url}/${res.id}`);
     } catch (err) {
       if ("response" in err) {
         const resp = await err.response.json();
@@ -55,6 +66,13 @@ const PurchaseModal: FunctionComponent<PurchaseModalProps> = ({ meta, close, gro
           <p className="subtitle">{shortDesc}</p>
           <p className="modal-desc">{longDesc}</p>
           <p>This feature is billed at <strong>£{cost}</strong> per month.</p>
+          <br />
+          <p>
+            <i>
+              Clicking the <code>Enable</code> button below will redirect you to Stripe,
+              our payment processor, to include {name} in your subscription.
+            </i>
+          </p>
           {error ? <p className="has-text-danger">{error}</p> : ""}
         </section>
 

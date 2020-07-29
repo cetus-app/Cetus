@@ -114,8 +114,7 @@ export default class PaymentController {
       .filter(item => !!(item.price.product as Stripe.Product).metadata.type)
       .map(({ id, price }) => {
         const product = price.product as Stripe.Product;
-        const typeStr = product.metadata.type as keyof typeof IntegrationType;
-        const type = IntegrationType[typeStr];
+        const type = product.metadata.type as IntegrationType;
 
         const integration = new Integration();
         integration.type = type;
