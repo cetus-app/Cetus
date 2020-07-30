@@ -120,7 +120,7 @@ const Subscribe: FunctionComponent = () => {
         </div>
 
         <div className="has-text-centered">
-          <button type="submit" className={`button is-primary checkout-button${stripeLoading ? " is-loading" : ""}`} onClick={handleCheckout}>Continue to checkout</button>
+          <button type="submit" className={`button is-primary checkout-button${stripeLoading ? " is-loading" : ""}`} disabled={stripeLoading} onClick={handleCheckout}>Continue to checkout</button>
         </div>
 
         {error && <p className="has-text-centered has-text-danger">{error}</p>}

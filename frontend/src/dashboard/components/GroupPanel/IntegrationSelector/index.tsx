@@ -8,6 +8,7 @@ import { disableIntegration, getMetas } from "../../../api/integrations";
 import { IntegrationInfo, IntegrationMeta, PartialIntegration } from "../../../api/types";
 import GroupContext from "../../../context/GroupContext";
 import { typedKeys } from "../../shared";
+import DisableModal from "./DisableModal";
 import IntegrationButton from "./IntegrationButton";
 import PurchaseModal from "./PurchaseModal";
 
@@ -24,7 +25,8 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
   const [grp, setGrp] = useContext(GroupContext);
   const history = useHistory();
   const { url } = useRouteMatch();
-  const [modal, setModal] = useState<IntegrationInfo>();
+  const [purchaseModal, setModal] = useState<IntegrationInfo>();
+  const [disableModal, setDisableModal] = useState<PartialIntegration & IntegrationInfo>();
   const [integrationInfo, setInfo] = useState<IntegrationState|undefined>();
   const [error, setError] = useState("");
 
@@ -52,6 +54,8 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
   }
   async function handleDisable (id: string): Promise<void> {
     try {
+      setDisableModal(undefined);
+
       await disableIntegration(id);
 
       if (!grp) return;
@@ -76,7 +80,8 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
   return (
     <Fragment>
       <div className="integrations-menu">
-        {modal ? <PurchaseModal meta={modal} close={() => setModal(undefined)} groupId={grp.id} /> : ""}
+        {purchaseModal ? <PurchaseModal meta={purchaseModal} close={() => setModal(undefined)} groupId={grp.id} /> : ""}
+        {disableModal ? <DisableModal meta={disableModal} close={() => setDisableModal(undefined)} onDisable={() => handleDisable(disableModal.id)} /> : ""}
         <h1 className="title">Integrations</h1>
         <p>You can find a list of available integrations for your group here -
           this includes both those enabled and disabled integrations.
@@ -89,7 +94,10 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
                 <IntegrationButton
                   meta={integrationInfo.info[i.type]}
                   handleClick={() => handleClick(i.id)}
-                  handleDisable={() => handleDisable(i.id)}
+                  handleDisable={() => setDisableModal({
+                    ...integrationInfo.info[i.type],
+                    ...i
+                  })}
                   key={i.id} />
               ))
             }
