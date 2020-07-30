@@ -70,10 +70,6 @@ export class AntiAbuseConfigBody {
 export class DiscordBotConfigBody {
   @IsString()
   @IsOptional()
-  guildId?: string;
-
-  @IsString()
-  @IsOptional()
   verifiedRoleId?: string;
 
   @IsString()
