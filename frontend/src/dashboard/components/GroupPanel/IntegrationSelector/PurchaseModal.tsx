@@ -69,8 +69,8 @@ const PurchaseModal: FunctionComponent<PurchaseModalProps> = ({ meta, close, gro
           <br />
           <p>
             <i>
-              Clicking the <code>Enable</code> button below will redirect you to Stripe,
-              our payment processor, to include {name} in your subscription.
+              Clicking the <code>Enable</code> button below will update your subscription with
+              Stripe, our payment processor, to include {name}.
             </i>
           </p>
           {error ? <p className="has-text-danger">{error}</p> : ""}

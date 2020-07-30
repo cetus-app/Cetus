@@ -2,7 +2,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import React, {
   Fragment, FunctionComponent, useEffect, useState
 } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import "../../assets/scss/Subscribe.scss";
 import { createSession, getGroup } from "../../api";
@@ -16,6 +16,7 @@ const stripePromise = loadStripe(process.env.STRIPE_PK);
 const Subscribe: FunctionComponent = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const { push } = useHistory();
+  const { search } = useLocation();
 
   const [loading, setLoading] = useState(false);
   const [stripeLoading, setStripeLoading] = useState(false);
@@ -23,13 +24,17 @@ const Subscribe: FunctionComponent = () => {
   const [group, setGroup] = useState<FullGroup>();
   const [cart, setCart] = useState<Map<IntegrationType, IntegrationInfo>>(new Map());
 
+  const query = new URLSearchParams(search);
+
   useEffect(() => {
+    if (query.get("success") === "false") setError("Payment process was cancelled");
+
     const get = async () => {
       setLoading(true);
 
       const res = await getGroup(groupId);
 
-      if (res.subscription) push(`/groups/${groupId}`);
+      if (res.stripeSubscriptionId) push(`/groups/${groupId}`);
       else setGroup(res);
 
       setLoading(false);

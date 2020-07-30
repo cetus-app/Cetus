@@ -30,7 +30,7 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   });
 
   const handleClick = (group: PartialGroup) => {
-    if (group.subscription) {
+    if (group.stripeSubscriptionId) {
       setRedirect(group.id);
     } else {
       push(`/subscribe/${group.id}`);
@@ -50,7 +50,7 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
               <GroupButton
                 imgUrl={g.robloxInfo ? g.robloxInfo.emblemUrl : "https://jdrf.org.uk/wp-content/uploads/2017/06/placeholder-image.jpg"}
                 groupName={g.robloxInfo ? g.robloxInfo.name : `${g.robloxId}`}
-                enabled={!!g.subscription}
+                enabled={!!g.stripeSubscriptionId}
                 handleClick={() => handleClick(g)}
                 key={g.id} />
             ))
