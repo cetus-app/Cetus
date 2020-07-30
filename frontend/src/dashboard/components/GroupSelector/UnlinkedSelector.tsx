@@ -2,7 +2,7 @@
 import React, {
   Fragment, FunctionComponent, useEffect, useState
 } from "react";
-import { Redirect, useRouteMatch } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import { addGroup, getUnlinkedGroups } from "../../api/groups";
 import { PartialGroup, UnlinkedGroup } from "../../api/types";
@@ -13,7 +13,6 @@ const UnlinkedSelector: FunctionComponent = () => {
   const [groups, setGroups] = useState<undefined |UnlinkedGroup[]>();
   const [redirect, setRedirect] = useState<undefined | PartialGroup["id"]>();
   const [error, setError] = useState<undefined | string>();
-  const match = useRouteMatch();
 
   useEffect(() => {
     if (!groups) {
@@ -54,6 +53,7 @@ const UnlinkedSelector: FunctionComponent = () => {
                 imgUrl={g.emblemUrl ? g.emblemUrl : "https://jdrf.org.uk/wp-content/uploads/2017/06/placeholder-image.jpg"}
                 groupName={g.name ? g.name : `${g.id}`}
                 handleClick={() => handleAdd(g.id)}
+                enabled
                 key={g.id} />
             ))
         }
