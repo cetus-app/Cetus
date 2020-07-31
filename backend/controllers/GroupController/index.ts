@@ -19,6 +19,7 @@ import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
+import stripe from "../../shared/stripe";
 import { UserRobloxGroup } from "../../types";
 import { Bot } from "../BotController/types";
 import {
@@ -146,7 +147,7 @@ export default class Groups {
                   }) { id }: IdParam,
                   @Req() request: Request): Promise<FullGroup> {
     // Get specific group
-    const group = await request.groupService.canAccessGroup(id);
+    const group = await request.groupService.canAccessGroup(id, false);
     let p;
     if (group && group.bot) {
       p = Roblox.getUsernameFromId(group.bot.robloxId);
@@ -186,6 +187,15 @@ export default class Groups {
 
     // Check permissions
     if (grp.owner.id === user.id) {
+      if (grp.stripeSubscriptionId) {
+        try {
+          await stripe.subscriptions.del(grp.stripeSubscriptionId);
+        } catch (e) {
+          console.error(e);
+          throw new InternalServerError("Error occurred while cancelling subscription. Please contact support if the issue persists");
+        }
+      }
+
       await database.groups.remove(grp);
 
       // TODO: Remove the bot from the group

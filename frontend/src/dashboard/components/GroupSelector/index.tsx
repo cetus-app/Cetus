@@ -3,8 +3,7 @@
 import React, { FunctionComponent } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 
-import "./GroupMenu.css";
-import {Greeting} from "./Greeting";
+import "./GroupMenu.scss";
 
 interface GroupMenuProps {
   title: string,

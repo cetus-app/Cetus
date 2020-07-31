@@ -2,7 +2,7 @@
 import React, {
   Fragment, FunctionComponent, useEffect, useState
 } from "react";
-import { Redirect, useRouteMatch } from "react-router-dom";
+import { Redirect, useHistory, useRouteMatch } from "react-router-dom";
 
 import { getGroups } from "../../api/groups";
 import { PartialGroup } from "../../api/types";
@@ -16,6 +16,7 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   const [groups, setGroups] = useState<undefined |PartialGroup[]>();
   const [redirect, setRedirect] = useState<undefined | PartialGroup["id"]>();
   const match = useRouteMatch();
+  const { push } = useHistory();
 
   useEffect(() => {
     if (!groups) {
@@ -27,6 +28,15 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
       }());
     }
   });
+
+  const handleClick = (group: PartialGroup) => {
+    if (group.stripeSubscriptionId) {
+      setRedirect(group.id);
+    } else {
+      push(`/subscribe/${group.id}`);
+    }
+  };
+
   if (redirect) {
     if (match.url.slice(-1) === "/") {
       return <Redirect to={`${match.url}${redirect}`} />;
@@ -43,7 +53,8 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
               <GroupButton
                 imgUrl={g.robloxInfo ? g.robloxInfo.emblemUrl : "https://jdrf.org.uk/wp-content/uploads/2017/06/placeholder-image.jpg"}
                 groupName={g.robloxInfo ? g.robloxInfo.name : `${g.robloxId}`}
-                handleClick={() => setRedirect(g.id)}
+                enabled={!!g.stripeSubscriptionId}
+                handleClick={() => handleClick(g)}
                 key={g.id} />
             ))
       }

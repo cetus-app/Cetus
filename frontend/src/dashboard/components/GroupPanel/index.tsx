@@ -1,7 +1,7 @@
 // Allows Groups to be edited and contains all group editor related stuff
 import React, { FunctionComponent, useEffect, useState } from "react";
 import {
-  Redirect, Route, Switch, useParams, useRouteMatch
+  Redirect, Route, Switch, useHistory, useParams, useRouteMatch
 } from "react-router-dom";
 
 import { getGroup } from "../../api/groups";
@@ -13,6 +13,7 @@ import GroupHome from "./Home";
 import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
 import SideBar from "./Sidebar";
+import Unlink from "./Unlink";
 
 interface GroupPanelProps {
 
@@ -21,6 +22,7 @@ interface GroupPanelProps {
 const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
   const { groupId } = useParams();
   const { path } = useRouteMatch();
+  const { push } = useHistory();
   const [group, setGroup] = useState<FullGroup|null>(null);
   const [error, setError] = useState<string|undefined>();
 
@@ -28,6 +30,7 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
     (async function getGroupInfo () {
       try {
         const groupInfo = await getGroup(groupId);
+        if (!groupInfo.stripeSubscriptionId) push(`/subscribe/${groupId}`);
         setGroup(groupInfo);
       } catch (e) {
         // do something
@@ -62,6 +65,9 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             </Route>
             <Route path={`${path}/integrations/:integrationId`}>
               <IntegrationEditor />
+            </Route>
+            <Route path={`${path}/unlink`}>
+              <Unlink />
             </Route>
             <Route path={path}>
               <NoMatch />

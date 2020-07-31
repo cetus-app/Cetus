@@ -14,6 +14,7 @@ import { Greeting } from "./GroupSelector/Greeting";
 import GroupMenu from "./GroupSelector/GroupMenu";
 import UnlinkedSelector from "./GroupSelector/UnlinkedSelector";
 import { NoMatch } from "./NoMatch";
+import Subscribe from "./Subscribe";
 import Verify from "./Verification/Verification";
 import Navbar from "./shared/Navbar";
 
@@ -46,6 +47,11 @@ const AuthenticatedApp: FunctionComponent = () => {
         <Route path="/account">
           <Account />
         </Route>
+
+        <Route path="/subscribe/:groupId">
+          <Subscribe />
+        </Route>
+
         <Route path="/admin" exact>
           <Admin />
         </Route>

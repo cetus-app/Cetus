@@ -29,6 +29,12 @@ export default class User {
   })
   discordId?: string;
 
+  @Column("text", {
+    nullable: true,
+    unique: true
+  })
+  stripeCustomerId?: string;
+
   // The Bcrypt hash of the password. These are always 60 characters long.
   @Column({
     length: 60,

@@ -9,7 +9,7 @@ import { getMetadataArgsStorage, RoutingControllersOptions, useExpressServer } f
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
 
-import controllers, { RankingV1Controller } from "./controllers";
+import controllers from "./controllers";
 import { PermissionLevel } from "./entities/User.entity";
 import middlewares from "./middleware";
 import { name, version } from "./package.json";
