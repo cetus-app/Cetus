@@ -13,6 +13,7 @@ import GroupHome from "./Home";
 import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
 import SideBar from "./Sidebar";
+import Unlink from "./Unlink";
 
 interface GroupPanelProps {
 
@@ -64,6 +65,9 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             </Route>
             <Route path={`${path}/integrations/:integrationId`}>
               <IntegrationEditor />
+            </Route>
+            <Route path={`${path}/unlink`}>
+              <Unlink />
             </Route>
             <Route path={path}>
               <NoMatch />
