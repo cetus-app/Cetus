@@ -6,7 +6,7 @@ import IntegrationController from "./IntegrationController";
 import InternalController from "./InternalController";
 import KeyController from "./KeyController";
 import PaymentController from "./PaymentController";
-import RankingV1Controller from "./RankingController/v1";
+import RobloxV1Controller from "./RobloxController/v1";
 import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
 
@@ -17,7 +17,7 @@ export default [
   AccountController,
   KeyController,
   IntegrationController,
-  RankingV1Controller,
+  RobloxV1Controller,
   BotController,
   InternalController,
   AuthController,
@@ -31,7 +31,7 @@ export {
   AccountController,
   KeyController,
   IntegrationController,
-  RankingV1Controller,
+  RobloxV1Controller,
   BotController,
   InternalController,
   AuthController,

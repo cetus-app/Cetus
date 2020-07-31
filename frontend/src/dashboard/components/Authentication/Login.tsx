@@ -17,7 +17,7 @@ interface LoginProps {
 export const Login: FunctionComponent<LoginProps> = ({ toRegister, setUser }) => (
   <div>
     <div className="box auth-box">
-      <h1 className="title">Login</h1>
+      <h1 className="title has-text-centered">Login to your account</h1>
       <Formik
         initialValues={{
           email: "",

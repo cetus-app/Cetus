@@ -12,9 +12,9 @@ import {
   GetRankResponse, SetRankBody, SetRankResponse, UserRobloxIdParam
 } from "./types";
 
-@JsonController("/v1/ranking")
-export default class RankingV1 {
-  @Get("/:uRbxId")
+@JsonController("/v1/roblox")
+export default class RobloxV1 {
+  @Get("/rank/:uRbxId")
   @ResponseSchema(GetRankResponse)
   async getRank (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<GetRankResponse> {
     const userGroup = await Roblox.getUserGroup(uRbxId, group.robloxId);

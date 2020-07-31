@@ -13,3 +13,13 @@ export interface PartialUser {
 }
 
 export interface FullUser extends PartialUser {}
+
+export interface RobloxUser {
+  id: number
+
+
+  username: string
+
+
+  image: string
+}

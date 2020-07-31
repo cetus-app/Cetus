@@ -1,16 +1,26 @@
 import { compare, hash } from "bcrypt";
 import { Request } from "express";
 import {
-  BadRequestError, Body, CurrentUser, ForbiddenError, Get, JsonController, Params, Post, Redirect, Req
+  BadRequestError,
+  Body,
+  CurrentUser,
+  ForbiddenError,
+  Get,
+  JsonController,
+  Params,
+  Post,
+  Redirect,
+  Req
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
 
+import Roblox from "../../api/roblox/Roblox";
 import { hashRounds } from "../../constants";
 import database from "../../database";
 import { User } from "../../entities";
 import {
-  FullUser, PartialUser, UserAccessBody, VerificationCode
+  FullUser, PartialRobloxUser, PartialUser, UserAccessBody, VerificationCode
 } from "./types";
 
 
@@ -21,6 +31,27 @@ export default class Account {
   async getUser (@CurrentUser({ required: true }) user: User): Promise<FullUser> {
     // TODO: Fetch additional props
     return user;
+  }
+
+  @Get("/roblox")
+  @ResponseSchema(PartialRobloxUser)
+  async getRoblox (@CurrentUser({ required: true }) user: User): Promise<PartialRobloxUser> {
+    if (!user.robloxId) {
+      throw new BadRequestError("Cannot get Roblox info: No Roblox linked.");
+    }
+    // Perform both requests concurrently
+    const usernamePromise = Roblox.getUsernameFromId(user.robloxId);
+    const imagePromise = Roblox.getUserImage(user.robloxId);
+    const username = await usernamePromise;
+    const image = await imagePromise;
+    if (username && image) {
+      return {
+        username,
+        image,
+        id: user.robloxId
+      };
+    }
+    throw new Error("Failed to get Roblox info for user.");
   }
 
   @Post("/")

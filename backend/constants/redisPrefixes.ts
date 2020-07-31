@@ -4,7 +4,8 @@ const REDIS_PREFIXES = {
   groupCache: "groupCache-",
   userGroupsCache: "userGroupsCache-",
   groupRolesCache: "groupRolesCache-",
-  idToUsernameCache: "idToUsernameCache-"
+  idToUsernameCache: "idToUsernameCache-",
+  userImageCache: "userImageCache-"
 };
 
 export default REDIS_PREFIXES;

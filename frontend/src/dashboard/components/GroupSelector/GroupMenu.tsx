@@ -38,6 +38,9 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   };
 
   if (redirect) {
+    if (match.url.slice(-1) === "/") {
+      return <Redirect to={`${match.url}${redirect}`} />;
+    }
     return <Redirect to={`${match.url}/${redirect}`} />;
   }
   if (groups) {

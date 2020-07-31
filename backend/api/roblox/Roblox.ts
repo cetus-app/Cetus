@@ -27,6 +27,7 @@ const fetch = (url: string, opt?: RequestInit) => {
 export const BASE_API_URL = "https://api.roblox.com";
 export const USERS_API_URL = "https://users.roblox.com";
 export const GROUPS_API_URL = "https://groups.roblox.com";
+export const THUMBNAILS_API_URL = "https://thumbnails.roblox.com";
 
 export class InvalidRobloxCookie extends Error {
   constructor (...params: ConstructorParameters<typeof Error>) {
@@ -159,6 +160,33 @@ export default class Roblox {
         if (e instanceof ExternalHttpError && e.response.status === 400) return undefined;
 
         console.error(`Error while fetching username from ID ${id}`, e);
+        return undefined;
+      });
+  }
+
+  static async getUserImage (id: number): Promise<string | undefined> {
+    const key = redisPrefixes.userImageCache + id;
+    const cached = await redis.get(key);
+    if (cached) return cached;
+
+    const imageUrl = await this.fetchUserImage(id);
+
+    if (imageUrl) {
+      await redis.set(key, imageUrl, "EX", 60 * 60 * 5);
+      return imageUrl;
+    }
+
+    return undefined;
+  }
+
+  static fetchUserImage (id: number): Promise<string | undefined> {
+    return fetch(`${THUMBNAILS_API_URL}/v1/users/avatar-bust?userIds=${id}&size=75x75&format=Png&isCircular=true`).then(checkStatus).then(res => res && res.json())
+      .then(data => data.data && data.data[0] && data.data[0].imageUrl)
+      .catch(e => {
+        // Roblox responds with 400 for invalid IDs or deleted users
+        if (e instanceof ExternalHttpError && e.response.status === 400) return undefined;
+
+        console.error(`Error while fetching user bust from ID ${id}`, e);
         return undefined;
       });
   }
