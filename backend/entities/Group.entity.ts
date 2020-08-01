@@ -18,7 +18,6 @@ import Bot from "./Bot.entity";
 import Integration from "./Integration.entity";
 import User from "./User.entity";
 
-
 @Entity()
 export default class Group {
   // UUID V4
@@ -27,6 +26,12 @@ export default class Group {
 
   @Column()
   robloxId: number;
+
+  @Column({
+    type: "text",
+    nullable: true
+  })
+  stripeSubscriptionId?: string;
 
   @Column("boolean", { default: false })
   // Partial index as per https://stackoverflow.com/a/42972924/6090379

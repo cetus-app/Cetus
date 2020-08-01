@@ -23,11 +23,12 @@ export interface RobloxGroup extends GroupBase{
   roles: RobloxRole[]
 }
 
-
 export class PartialGroup {
   id: string;
 
   robloxId: number;
+
+  stripeSubscriptionId?: string;
 
   botActive: boolean;
 
@@ -56,5 +57,5 @@ export class FullGroup extends PartialGroup {
 
   owner: PartialUser;
 
-  bot: Bot
+  bot?: Bot
 }

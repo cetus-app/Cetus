@@ -46,6 +46,12 @@ export default class Integration {
   id: string;
 
   @Column({
+    type: "text",
+    nullable: true
+  })
+  stripeItemId?: string;
+
+  @Column({
     type: "enum",
     enum: IntegrationType
   })
@@ -54,6 +60,9 @@ export default class Integration {
   @Column({ type: "jsonb" })
   config: AntiAdminAbuseConfig|DiscordBotConfig;
 
-  @ManyToOne(() => Group, grp => grp.integrations, { nullable: false })
+  @ManyToOne(() => Group, grp => grp.integrations, {
+    nullable: false,
+    onDelete: "CASCADE"
+  })
   group: Group;
 }

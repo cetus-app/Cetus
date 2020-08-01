@@ -135,7 +135,7 @@ export default class AuthController {
 
     const integration = await key.group.integrations.find(i => i.type === IntegrationType.discordBot);
 
-    if (!integration) {
+    if (!integration || !key.group.stripeSubscriptionId) {
       throw new ForbiddenError();
     }
 

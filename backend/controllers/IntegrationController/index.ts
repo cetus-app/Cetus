@@ -18,11 +18,13 @@ import {
   Req
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
+import Stripe from "stripe";
 
 import database from "../../database";
 import CurrentGroup from "../../decorators/CurrentGroup";
 import { Group, Integration } from "../../entities";
 import { CustomValidationError } from "../../shared";
+import stripe from "../../shared/stripe";
 import {
   AddIntegrationBody,
   AntiAbuseConfigBody,
@@ -75,9 +77,29 @@ export default class Integrations {
 
     if (group.integrations.some(int => int.type === type)) throw new BadRequestError("Integration already enabled");
 
+    const stripePrices = await stripe.prices.list({ expand: ["data.product"] });
+    // Extremely unlikely that we will ever have enough products and prices to trigger pagination
+    // Can cast safely because product is expanded by Stripe
+    const integrationPrice = stripePrices.data.find(p => (p.product as Stripe.Product).metadata.type === type);
+    if (!integrationPrice) throw new InternalServerError("Could not find price. Contact support if the issue persists");
+
+    let subscriptionItem: Stripe.SubscriptionItem;
+
+    try {
+      subscriptionItem = await stripe.subscriptionItems.create({
+      // Checked by `canAccessGroup`
+        subscription: group.stripeSubscriptionId!,
+        price: integrationPrice.id
+      });
+    } catch (e) {
+      console.error(e);
+      throw new InternalServerError("Could not add integration to your subscription. Please contact support if the issue persists");
+    }
+
     const integration = new Integration();
     integration.type = type;
     integration.group = group;
+    integration.stripeItemId = subscriptionItem.id;
     if (integrationDefault[type]) {
       integration.config = integrationDefault[type];
     }
@@ -175,10 +197,17 @@ export default class Integrations {
   @OnUndefined(204)
   async removeIntegration (@CurrentUser({ required: true }) user: User, @Params() { id }: IdParam): Promise<void> {
     const integration = await database.integrations.findOne(id, { relations: ["group", "group.owner"] });
-    if (!integration) throw new NotFoundError();
+    if (!integration || !integration.stripeItemId) throw new NotFoundError();
 
-    // "Mask" no access as not found (doesn't expose IDs)
-    if (integration.group.owner.id !== user.id) throw new NotFoundError();
+    // "Mask" no access/missing subscription as not found (doesn't expose IDs)
+    if (!integration.group.stripeSubscriptionId || integration.group.owner.id !== user.id) throw new NotFoundError();
+
+    try {
+      await stripe.subscriptionItems.del(integration.stripeItemId);
+    } catch (e) {
+      console.error(e);
+      throw new InternalServerError("Could not remove integration from your subscription. Please contact support if the issue persists");
+    }
 
     await database.integrations.remove(integration);
   }

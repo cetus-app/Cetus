@@ -11,6 +11,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "@stripe/stripe-js": "^1.8.0",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
     "@types/yup": "^0.29.2",

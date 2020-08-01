@@ -70,10 +70,6 @@ export class AntiAbuseConfigBody {
 export class DiscordBotConfigBody {
   @IsString()
   @IsOptional()
-  guildId?: string;
-
-  @IsString()
-  @IsOptional()
   verifiedRoleId?: string;
 
   @IsString()
@@ -126,7 +122,8 @@ interface IntegrationInfo {
   shortDesc: string,
   icon: string,
   longDesc: string,
-  cost: number
+  cost: number,
+  stripePriceId: string
 }
 export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
   [IntegrationType.discordBot]: {
@@ -134,13 +131,15 @@ export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
     shortDesc: "Power up your Server and get powerful commands and features.",
     icon: "fab fa-discord",
     longDesc: "Discord bot long description. Insert some long winded statement about all the features it supports and about how it's generally pretty amazing.\n\nNew line test",
-    cost: 3
+    cost: 5,
+    stripePriceId: "price_1GxbmxGqpYObsvKxGBZQBBS8"
   },
   [IntegrationType.antiAdminAbuse]: {
     name: "Group defender",
     shortDesc: "Protect your group against admin abuse.",
     icon: "fas fa-shield-alt",
     longDesc: "Group defender gives you peace of mind. It consists of advanced software, running on our servers. It works by monitoring your group audit logs and detecting suspicious actions or users exceed the limits you set.\n\nWhat else can it do?\nGroup defender can detect, report and revert admin abuse to allow your group to continue functioning - with minimal disruption.",
-    cost: 3
+    cost: 5,
+    stripePriceId: "price_1GxblhGqpYObsvKxjWqDyycC"
   }
 };
