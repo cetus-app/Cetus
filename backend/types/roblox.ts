@@ -50,3 +50,12 @@ export interface FullRobloxRole {
   rank: number;
   memberCount: number;
 }
+// The roblox type has "message" as "body" but that makes no sense since we provide it as message
+export interface Shout {
+  message: string;
+  poster: {
+    userId: number,
+    username: string
+  },
+  updated: string
+}

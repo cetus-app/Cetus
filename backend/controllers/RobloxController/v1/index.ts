@@ -1,5 +1,6 @@
 import {
-  Body, Get, JsonController, Params, Post
+  BadRequestError,
+  Body, Delete, Get, JsonController, Params, Patch, Post
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
@@ -8,12 +9,50 @@ import { redisPrefixes } from "../../../constants";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
 import { redis } from "../../../shared";
+import { RobloxGroup } from "../../../types";
 import {
-  GetRankResponse, SetRankBody, SetRankResponse, UserRobloxIdParam
+  ExileUserResponse, GetRankResponse, SetRankBody, SetRankResponse, SetShoutBody, SetShoutResponse, UserRobloxIdParam
 } from "./types";
 
 @JsonController("/v1/roblox")
 export default class RobloxV1 {
+  @Get("/info")
+  @ResponseSchema(GetRankResponse)
+  async getGroupInfo (@CurrentGroup() group: Group): Promise<RobloxGroup> {
+    const userGroup = await Roblox.getGroup(group.robloxId);
+    if (!userGroup) {
+      throw new Error("Failed to get Roblox information");
+    }
+    return userGroup;
+  }
+
+  @Patch("/shout")
+  @ResponseSchema(SetShoutResponse)
+  async postShout (@CurrentGroup() group: Group, @Body() { message }: SetShoutBody): Promise<SetShoutResponse> {
+    const client = await getGroupClient(group.id);
+    const newShout = await client.setShout(message);
+    return {
+      success: true,
+      ...newShout
+    };
+  }
+
+  @Delete("/exile/:uRbxid")
+  @ResponseSchema(ExileUserResponse)
+  async exileUser (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<ExileUserResponse> {
+    const isMember = await Roblox.isMember(group.robloxId, uRbxId);
+    if (!isMember) {
+      throw new BadRequestError("User is not a member of group");
+    }
+
+    const client = await getGroupClient(group.id);
+    await client.exile(uRbxId);
+    return {
+      success: true,
+      message: `Successfully kicked user ${uRbxId} from the group.`
+    };
+  }
+
   @Get("/rank/:uRbxId")
   @ResponseSchema(GetRankResponse)
   async getRank (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<GetRankResponse> {
@@ -37,29 +76,17 @@ export default class RobloxV1 {
   ): Promise<SetRankResponse> {
     const isMember = await Roblox.isMember(group.robloxId, uRbxId);
     if (!isMember) {
-      return {
-        success: false,
-        message: "User is not a member of group"
-      };
+      throw new BadRequestError("User is not a member of group");
     }
 
     const client = await getGroupClient(group.id);
 
-    return client.setRank(uRbxId, rank).then(async () => {
-      // Invalidate cache
-      await redis.del(redisPrefixes.userGroupsCache + uRbxId);
+    await client.setRank(uRbxId, rank);
+    await redis.del(redisPrefixes.userGroupsCache + uRbxId);
 
-      return {
-        success: true,
-        message: "User's rank is updated"
-      };
-    }).catch(e => {
-      console.error(e);
-
-      return {
-        success: true,
-        message: "Roblox error occurred while setting rank (does the rank exist?)"
-      };
-    });
+    return {
+      success: true,
+      message: "User's rank is updated"
+    };
   }
 }

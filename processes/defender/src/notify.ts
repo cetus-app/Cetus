@@ -22,7 +22,7 @@ export async function notify (integration: Integration, notifcationType: Notifca
   if (sent.has(sentKey) && notifcationType !== NotifcationType.activation) return;
   const config = integration.config as AntiAdminAbuseConfig;
   if (config.webhook) {
-    const configUrl = `https://cetus.app/dashboard/${integration.group.id}/integrations/${integration.id}`;
+    const configUrl = `https://cetus.app/dashboard/groups/${integration.group.id}/integrations/${integration.id}`;
     try {
       if (notifcationType === NotifcationType.scanError) {
         await sendWebhook(config.webhook, {

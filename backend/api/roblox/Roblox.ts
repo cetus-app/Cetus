@@ -1,5 +1,6 @@
 import { max, min } from "class-validator";
 import realFetch, { Headers, RequestInit, Response } from "node-fetch";
+import { BadRequestError, ForbiddenError } from "routing-controllers";
 
 import { cetusGroupId, redisPrefixes } from "../../constants";
 import database from "../../database";
@@ -8,7 +9,7 @@ import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import {
-  FullRobloxRole, RobloxGroup, RobloxUser, UserRobloxGroup
+  FullRobloxRole, RobloxGroup, RobloxUser, Shout, UserRobloxGroup
 } from "../../types";
 
 const fetch = (url: string, opt?: RequestInit) => {
@@ -28,6 +29,7 @@ export const BASE_API_URL = "https://api.roblox.com";
 export const USERS_API_URL = "https://users.roblox.com";
 export const GROUPS_API_URL = "https://groups.roblox.com";
 export const THUMBNAILS_API_URL = "https://thumbnails.roblox.com";
+export const AUTH_API_URL = "https://auth.roblox.com";
 
 export class InvalidRobloxCookie extends Error {
   constructor (...params: ConstructorParameters<typeof Error>) {
@@ -105,7 +107,7 @@ export default class Roblox {
 
     if (!this.csrfToken) {
       try {
-        const res = await fetch(`${BASE_API_URL}/sign-out/v1`, {
+        const res = await fetch(`${AUTH_API_URL}/v2/logout`, {
           method: "POST",
           headers: newOpts.headers
         }).then(checkStatus);
@@ -321,7 +323,7 @@ export default class Roblox {
     if (!roles) throw new Error(`Unknown error occurred while getting roles in group ${this.group.robloxId}`);
 
     const { id: roleId } = roles.find(r => r.rank === rank) || {};
-    if (!roleId) throw new Error(`Role with rank ${rank} does not exist in group ${this.group.robloxId}`);
+    if (!roleId) throw new BadRequestError(`Role with rank ${rank} does not exist in group ${this.group.robloxId}`);
 
     const body = JSON.stringify({ roleId });
 
@@ -338,6 +340,48 @@ export default class Roblox {
     }
 
     return undefined;
+  }
+
+  async exile (userId: number): Promise<void> {
+    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, { method: "DELETE" }).then(checkStatus).then(res => res && res.json());
+
+    if (!data) throw new Error(`Unknown error while exiling ${userId} from group ${this.group.robloxId}`);
+
+    if (data.errors && data.errors.length > 0) {
+      const firstErr = data.errors[0].message;
+      if (firstErr.code === 3) {
+        throw new BadRequestError("User does not exist");
+      }
+      throw new Error(`Error(s) occurred while exiling ${userId} from group ${this.group.robloxId}: ${firstErr.message}`);
+    }
+
+    return undefined;
+  }
+
+  async setShout (newShout: string): Promise<Shout> {
+    const body = { message: newShout };
+    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/status/`, {
+      method: "PATCH",
+      body: JSON.stringify(body)
+    }).then(checkStatus).then(res => res && res.json());
+
+
+    if (data.errors && data.errors.length > 0) {
+      const err = data.errors[0];
+      if (err.code === 6) {
+        // Not authorised
+        throw new ForbiddenError("Bot does not have permission to post shout");
+      } else if (err.code === 7) {
+        throw new BadRequestError(err.message || "Roblox rejected shout content");
+      }
+      throw new Error(`Error(s) occurred while posting shout to ${this.group.robloxId}: ${err.message}`);
+    }
+    const { body: message, poster, updated } = data;
+    return {
+      message,
+      poster,
+      updated
+    };
   }
 }
 

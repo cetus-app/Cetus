@@ -70,7 +70,7 @@ const AuthenticatedApp: FunctionComponent = () => {
         <p className="has-text-centered has-text-danger">You cannot reset a password while logged in.</p>
       </Route>
 
-      <Route path="/:groupId">
+      <Route path="/groups/:groupId">
         <GroupPanel />
       </Route>
 

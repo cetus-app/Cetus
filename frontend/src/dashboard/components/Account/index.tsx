@@ -16,8 +16,13 @@ export interface shownMessage {
 }
 
 const Account: FunctionComponent = () => {
-  const [message, setMessage] = useState<shownMessage|undefined>();
+  const [message, setRawMessage] = useState<shownMessage|undefined>();
   const user = useContext(UserContext);
+  function setMessage (msg?: shownMessage) {
+    setRawMessage(msg);
+    window.scrollTo(0, 0);
+  }
+
   function handlePasswordChange () {
     setMessage({
       notificationType: "success",

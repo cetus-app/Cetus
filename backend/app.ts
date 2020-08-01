@@ -60,7 +60,7 @@ const schemas = validationMetadatasToSchemas({
 const metadataStorage = getMetadataArgsStorage();
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });
 
-if (openApiSpec.paths) {
+if (!openApiSpec.paths) {
   const pathKeys: (keyof typeof openApiSpec.paths)[] = Object.keys(openApiSpec.paths);
   for (const pathKey of pathKeys) {
     if (typeof pathKey === "string" && !pathKey.toLowerCase().includes("/roblox/")) {
