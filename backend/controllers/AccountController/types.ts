@@ -3,6 +3,7 @@ import {
   IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, IsUUID, maxLength, MaxLength, MinLength
 } from "class-validator";
 
+// TODO: Combine common fields?
 export class UserAccessBody {
   @IsEmail()
   @MaxLength(50)
@@ -65,13 +66,13 @@ export class ChangePasswordBody {
   @MinLength(5)
   currentPassword: string
 }
-export class ForgotPasswordRequest {
+export class ForgotPasswordBody {
   @IsEmail()
   @MaxLength(50)
   email: string
 }
 
-export class FinishPasswordRequest {
+export class FinishPasswordBody {
   @IsString()
   @MinLength(50)
   @MaxLength(50)
@@ -81,6 +82,25 @@ export class FinishPasswordRequest {
   @IsNotEmpty()
   @MinLength(5)
   password: string
+}
+
+export class ChangeEmailBody {
+  @IsEmail()
+  @MaxLength(50)
+  email: string;
+}
+
+export class DeleteAccountBody {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(5)
+  password: string
+}
+
+export class SignOutBody {
+  @IsBoolean()
+  @IsOptional()
+  all?: boolean
 }
 
 export class FullUser extends PartialUser {

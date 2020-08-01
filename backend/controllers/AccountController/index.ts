@@ -1,9 +1,10 @@
-import {compare, hash} from "bcrypt";
-import {Request} from "express";
+import { compare, hash } from "bcrypt";
+import { Request } from "express";
 import {
   BadRequestError,
   Body,
   CurrentUser,
+  Delete,
   ForbiddenError,
   Get,
   InternalServerError,
@@ -15,21 +16,24 @@ import {
   Redirect,
   Req
 } from "routing-controllers";
-import {ResponseSchema} from "routing-controllers-openapi";
+import { ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../../api/roblox/Roblox";
-import {EmailGroup, hashRounds, redisPrefixes} from "../../constants";
+import { EmailGroup, hashRounds, redisPrefixes } from "../../constants";
 import database from "../../database";
-import {User} from "../../entities";
-import {redis} from "../../shared";
+import { User } from "../../entities";
+import { redis } from "../../shared";
 import generateToken from "../../shared/util/generateToken";
+import getAuthFromRequest from "../../shared/util/getAuth";
 import {
+  ChangeEmailBody,
   ChangePasswordBody,
-  FinishPasswordRequest,
-  ForgotPasswordRequest,
+  DeleteAccountBody,
+  FinishPasswordBody,
+  ForgotPasswordBody,
   FullUser,
   PartialRobloxUser,
-  PartialUser,
+  PartialUser, SignOutBody,
   UserAccessBody,
   VerificationCode
 } from "./types";
@@ -145,13 +149,39 @@ export default class Account {
     });
   }
 
+  // Verification emails can be resent by simply making this request with the current email address
+  @Patch("/email")
+  @OnUndefined(204)
+  async changeEmail (@CurrentUser({ required: true }) user: User,
+                        @Body() { email }: ChangeEmailBody,
+                        @Req() request: Request) {
+    const newUser = { ...user };
+    const isResend = email === user.email;
+    if (isResend && user.emailVerified) {
+      throw new BadRequestError("You have already verified your email.");
+    }
+    newUser.emailVerified = false;
+    newUser.email = email;
+    await database.users.save(newUser);
+
+    const invite = discordInvite || "https://cetus.app";
+    if (!isResend) {
+      await request.userService.sendEmail(EmailGroup.account, {
+        title: "Email changed",
+        subject: "Email changed",
+        text: `Your account's email address was just updated. If you made this change, you can disregard this email. Have a nice day! :) <br>If you did not make this change, please <a href="https://cetus.app/dashboard">Reset your password</a> and revert your email.<br>If you cannot reset your password or access your account, <a href="mailto:account@cetus.app">Contact us</a> <strong>immediately</strong> by email or by <a href="${invite}">joining our Discord.</a>`
+      });
+    }
+    await request.userService.verifyEmail(newUser);
+  }
+
 
   // https://www.troyhunt.com/everything-you-ever-wanted-to-know/
   // tODO: add recaptcha?
   @Patch("/reset")
   @OnUndefined(204)
   async forgotPassword (
-                        @Body() { email }: ForgotPasswordRequest,
+                        @Body() { email }: ForgotPasswordBody,
                         @Req() request: Request
   ) {
     // Additional values are selected for the email sender
@@ -179,7 +209,7 @@ export default class Account {
   @OnUndefined(204)
   async finishReset (
       @Req() request: Request,
-      @Body() { password, token }: FinishPasswordRequest
+      @Body() { password, token }: FinishPasswordBody
   ) {
     // Additional values are selected for the email sender
     const key = redisPrefixes.passwordReset + token;
@@ -200,5 +230,59 @@ export default class Account {
       subject: "Password reset",
       text: `Your account's password was just reset via. your email. If you made this change, you can disregard this email. Have a nice day! :) <br>If you did not make this change, <a href="https://cetus.app/dashboard">Reset your password</a>.<br>If you cannot reset your password, <a href="mailto:account@cetus.app">Contact us</a> <strong>immediately</strong> by email or by <a href="${discordInvite}">joining our Discord.</a>`
     }, user);
+  }
+
+  // :(
+  @Delete("/")
+  @OnUndefined(204)
+  async deleteAccount (
+      @Req() request: Request,
+      @CurrentUser({ required: true }) user: User,
+      @Body() { password }: DeleteAccountBody
+  ) {
+    console.log(`Deletion request received for ${user.id}`);
+    const moreValues = await database.users.findOne({ id: user.id }, { select: ["hash"] });
+    if (!moreValues) {
+      throw new Error("Failed to retrieve user for deletion?");
+    }// TODO; Cancel stripe billing
+    const { hash: userHash } = moreValues;
+    const isCorrect = await compare(password, userHash);
+    if (!isCorrect) {
+      throw new ForbiddenError("Incorrect password");
+    }
+    console.log(`Deleting user ${user.id}`);
+    await request.userService.sendEmail(EmailGroup.account, {
+      title: "Account deleted",
+      subject: "Account deleted",
+      text: `We're sorry to see you go :(<br>Following your request (authenticated with your password) we have deleted your account and all groups on our service. We'll also cancel your billing with our payments provider, Stripe, shortly.<br>This is a permanent change that cannot be reversed. As per our Privacy Policy, your data will not be retained except as required for billing/regulatory compliance. If you did not make this change, <a href="mailto:account@cetus.app">Contact us</a> <strong>immediately</strong> by email or by <a href="${discordInvite}">joining our Discord.</a>`
+    });
+    await database.users.remove(user);
+  }
+
+  @Post("/logout")
+  @OnUndefined(204)
+  async logout (
+      @Req() request: Request,
+      @CurrentUser({ required: true }) user: User,
+      @Body() { all }: SignOutBody
+  ) {
+    if (all) {
+      const newUser = { ...user };
+      const auth = await database.users
+        .createQueryBuilder()
+        .relation("auth")
+        .of(user)
+        .loadMany();
+
+      await database.auth.remove(auth);
+      await request.userService.completeAuthentication(newUser);
+    } else {
+      const token = getAuthFromRequest(request);
+      const auth = await database.auth.findOne({ where: { token } });
+      if (!auth) {
+        throw new Error("Failed");
+      }
+      await database.auth.remove(auth);
+    }
   }
 }

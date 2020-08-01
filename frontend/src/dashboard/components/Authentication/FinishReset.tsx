@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import finishPasswordReset from "../../api/account/finishPasswordReset";
 import mapErrors from "../../api/mapErrors";
 import InputField from "../forms/InputField";
+import {PasswordValidation} from "../shared";
 // Takes "t" from query params and POST it with the new password
 // For when the user has forgotten their password and wants to reset it.
 const FinishReset: FunctionComponent = () => {
@@ -45,14 +46,8 @@ const FinishReset: FunctionComponent = () => {
           confirmPassword: ""
         }}
         validationSchema={Yup.object({
-          newPassword: Yup.string()
-            .min(6, "Your password must be at least 6 characters long.")
-            .max(100, "Must be 100 characters or less")
-            .required("A password is required."),
-          confirmPassword: Yup.string()
-            .min(6, "Your password confirmation must be at least 6 characters long.")
-            .max(100, "Must be 100 characters or less")
-            .required("A password confirmation is required.")
+          newPassword: PasswordValidation,
+          confirmPassword: PasswordValidation
         })}
         onSubmit={async (values, { setErrors, setFieldError }) => {
           if (values.newPassword !== values.confirmPassword) {

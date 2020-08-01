@@ -8,6 +8,7 @@ import "./auth.css";
 import { login } from "../../api/authentication";
 import mapErrors from "../../api/mapErrors";
 import BasicInput from "../shared/Input";
+import {PasswordValidation} from "../shared";
 
 interface LoginProps {
   setUser: Function
@@ -29,10 +30,7 @@ export const Login: FunctionComponent<LoginProps> = ({ setUser }) => {
             password: ""
           }}
           validationSchema={Yup.object({
-            password: Yup.string()
-              .min(6, "Your password must be at least 6 characters long.")
-              .max(100, "Must be 100 characters or less")
-              .required("Required"),
+            password: PasswordValidation,
             email: Yup.string()
               .email("Invalid email address")
               .required("Required")

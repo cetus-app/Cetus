@@ -114,8 +114,8 @@ export default class UserService {
   }
 
   // Used to both to verify emails & resend verification emails
-  async verifyEmail (): Promise<boolean> {
-    const { user } = this.request;
+  async verifyEmail (userOverride?: User): Promise<boolean> {
+    const user = userOverride || this.request.user;
     if (!user) {
       throw new Error("Cannot verify email - no user on request.");
     }
@@ -130,6 +130,9 @@ export default class UserService {
         if (Date.now() - current.lastSend < resendTime) {
           return false;
         }
+        // to stop spam
+      } else if (Date.now() - current.lastSend < (resendTime / 50)) {
+        return false;
       }
     }
     const code = await generateToken(50);
@@ -175,7 +178,7 @@ export default class UserService {
     const url = `${process.env.backendUrl}/account/verify/${encodeURIComponent(code)}`;
     return this.sendEmail(EmailGroup.account, {
       title: "Verify your email",
-      subject: "Finish sign-up: Verify your email",
+      subject: "Account: Verify your email",
       buttonText: "Verify your email",
       buttonUrl: url,
       text: `Click the button below to complete your email verification. Can't use the button? Copy this link into your Browser: <a href="${url}">${url}</a>`

@@ -8,6 +8,7 @@ import "./auth.css";
 import registerPost from "../../api/authentication/register";
 import mapErrors from "../../api/mapErrors";
 import BasicInput, { Checkbox } from "../shared/Input";
+import {PasswordValidation} from "../shared";
 
 
 interface RegisterProps {
@@ -33,14 +34,8 @@ export const Register: FunctionComponent<RegisterProps> = ({ setUser }) => {
             acceptedTerms: false
           }}
           validationSchema={Yup.object({
-            password: Yup.string()
-              .min(6, "Your password must be at least 6 characters long.")
-              .max(100, "Must be 100 characters or less")
-              .required("A password is required."),
-            confirmPassword: Yup.string()
-              .min(6, "Your password must be at least 6 characters long.")
-              .max(100, "Must be 100 characters or less")
-              .required("You must confirm your password."),
+            password: PasswordValidation,
+            confirmPassword: PasswordValidation,
             email: Yup.string()
               .email("Invalid email address")
               .required("Please provide an email."),

@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import { updatePassword } from "../../api";
 import mapErrors from "../../api/mapErrors";
 import InputField from "../forms/InputField";
+import { PasswordValidation } from "../shared";
 
 interface UpdatePasswordProps {
   handleDone: Function
@@ -19,18 +20,9 @@ const UpdatePassword: FunctionComponent<UpdatePasswordProps> = ({ handleDone }) 
       currentPassword: ""
     }}
     validationSchema={Yup.object({
-      currentPassword: Yup.string()
-        .min(6, "Your current password must be at least 6 characters long.")
-        .max(100, "Must be 100 characters or less")
-        .required("A password is required."),
-      newPassword: Yup.string()
-        .min(6, "Your new password must be at least 6 characters long.")
-        .max(100, "Must be 100 characters or less")
-        .required("A password is required."),
-      confirmNewPassword: Yup.string()
-        .min(6, "Your password confirmation must be at least 6 characters long.")
-        .max(100, "Must be 100 characters or less")
-        .required("A password confirmation is required.")
+      currentPassword: PasswordValidation,
+      newPassword: PasswordValidation,
+      confirmNewPassword: PasswordValidation
     })}
     onSubmit={async (values, { setErrors, setFieldError }) => {
       if (values.newPassword !== values.confirmNewPassword) {
@@ -59,6 +51,7 @@ const UpdatePassword: FunctionComponent<UpdatePasswordProps> = ({ handleDone }) 
       <div className="columns">
         <div className="column is-6">
           <Form>
+
             <InputField label="Current password" type="password" name="currentPassword" placeholder="Your current password" />
             <InputField label="New password" type="password" name="newPassword" placeholder="Enter your new password" />
             <InputField label="Confirm new password" type="password" name="confirmNewPassword" placeholder="Confirm your new password" />

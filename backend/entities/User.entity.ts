@@ -49,10 +49,10 @@ export default class User {
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @OneToMany(() => Auth, auth => auth.user)
+  @OneToMany(() => Auth, auth => auth.user, { onDelete: "CASCADE" })
   auth: Auth[];
 
-  @OneToMany(() => Group, grp => grp.owner)
+  @OneToMany(() => Group, grp => grp.owner, { onDelete: "CASCADE" })
   groups: Group[];
 
   @Column({

@@ -9,7 +9,8 @@ export interface PartialUser {
 
   discordId?: string;
 
-  created: Date
+  // it isn't a date when returned
+  created: string
 }
 
 export interface FullUser extends PartialUser {}

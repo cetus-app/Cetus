@@ -37,10 +37,10 @@ export default class Group {
   @CreateDateColumn({ type: "timestamptz" })
   created: Date;
 
-  @OneToMany(() => ApiKey, key => key.group)
+  @OneToMany(() => ApiKey, key => key.group, { onDelete: "CASCADE" })
   keys: ApiKey[];
 
-  @OneToMany(() => Integration, integration => integration.group)
+  @OneToMany(() => Integration, integration => integration.group, { onDelete: "CASCADE" })
   integrations: Integration[];
 
   // Possible problem: What happens when Group ownership is transferred?
