@@ -5,6 +5,7 @@ import { defaultMetadataStorage } from "class-transformer/storage";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import cookieParser from "cookie-parser";
 import express from "express";
+import helmet from "helmet";
 import { getMetadataArgsStorage, RoutingControllersOptions, useExpressServer } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
@@ -48,6 +49,7 @@ const app = express();
 
 app.use(Sentry.Handlers.requestHandler());
 app.use(cookieParser());
+app.use(helmet());
 
 useExpressServer(app, options);
 

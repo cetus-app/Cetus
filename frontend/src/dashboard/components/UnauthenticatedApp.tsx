@@ -1,31 +1,36 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
 
-
+import FinishReset from "./Authentication/FinishReset";
 import LoginForm from "./Authentication/Login";
+import PasswordReset from "./Authentication/PasswordReset";
 import RegisterForm from "./Authentication/Register";
-// Unauthenticated app state "page"
-enum AppState {
-  login,
-  register
-}
+
 interface UnauthenticatedAppProps {
   setUser: Function
 }
 
 // Could probably make some of this shared i.e. put the conditionals within children
-const UnauthenticatedApp: FunctionComponent<UnauthenticatedAppProps> = ({ setUser }) => {
-  const [appState, setState] = useState<AppState>(AppState.login);
-  return (
-    <div className="columns is-centered">
-      <div className="column is-10-mobile is-4-desktop">
-        {
-            appState === AppState.login
-              ? <LoginForm toRegister={() => setState(AppState.register)} setUser={setUser} />
-              : <RegisterForm toLogin={() => setState(AppState.login)} setUser={setUser} />
-          }
-      </div>
+const UnauthenticatedApp: FunctionComponent<UnauthenticatedAppProps> = ({ setUser }) => (
+  <div className="columns is-centered">
+    <div className="column is-10-mobile is-4-desktop">
+      <Switch>
+        <Route exact path="/login">
+          <LoginForm setUser={setUser} />
+        </Route>
+        <Route exact path="/register">
+          <RegisterForm setUser={setUser} />
+        </Route>
+        <Route exact path="/reset">
+          <PasswordReset />
+        </Route>
+        <Route exact path="/finish-reset">
+          <FinishReset />
+        </Route>
+        <Redirect to="/login" from="/" />
+      </Switch>
     </div>
-  );
-};
+  </div>
+);
 
 export default UnauthenticatedApp;

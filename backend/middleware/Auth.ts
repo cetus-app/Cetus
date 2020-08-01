@@ -4,6 +4,7 @@ import { getRepository } from "typeorm";
 
 import { authLife } from "../constants";
 import { Auth } from "../entities";
+import { getAuthFromRequest } from "../shared/util/getAuth";
 
 // Handles authentication of requests, and sets req.user.
 @Middleware({ type: "before" })
@@ -11,9 +12,7 @@ export default class AuthMiddleware implements ExpressMiddlewareInterface {
   use: RequestHandler = async (req, _res, next: NextFunction) => {
     const authRepository = getRepository(Auth);
 
-    const header = req.header("authorization");
-    // Header should look like "Bearer [TOKEN]"
-    const token = header && header.startsWith("Bearer") ? header.split(" ")[1] : req.cookies.token;
+    const token = getAuthFromRequest(req);
 
     // An authorization token has been supplied. Verify it.
     const auth = await authRepository.findOne({

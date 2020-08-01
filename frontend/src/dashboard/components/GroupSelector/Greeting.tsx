@@ -4,7 +4,6 @@ import { getRoblox } from "../../api/account";
 import { PartialUser, RobloxUser } from "../../api/types";
 
 
-
 export const Greeting: FunctionComponent = () => {
   const [robloxInfo, setRoblox] = useState<undefined | RobloxUser>();
   useEffect(() => {

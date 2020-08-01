@@ -1,17 +1,26 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  Fragment, FunctionComponent, useEffect, useState
+} from "react";
 
 import "../assets/scss/dashboard.scss";
+import { BrowserRouter } from "react-router-dom";
+
 import { fetch } from "../api";
 import { FullUser } from "../api/types";
 import { UserProvider } from "../context/UserContext";
 import AuthenticatedApp from "./AuthenticatedApp";
 import UnauthenticatedApp from "./UnauthenticatedApp";
+import Navbar from "./shared/Navbar";
 
 const App: FunctionComponent = () => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<FullUser | null>(null);
+  const [user, setUserO] = useState<FullUser | null>(null);
   const [error, setError] = useState("");
-
+  function setUser (...content: any[]) {
+    console.log("SetUSerState");
+    // @ts-ignore
+    setUserO(...content);
+  }
   useEffect(() => {
     setLoading(true);
 
@@ -34,14 +43,21 @@ const App: FunctionComponent = () => {
 
   if (error) return <div className="has-text-centered">{error}</div>;
 
-  if (loading) return <div className="has-text-centered">Loading..</div>;
-
-  if (!user) return <UnauthenticatedApp setUser={setUser} />;
+  if (loading) return <div className="has-text-centered">Loading...</div>;
 
   return (
-    <UserProvider value={user}>
-      <AuthenticatedApp />
-    </UserProvider>
+    <BrowserRouter basename="/dashboard">
+      <Navbar />
+      {
+          user
+            ? (
+              <UserProvider value={user}>
+                <AuthenticatedApp />
+              </UserProvider>
+            )
+            : (<UnauthenticatedApp setUser={setUser} />)
+        }
+    </BrowserRouter>
   );
 };
 

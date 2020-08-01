@@ -6,4 +6,5 @@ export * from "./keys";
 export { default as fetch } from "./base";
 export * from "./authentication";
 export * from "./integrations";
+export * from "./account";
 export * from "./payments";
