@@ -9,8 +9,8 @@ import { updatePassword } from "../../api/account";
 import deleteAccount from "../../api/account/delete";
 import mapErrors from "../../api/mapErrors";
 import { Click } from "../../types";
-import { PasswordValidation } from "../shared";
 import InputField from "../forms/InputField";
+import { PasswordValidation } from "../shared";
 
 interface Props {
   handleCancel: Function

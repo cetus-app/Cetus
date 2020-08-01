@@ -32,7 +32,7 @@ const EmailManager: FunctionComponent<EmailManagerProps> = ({ setMessage, email,
             </p>),
           notificationType: "success"
         };
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
         setMessage(msg);
       } catch (err) {
         if (err.response) {

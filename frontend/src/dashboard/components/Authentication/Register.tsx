@@ -7,8 +7,8 @@ import "./auth.css";
 
 import registerPost from "../../api/authentication/register";
 import mapErrors from "../../api/mapErrors";
+import { PasswordValidation } from "../shared";
 import BasicInput, { Checkbox } from "../shared/Input";
-import {PasswordValidation} from "../shared";
 
 
 interface RegisterProps {

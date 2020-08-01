@@ -32,25 +32,25 @@ const AuthenticatedApp: FunctionComponent = () => {
           subtitle="Linked groups are groups which already have a bot deployed to them, and are ready to make use of group integrations.">
           <GroupMenu />
         </GroupSelector>
-        </Route>
-      
-        <Route path="/unlinked" exact>
-          <Greeting />
-          <GroupSelector
-            title="Available groups"
-            subtitle="Below are all of the groups owned by you which we found on your profile. Click one to link it to our service. ">
-            <UnlinkedSelector />
-          </GroupSelector>
-        </Route>
-      
-        <Route path="/account">
-          <Account />
-        </Route>
+      </Route>
 
-        <Route path="/subscribe/:groupId">
-          <Subscribe />
-        </Route>
-      
+      <Route path="/unlinked" exact>
+        <Greeting />
+        <GroupSelector
+          title="Available groups"
+          subtitle="Below are all of the groups owned by you which we found on your profile. Click one to link it to our service. ">
+          <UnlinkedSelector />
+        </GroupSelector>
+      </Route>
+
+      <Route path="/account">
+        <Account />
+      </Route>
+
+      <Route path="/subscribe/:groupId">
+        <Subscribe />
+      </Route>
+
       <Route path="/admin" exact>
         <Admin />
       </Route>

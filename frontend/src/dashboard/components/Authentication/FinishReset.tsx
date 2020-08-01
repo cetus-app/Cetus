@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import finishPasswordReset from "../../api/account/finishPasswordReset";
 import mapErrors from "../../api/mapErrors";
 import InputField from "../forms/InputField";
-import {PasswordValidation} from "../shared";
+import { PasswordValidation } from "../shared";
 // Takes "t" from query params and POST it with the new password
 // For when the user has forgotten their password and wants to reset it.
 const FinishReset: FunctionComponent = () => {

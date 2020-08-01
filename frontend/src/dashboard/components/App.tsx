@@ -1,4 +1,6 @@
-import React, {Fragment, FunctionComponent, useEffect, useState} from "react";
+import React, {
+  Fragment, FunctionComponent, useEffect, useState
+} from "react";
 
 import "../assets/scss/dashboard.scss";
 import { BrowserRouter } from "react-router-dom";

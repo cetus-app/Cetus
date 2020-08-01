@@ -7,8 +7,8 @@ import "./auth.css";
 
 import { login } from "../../api/authentication";
 import mapErrors from "../../api/mapErrors";
+import { PasswordValidation } from "../shared";
 import BasicInput from "../shared/Input";
-import {PasswordValidation} from "../shared";
 
 interface LoginProps {
   setUser: Function
