@@ -12,13 +12,14 @@ import {
   Params,
   Patch,
   Post,
-  Req
+  Req, UseBefore
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import stripe from "../../shared/stripe";
 import { UserRobloxGroup } from "../../types";
 import { Bot } from "../BotController/types";
@@ -28,6 +29,7 @@ import {
 
 
 @JsonController("/groups")
+@UseBefore(csrfMiddleware)
 export default class Groups {
   @Get("/")
   @ResponseSchema(PartialGroup, { isArray: true })

@@ -25,6 +25,7 @@ const AuthenticatedApp: FunctionComponent = () => {
       {/* Redirects from signin/signup pages. */}
       <Redirect to="/" from="/login" />
       <Redirect to="/" from="/register" />
+      <Redirect to="/" from="/groups" exact />
       <Route exact path="/">
         <Greeting />
         <GroupSelector

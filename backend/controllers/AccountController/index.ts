@@ -14,7 +14,8 @@ import {
   Patch,
   Post,
   Redirect,
-  Req
+  Req,
+  UseBefore
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
@@ -22,9 +23,10 @@ import Roblox from "../../api/roblox/Roblox";
 import { EmailGroup, hashRounds, redisPrefixes } from "../../constants";
 import database from "../../database";
 import { User } from "../../entities";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import { redis } from "../../shared";
 import generateToken from "../../shared/util/generateToken";
-import getAuthFromRequest from "../../shared/util/getAuth";
+import { getAuthFromRequest } from "../../shared/util/getAuth";
 import {
   ChangeEmailBody,
   ChangePasswordBody,
@@ -41,6 +43,7 @@ import {
 const { discordInvite, frontendUrl } = process.env;
 
 @JsonController("/account")
+@UseBefore(csrfMiddleware)
 export default class Account {
   @Get("/")
   @ResponseSchema(FullUser)

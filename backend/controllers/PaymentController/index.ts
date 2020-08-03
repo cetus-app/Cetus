@@ -13,6 +13,7 @@ import { stripeGroupPriceId } from "../../constants";
 import database from "../../database";
 import { Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import stripe from "../../shared/stripe";
 import { integrationDefault, integrationMeta } from "../IntegrationController/types";
 import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./types";
@@ -20,6 +21,7 @@ import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./ty
 @JsonController("/payments")
 export default class PaymentController {
   @Post("/session")
+  @UseBefore(csrfMiddleware)
   @ResponseSchema(SessionResponse)
   async createSession (
     @Body() { groupId, integrations }: SessionBody,

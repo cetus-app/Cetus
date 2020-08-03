@@ -15,7 +15,7 @@ import {
   Params,
   Patch,
   Post,
-  Req
+  Req, UseBefore
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import Stripe from "stripe";
@@ -23,6 +23,7 @@ import Stripe from "stripe";
 import database from "../../database";
 import CurrentGroup from "../../decorators/CurrentGroup";
 import { Group, Integration } from "../../entities";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import { CustomValidationError } from "../../shared";
 import stripe from "../../shared/stripe";
 import {
@@ -39,6 +40,7 @@ import {
 
 
 @JsonController("/integrations")
+@UseBefore(csrfMiddleware)
 export default class Integrations {
   @Get("/global/meta")
   @Authorized()

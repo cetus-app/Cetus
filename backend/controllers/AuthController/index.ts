@@ -3,12 +3,23 @@ import btoa from "btoa";
 import { Request, Response } from "express";
 import fetch from "node-fetch";
 import {
-  Controller, CookieParam, ForbiddenError, Get, InternalServerError, QueryParam, QueryParams, Redirect, Req, Res
+  Controller,
+  CookieParam,
+  ForbiddenError,
+  Get,
+  InternalServerError,
+  QueryParam,
+  QueryParams,
+  Redirect,
+  Req,
+  Res,
+  UseBefore
 } from "routing-controllers";
 
 import Discord, { BASE_OAUTH2_URL } from "../../api/discord/Discord";
 import database from "../../database";
 import { DiscordBotConfig, IntegrationType } from "../../entities/Integration.entity";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import generateToken from "../../shared/util/generateToken";
 import { DiscordOAuth2CallbackQuery } from "./types";
@@ -21,6 +32,7 @@ const botScope = "bot";
 const redirect = `${backendUrl}/auth/callback/discord`;
 
 @Controller("/auth")
+@UseBefore(csrfMiddleware)
 export default class AuthController {
   @Get("/discord")
   // Fallback in case an error occurs somewhere

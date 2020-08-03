@@ -5,7 +5,7 @@ import {
   Delete,
   JsonController, NotFoundError,
   OnUndefined,
-  Params, Post, Req
+  Params, Post, Req, UseBefore
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
@@ -14,11 +14,13 @@ import database from "../../database";
 import { User } from "../../entities";
 import ApiKey from "../../entities/ApiKey.entity";
 import Group from "../../entities/Group.entity";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import generateToken from "../../shared/util/generateToken";
 import { ApiKeyRequest, ApiKeyResponse, DeleteKeyRequest } from "./types";
 
 
 @JsonController("/keys")
+@UseBefore(csrfMiddleware)
 export default class KeyController {
   @OpenAPI({ description: "Adds a new API key for a given group" })
   @Post("/")

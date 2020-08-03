@@ -1,5 +1,5 @@
 import {
-  Authorized, BadRequestError, Body, Get, JsonController, NotFoundError, Param, Patch, Post
+  Authorized, BadRequestError, Body, Get, JsonController, NotFoundError, Param, Patch, Post, UseBefore
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 
@@ -7,11 +7,13 @@ import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Bot } from "../../entities";
 import { PermissionLevel } from "../../entities/User.entity";
+import { csrfMiddleware } from "../../middleware/CSRF";
 import {
   AddBotBody, Bot as BotDTO, QueueItem, UpdateBotBody
 } from "./types";
 
 @JsonController("/bots")
+@UseBefore(csrfMiddleware)
 export default class Bots {
   @Get("/")
   @ResponseSchema(BotDTO, { isArray: true })
