@@ -38,7 +38,7 @@ const Account: FunctionComponent = () => {
   }
   const created = new Date(user.created);
   return (
-    <div className="section">
+    <div className="section account-page">
       <div className="columns is-centered">
         <div className="column is-6">
           {message ? (
