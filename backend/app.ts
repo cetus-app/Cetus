@@ -57,7 +57,7 @@ app.use(helmet({
       blockAllMixedContent: true,
       fontSrc: ["'self'", "https:", "data:"],
       frameAncestors: ["'self'"],
-      imgSrc: ["'self'", "data:", "https://*.stripe.com"],
+      imgSrc: ["'self'", "data:", "https://*.cloudfront.net", "https://*.rbxcdn.com", "https://*.roblox.com", "https://*.stripe.com"],
       objectSrc: ["'none'"],
       scriptSrc: ["'self'", "https://checkout.stripe.com"],
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
