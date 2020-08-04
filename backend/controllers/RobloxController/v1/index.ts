@@ -2,22 +2,22 @@ import {
   BadRequestError,
   Body, Delete, Get, JsonController, Params, Patch, Post
 } from "routing-controllers";
-import { ResponseSchema } from "routing-controllers-openapi";
+import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox, { getGroupClient } from "../../../api/roblox/Roblox";
 import { redisPrefixes } from "../../../constants";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
 import { redis } from "../../../shared";
-import { RobloxGroup } from "../../../types";
 import {
-  ExileUserResponse, GetRankResponse, SetRankBody, SetRankResponse, SetShoutBody, SetShoutResponse, UserRobloxIdParam
+  ExileUserResponse, GetRankResponse, RobloxGroup, SetRankBody, SetRankResponse, SetShoutBody, SetShoutResponse, UserRobloxIdParam
 } from "./types";
 
+@OpenAPI({ security: [{ apiKeyAuth: [] }] })
 @JsonController("/v1/roblox")
 export default class RobloxV1 {
   @Get("/info")
-  @ResponseSchema(GetRankResponse)
+  @ResponseSchema(RobloxGroup)
   async getGroupInfo (@CurrentGroup() group: Group): Promise<RobloxGroup> {
     const userGroup = await Roblox.getGroup(group.robloxId);
     if (!userGroup) {

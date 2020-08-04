@@ -9,6 +9,7 @@ import { FullGroup } from "../../api/types";
 import { GroupProvider } from "../../context/GroupContext";
 import "../../assets/scss/GroupPanel.scss";
 import NoMatch from "../NoMatch";
+import APIDocs from "./APIDocs";
 import GroupHome from "./Home";
 import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
@@ -59,6 +60,9 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
           <Switch>
             <Route path={path} exact>
               <GroupHome />
+            </Route>
+            <Route path={`${path}/api`}>
+              <APIDocs />
             </Route>
             <Route path={`${path}/integrations`} exact>
               <Integrations />

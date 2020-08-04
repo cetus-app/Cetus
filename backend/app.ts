@@ -11,6 +11,7 @@ import { routingControllersToSpec } from "routing-controllers-openapi";
 import { setup, serve as swaggerServe } from "swagger-ui-express";
 
 import controllers from "./controllers";
+import * as RobloxApiSchemas from "./controllers/RobloxController/v1/types";
 import { PermissionLevel } from "./entities/User.entity";
 import middlewares from "./middleware";
 import { name, version } from "./package.json";
@@ -77,7 +78,7 @@ const schemas = validationMetadatasToSchemas({
 const metadataStorage = getMetadataArgsStorage();
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });
 
-if (!openApiSpec.paths) {
+if (openApiSpec.paths) {
   const pathKeys: (keyof typeof openApiSpec.paths)[] = Object.keys(openApiSpec.paths);
   for (const pathKey of pathKeys) {
     if (typeof pathKey === "string" && !pathKey.toLowerCase().includes("/roblox/")) {
@@ -86,6 +87,22 @@ if (!openApiSpec.paths) {
   }
 }
 
+if (openApiSpec.components?.schemas) {
+  const robloxSchemaKeys = Object.keys(RobloxApiSchemas);
+  for (const schemaKey of Object.keys(openApiSpec.components.schemas)) {
+    if (!robloxSchemaKeys.includes(schemaKey)) {
+      delete openApiSpec.components.schemas[schemaKey];
+    }
+  }
+}
+
+if (!openApiSpec.components) openApiSpec.components = {};
+openApiSpec.components.securitySchemes = {
+  apiKeyAuth: {
+    type: "http",
+    scheme: "bearer"
+  }
+};
 
 app.use("/docs", swaggerServe, setup(openApiSpec));
 

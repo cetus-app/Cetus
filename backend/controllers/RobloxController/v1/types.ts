@@ -1,12 +1,56 @@
 import { Type } from "class-transformer";
 import {
-  IsBoolean, IsNotEmpty, IsNumber, IsPositive, IsString, Max, Min
+  IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsPositive, IsString, IsUrl, Max, Min, ValidateNested
 } from "class-validator";
 
 export class UserRobloxIdParam {
   @IsNumber()
   @IsPositive()
   uRbxId: number;
+}
+
+export class RobloxRole {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsNumber()
+  @Min(0)
+  @Max(255)
+  rank: number;
+}
+
+export class RobloxGroupOwner {
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  @IsPositive()
+  id: number;
+}
+
+export class RobloxGroup {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsNumber()
+  @IsPositive()
+  id: number;
+
+  @IsUrl()
+  emblemUrl: string;
+
+  @ValidateNested()
+  owner: RobloxGroupOwner;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ValidateNested({ each: true })
+  @Type(() => RobloxRole)
+  roles: RobloxRole[];
 }
 
 // {
@@ -24,22 +68,27 @@ export class SetShoutBody {
   @IsString()
   message: string;
 }
-class ShoutPoster {
+export class ShoutPoster {
   @IsNumber()
+  @IsPositive()
   userId: number
 
   @IsString()
+  @IsNotEmpty()
   username: string
 }
 export class SetShoutResponse {
   @IsString()
   message: string;
 
+  @ValidateNested()
   @Type(() => ShoutPoster)
   poster: ShoutPoster
 
+  @IsDateString()
   updated: string
 
+  @IsBoolean()
   success: boolean
 }
 
@@ -65,6 +114,7 @@ export class SetRankResponse {
   success: boolean;
 
   @IsString()
+  @IsNotEmpty()
   message: string;
 }
 
@@ -73,5 +123,6 @@ export class ExileUserResponse {
   success: boolean;
 
   @IsString()
+  @IsNotEmpty()
   message: string;
 }
