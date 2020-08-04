@@ -57,13 +57,13 @@ app.use(helmet({
       blockAllMixedContent: true,
       fontSrc: ["'self'", "https:", "data:"],
       frameAncestors: ["'self'"],
-      imgSrc: ["'self'", "data:"],
+      imgSrc: ["'self'", "data:", "https://*.stripe.com"],
       objectSrc: ["'none'"],
-      scriptSrc: ["'self'", "https://js.stripe.com"],
+      scriptSrc: ["'self'", "https://checkout.stripe.com"],
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       upgradeInsecureRequests: true,
-      connectSrc: ["https://api.stripe.com"],
-      frameSrc: ["https://js.stripe.com", "https://hooks.stripe.com"]
+      connectSrc: ["https://checkout.stripe.com"],
+      frameSrc: ["https://checkout.stripe.com"]
     }
   }
 }));
