@@ -1,7 +1,6 @@
 import React, {
   Fragment, FunctionComponent, useContext, useState
 } from "react";
-import { Link as a } from "react-router-dom";
 
 import "./Verification.css";
 
@@ -12,7 +11,6 @@ import { StartVerificationResponse } from "../../api/types";
 import UserContext from "../../context/UserContext";
 import { InputChange } from "../../types";
 import BlurbVerification from "./BlurbVerification";
-import DiscordLogin from "./DiscordLogin";
 import GameVerification from "./GameVerification";
 import StartVerification from "./StartVerification";
 
@@ -72,11 +70,7 @@ const Verify: FunctionComponent = () => {
   return (
     <section className="section columns is-centered">
       <div className="verify-box column is-three-fifths-tablet is-two-fifths-widescreen is-one-third-fullhd is box has-background-grey-light has-text-black">
-        {!user.discordId && <DiscordLogin />}
-
-        {user.discordId
-        && !verification
-        && <StartVerification username={username} onUsernameChange={handleUsernameChange} onClick={handleStart} />}
+        {!verification && <StartVerification username={username} onUsernameChange={handleUsernameChange} onClick={handleStart} />}
 
         {(!completed && verification?.blurbCode)
           && <BlurbVerification username={username} code={verification.blurbCode} onClick={() => handleVerify(true)} />}
@@ -88,7 +82,7 @@ const Verify: FunctionComponent = () => {
           <div>Your Roblox account ({username}) is now verified in the Cetus system. You can now register and set up your groups!
             {/* Temp? Maybe a more of an "onboarding sequence" would be helpful here? */}
             <br />
-            <a href="/groups">Set up groups</a>
+            <a href="/dashboard">Set up groups</a>
           </div>
         )}
 
