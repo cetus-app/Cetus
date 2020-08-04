@@ -49,7 +49,24 @@ const app = express();
 
 app.use(Sentry.Handlers.requestHandler());
 app.use(cookieParser());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      blockAllMixedContent: true,
+      fontSrc: ["'self'", "https:", "data:"],
+      frameAncestors: ["'self'"],
+      imgSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      scriptSrc: ["'self'", "https://js.stripe.com"],
+      styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+      upgradeInsecureRequests: true,
+      connectSrc: ["https://api.stripe.com"],
+      frameSrc: ["https://js.stripe.com", "https://hooks.stripe.com"]
+    }
+  }
+}));
 
 useExpressServer(app, options);
 
