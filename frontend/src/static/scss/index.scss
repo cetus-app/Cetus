@@ -1,4 +1,6 @@
-@import "../../index";
+@import "bulma/sass/utilities/functions";
+@import "bulma/sass/utilities/derived-variables";
+
 $dark-background-other: #232C33;
 .hero {
   background-color: $dark-background-index;

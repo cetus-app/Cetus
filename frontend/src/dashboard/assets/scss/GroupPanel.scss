@@ -1,6 +1,5 @@
-@import '../../../index';
-@import "./checkbox";
 $effective-height: calc(100vh - #{$navbar-height});
+
 .group-img {
     height: 100%;
     border-radius: 4px;

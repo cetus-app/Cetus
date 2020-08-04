@@ -1,40 +1,4 @@
-// Set your brand colors
-// $purple: #8A4D76;
-// $pink: #FA7C91;
-// $brown: #757763;
-// $beige-light: #D0D1CD;
-// $beige-lighter: #EFF0EB;
-
-// // Update Bulma's global variables
-// $family-sans-serif: "Nunito", sans-serif;
-// $grey-dark: $brown;
-// $grey-light: $beige-light;
-// $primary: $purple;
-// $link: $pink;
-// $widescreen-enabled: false;
-// $fullhd-enabled: false;
-
-// // Update some of Bulma's component variables
-// $body-background-color: $beige-lighter;
-// $control-border-width: 2px;
-// $input-border-color: transparent;
-// $input-shadow: none;
-// Menu stuff
-@import "bulma/sass/utilities/initial-variables.sass";
-$dark-background: #232c33;
-$dark-background-text: #FFFFFF;
-
-$menu-item-active-background-color: #feaa0b;
-$menu-item-color: $dark-background-text;
-$menu-label-color: $grey;
-$dark-background-index: #3F3D56;
-
-$primary: #feaa0b;
-$info: #2b9eb3;
-$blurple: #7289da;
-
 @import "bulma/bulma";
-
 
 // Bulma "extensions"
 .has-background-transparent {
