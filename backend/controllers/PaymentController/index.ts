@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import * as Sentry from "@sentry/node";
 import bodyParser from "body-parser";
 import { Request } from "express";
 import {
@@ -9,9 +10,9 @@ import Stripe from "stripe";
 import { FindOneOptions } from "typeorm";
 
 import Roblox from "../../api/roblox/Roblox";
-import { stripeGroupPriceId } from "../../constants";
+import { botGroupThreshold, stripeGroupPriceId } from "../../constants";
 import database from "../../database";
-import { Integration, User } from "../../entities";
+import { Group, Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import stripe from "../../shared/stripe";
@@ -129,8 +130,23 @@ export default class PaymentController {
 
     const integrations = await Promise.all(integrationPromises);
 
+    const bots = await database.bots.createQueryBuilder("bot")
+      .select("bot.id", "id")
+      .addSelect("COUNT(\"group\".id)", "groupCount")
+      .leftJoin(Group, "group", "bot.id = \"group\".\"botId\"")
+      .groupBy("bot.id")
+      .getRawMany();
+
+    // Parsing to int - https://github.com/typeorm/typeorm/issues/2708
+    const bot = bots.find(b => parseInt(b.groupCount, 10) < botGroupThreshold);
+
+    if (!bot) {
+      Sentry.captureMessage(`No bots with less than ${botGroupThreshold} groups assigned are available. Group ${group.id} is therefore missing bot. Please assign manually and create a new Roblox bot account`);
+    }
+
     group.stripeSubscriptionId = subscription.id;
     group.integrations = integrations;
+    group.bot = bot;
     await database.groups.save(group);
 
     return { received: true };
