@@ -8,14 +8,15 @@ import { getGroup } from "../../api/groups";
 import { FullGroup } from "../../api/types";
 import { GroupProvider } from "../../context/GroupContext";
 import "../../assets/scss/GroupPanel.scss";
-import NoMatch from "../NoMatch";
+import { Billing } from "../Billing";
+import { NoMatch } from "../NoMatch";
 import APIDocs from "./APIDocs";
 import GroupHome from "./Home";
 import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
+import SDKDocs from "./SDKDocs";
 import SideBar from "./Sidebar";
 import Unlink from "./Unlink";
-import SDKDocs from "./SDKDocs";
 
 interface GroupPanelProps {
 
@@ -67,6 +68,9 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             </Route>
             <Route path={`${path}/lua`}>
               <SDKDocs />
+            </Route>
+            <Route path={`${path}/billing`}>
+              <Billing />
             </Route>
             <Route path={`${path}/integrations`} exact>
               <Integrations />
