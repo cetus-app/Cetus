@@ -8,3 +8,4 @@ export * from "./authentication";
 export * from "./integrations";
 export * from "./account";
 export * from "./payments";
+export * from "./other";

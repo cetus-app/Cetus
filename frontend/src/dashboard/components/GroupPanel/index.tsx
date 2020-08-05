@@ -15,6 +15,7 @@ import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
 import SideBar from "./Sidebar";
 import Unlink from "./Unlink";
+import SDKDocs from "./SDKDocs";
 
 interface GroupPanelProps {
 
@@ -63,6 +64,9 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             </Route>
             <Route path={`${path}/api`}>
               <APIDocs />
+            </Route>
+            <Route path={`${path}/lua`}>
+              <SDKDocs />
             </Route>
             <Route path={`${path}/integrations`} exact>
               <Integrations />
