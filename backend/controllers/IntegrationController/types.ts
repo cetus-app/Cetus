@@ -2,7 +2,7 @@ import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
-  IsEnum, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUrl, IsUUID, Max, Min, ValidateNested
+  IsEnum, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUrl, IsUUID, Max, Min, ValidateIf, ValidateNested
 } from "class-validator";
 
 import { AntiAdminAbuseConfig, DiscordBotConfig, IntegrationType } from "../../entities/Integration.entity";
@@ -43,6 +43,7 @@ export class EditIntegrationBody {
 export class AntiAbuseConfigBody {
   @IsUrl()
   @IsOptional()
+  @ValidateIf(body => body.webhook !== "")
   webhook?: string
 
   @IsNumber()
