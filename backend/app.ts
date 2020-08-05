@@ -64,7 +64,8 @@ app.use(helmet({
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       upgradeInsecureRequests: true,
       connectSrc: ["https://checkout.stripe.com"],
-      frameSrc: ["https://checkout.stripe.com"]
+      frameSrc: ["https://checkout.stripe.com"],
+      "frame-ancestors": ["'self'", process.env.frontendUrl!]
     }
   }
 }));

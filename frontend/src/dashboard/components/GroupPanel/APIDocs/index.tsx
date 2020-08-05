@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useContext } from "react";
 import { Link } from "react-router-dom";
-import SwaggerUI from "swagger-ui-react";
 
 import "./index.scss";
 import GroupContext from "../../../context/GroupContext";
@@ -10,12 +9,8 @@ const APIDocs: FunctionComponent = () => {
 
   if (!group) return null;
 
-  const onComplete = (system: any) => {
-    if (group.keys.length > 0) system.preauthorizeApiKey("apiKeyAuth", group.keys[0].token);
-  };
-
   return (
-    <section className="section">
+    <section className="section api-docs">
       <div className="content">
         <h1 className="title">API documentation</h1>
         <p>
@@ -27,7 +22,7 @@ const APIDocs: FunctionComponent = () => {
       </div>
 
       <div className="swagger-ui content box has-background-light">
-        <SwaggerUI url={`${process.env.BACKEND_URL}/swagger.json`} onComplete={onComplete} />
+        <iframe title="Swagger UI docs" src={`${process.env.BACKEND_URL}/docs`} frameBorder="0" width="100%" height="100%" />
       </div>
     </section>
   );

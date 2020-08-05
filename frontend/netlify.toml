@@ -19,4 +19,4 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; block-all-mixed-content; font-src 'self' https: data:; frame-ancestors 'self'; img-src 'self' data: https://*.cloudfront.net https://*.rbxcdn.com; https://*.roblox.com https://*.stripe.com; object-src 'none'; script-src 'self' https://checkout.stripe.com; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests; connect-src https://checkout.stripe.com; frame-src https://checkout.stripe.com"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; block-all-mixed-content; font-src 'self' https: data:; frame-ancestors 'self'; img-src 'self' data: https://*.cloudfront.net https://*.rbxcdn.com; https://*.roblox.com https://*.stripe.com; object-src 'none'; script-src 'self' https://checkout.stripe.com; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests; connect-src https://checkout.stripe.com; frame-src 'self' api.cetus.app https://checkout.stripe.com"
