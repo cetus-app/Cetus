@@ -16,7 +16,7 @@ const APIDocs: FunctionComponent = () => {
         <p>
           You can use this page to test our API methods using <a target="_blank" rel="noopener noreferrer" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a>.
           An authentication key (configure <Link to={`/groups/${group.id}`}>here</Link>) is required in order to use these endpoints.
-          We already prefilled Swagger UI with the first API key configured for your group (if any) so you can get straight to testing!
+          You can configure this key with the testing UI below by clicking <code>Authorize</code> and entering a valid key for your group.
           Remember to be careful, as actions executed here will affect your actual Roblox group!
         </p>
       </div>
