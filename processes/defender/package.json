@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
-    "start:prod": "node dist",
+    "start:prod": "ts-node --files --transpile-only -r dotenv/config index.ts",
     "build": "rimraf dist && tsc"
   },
   "author": "CETUS",
@@ -20,6 +20,7 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "@types/ioredis": "^4.16.0",
     "@types/node": "^13.13.4",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
     "@typescript-eslint/parser": "^2.31.0",
@@ -28,8 +29,8 @@
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.20.2",
     "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.8.3",
-    "@types/ioredis": "^4.16.0"
+    "typescript": "^3.8.3"
   }
 }

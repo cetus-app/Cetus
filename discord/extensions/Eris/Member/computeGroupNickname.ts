@@ -1,7 +1,7 @@
 import { Member } from "eris";
 
-import Roblox from "../../../../backend/api/roblox/Roblox";
 import { getLink } from "../../../api/aquarius";
+import Roblox from "../../../api/roblox/Roblox";
 
 Member.prototype.computeGroupNickname = async function computeGroupNickname () {
   const link = await getLink(this.id);

@@ -50,6 +50,7 @@ export default class UserService {
     await database.auth.save(authKey);
 
     response.cookie("token", secret, {
+      domain: process.env.cookieDomain,
       maxAge: authLife,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
