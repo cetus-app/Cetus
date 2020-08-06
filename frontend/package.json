@@ -6,8 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf public && rimraf dist && rimraf .parcel-cache && parcel build src/dashboard/index.html src/static/pages/*.html src/404.html --dist-dir public --no-source-maps --log-level verbose",
     "dev": "rimraf dist && rimraf .parcel-cache && parcel src/dashboard/index.html src/static/pages/*.html src/404.html",
-    "check": "tsc --noEmit",
-    "postinstall": "patch-package"
+    "check": "tsc --noEmit"
   },
   "author": "",
   "license": "UNLICENSED",
