@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
-    "start:prod": "node dist/processes/defender",
+    "start:prod": "ts-node --files --transpile-only -r dotenv/config index.ts",
     "build": "rimraf dist && tsc"
   },
   "author": "CETUS",
