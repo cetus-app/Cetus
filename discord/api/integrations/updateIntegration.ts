@@ -1,7 +1,6 @@
 import { ApiError, authFetch } from "..";
-import { redis } from "../../../backend/shared";
 import { REDIS_PREFIXES } from "../../constants";
-import { InvalidApiKeyError } from "../../shared";
+import { InvalidApiKeyError, client as redis } from "../../shared";
 import { DiscordBotConfig, DiscordIntegration } from "../types";
 
 export const updateIntegration = async (guildId: string, config: Partial<DiscordBotConfig>): Promise<DiscordIntegration> => (
