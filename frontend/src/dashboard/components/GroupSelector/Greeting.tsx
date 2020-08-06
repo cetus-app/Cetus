@@ -26,7 +26,7 @@ export const Greeting: FunctionComponent = () => {
   greetingStr = `${greetingStr}, ${robloxInfo ? robloxInfo.username : ""}!`;
   if (robloxInfo) {
     return (
-      <div className="section columns is-vcentered greeting">
+      <div className="columns is-vcentered greeting">
         <div className="column is-offset-1 is-1">
           <div className="user-image">
             <img src={robloxInfo.image} alt={robloxInfo.username} />

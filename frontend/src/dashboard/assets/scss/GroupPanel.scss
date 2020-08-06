@@ -64,6 +64,7 @@ $effective-height: calc(100vh - #{$navbar-height});
 }
 .greeting {
     padding-top: 1rem;
+    padding-left: 1rem;
 }
 .integrations-menu {
     .fa-discord {
