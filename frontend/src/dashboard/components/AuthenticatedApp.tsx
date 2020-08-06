@@ -46,7 +46,7 @@ const AuthenticatedApp: FunctionComponent = () => {
           <GroupSelector
             title="Available groups"
             subtitle="Below are all of the groups owned by you which we found on your profile. Click one to link it to our service. "
-          isUnlinked={true}>
+            isUnlinked>
             <UnlinkedSelector />
           </GroupSelector>
         </Route>

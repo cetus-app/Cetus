@@ -5,16 +5,13 @@ import { Form, Formik } from "formik";
 import React, { FunctionComponent } from "react";
 import * as Yup from "yup";
 
-import { updatePassword } from "../../api/account";
-import deleteAccount from "../../api/account/delete";
+import { deleteAccount } from "../../api/account/delete";
 import mapErrors from "../../api/mapErrors";
-import { Click } from "../../types";
 import InputField from "../forms/InputField";
 import { PasswordValidation } from "../shared";
 
 interface Props {
   handleCancel: Function
-  handleDelete: Click<HTMLButtonElement>
 }
 
 

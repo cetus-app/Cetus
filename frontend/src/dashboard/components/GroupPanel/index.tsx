@@ -10,6 +10,7 @@ import { GroupProvider } from "../../context/GroupContext";
 import "../../assets/scss/GroupPanel.scss";
 import { Billing } from "../Billing";
 import { NoMatch } from "../NoMatch";
+import EmailNotification from "../shared/EmailNotification";
 import APIDocs from "./APIDocs";
 import GroupHome from "./Home";
 import IntegrationEditor from "./IntegrationEditor";
@@ -17,7 +18,6 @@ import Integrations from "./IntegrationSelector";
 import SDKDocs from "./SDKDocs";
 import SideBar from "./Sidebar";
 import Unlink from "./Unlink";
-import EmailNotification from "../shared/EmailNotification";
 
 interface GroupPanelProps {
 
