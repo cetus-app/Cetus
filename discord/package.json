@@ -4,7 +4,7 @@
   "description": "The Cetus Discord bot integration",
   "scripts": {
     "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
-    "start:prod": "node dist/discord",
+    "start:prod": "node dist",
     "build": "rimraf dist && tsc",
     "debug": "ts-node-dev --inspect --respawn --transpile-only -r dotenv/config index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
