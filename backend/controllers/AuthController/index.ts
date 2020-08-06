@@ -63,7 +63,7 @@ export default class AuthController {
 
     // Bot join OAuth2 flow
     // Overriden instead of template because routing controllers complains about port not having a replacement (in redirect URI: "http://someurl:1234")
-    return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${botScope}&permissions=67584&response_type=code&state=${state}&redirect_uri=${redirect}`;
+    return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${botScope}&permissions=402728960&response_type=code&state=${state}&redirect_uri=${redirect}`;
   }
 
   @Get("/callback/discord")
