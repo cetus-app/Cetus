@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { getRoblox } from "../../api/account";
-import { PartialUser, RobloxUser } from "../../api/types";
+import { RobloxUser } from "../../api/types";
 
 
 export const Greeting: FunctionComponent = () => {
@@ -26,7 +26,7 @@ export const Greeting: FunctionComponent = () => {
   greetingStr = `${greetingStr}, ${robloxInfo ? robloxInfo.username : ""}!`;
   if (robloxInfo) {
     return (
-      <div className="columns is-mobile is-vcentered greeting">
+      <div className="section columns is-vcentered greeting">
         <div className="column is-offset-1 is-1">
           <div className="user-image">
             <img src={robloxInfo.image} alt={robloxInfo.username} />
@@ -40,3 +40,4 @@ export const Greeting: FunctionComponent = () => {
   }
   return <h2 className="title is-4">{greetingStr}</h2>;
 };
+export default Greeting;

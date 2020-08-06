@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
   BadRequestError,
   Body,
@@ -12,7 +12,9 @@ import {
   Params,
   Patch,
   Post,
-  Req, UseBefore
+  Req,
+  UseAfter,
+  UseBefore
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
@@ -26,6 +28,14 @@ import { Bot } from "../BotController/types";
 import {
   AddGroupBody, FullGroup, IdParam, PartialGroup, UnlinkedGroup
 } from "./types";
+
+// For /unlinked & /:id
+function requestDropper (_request: Request, response: Response, next:NextFunction) {
+  if (response.headersSent) {
+    return undefined;
+  }
+  return next();
+}
 
 
 @JsonController("/groups")
@@ -107,6 +117,7 @@ export default class Groups {
 
   @OpenAPI({ description: "Fetches the user's linkable groups (Owned by them & Not currently linked)" })
   @Get("/unlinked")
+  @UseAfter(requestDropper)
   @ResponseSchema(UnlinkedGroup, { isArray: true })
   async getUnlinked (@CurrentUser({ required: true }) user: User): Promise<UserRobloxGroup[]> {
     // TODO: Check their payment level & if they're allowed to add another one
@@ -148,6 +159,7 @@ export default class Groups {
                     validate: true
                   }) { id }: IdParam,
                   @Req() request: Request): Promise<FullGroup> {
+    // Drops it if we've already responded, like for unlinked
     // Get specific group
     const group = await request.groupService.canAccessGroup(id, false);
     let p;

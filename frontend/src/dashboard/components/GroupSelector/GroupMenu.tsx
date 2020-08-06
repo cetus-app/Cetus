@@ -2,7 +2,7 @@
 import React, {
   Fragment, FunctionComponent, useEffect, useState
 } from "react";
-import { Redirect, useHistory, useRouteMatch } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 
 import { getGroups } from "../../api/groups";
 import { PartialGroup } from "../../api/types";
@@ -15,7 +15,6 @@ interface GroupSelectorProps {
 const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   const [groups, setGroups] = useState<undefined |PartialGroup[]>();
   const [redirect, setRedirect] = useState<undefined | PartialGroup["id"]>();
-  const match = useRouteMatch();
   const { push } = useHistory();
 
   useEffect(() => {
@@ -38,10 +37,7 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   };
 
   if (redirect) {
-    if (match.url.slice(-1) === "/") {
-      return <Redirect to={`${match.url}groups/${redirect}`} />;
-    }
-    return <Redirect to={`${match.url}/groups/${redirect}`} />;
+    return <Redirect to={`groups/${redirect}`} />;
   }
   if (groups) {
     return (

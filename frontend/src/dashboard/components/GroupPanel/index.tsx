@@ -17,6 +17,7 @@ import Integrations from "./IntegrationSelector";
 import SDKDocs from "./SDKDocs";
 import SideBar from "./Sidebar";
 import Unlink from "./Unlink";
+import EmailNotification from "../shared/EmailNotification";
 
 interface GroupPanelProps {
 
@@ -59,6 +60,7 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
           <SideBar />
         </div>
         <div className="panel-right-column column">
+          <EmailNotification />
           <Switch>
             <Route path={path} exact>
               <GroupHome />

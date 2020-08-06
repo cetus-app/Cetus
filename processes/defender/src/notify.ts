@@ -54,7 +54,7 @@ export async function notify (integration: Integration, notifcationType: Notifca
           username: "Cetus Group Defender",
           // eslint-disable-next-line @typescript-eslint/naming-convention
           avatar_url: "https://i.imgur.com/hoPA0ZZ.png",
-          content: "@-here Warning: Possible admin abuse detected.",
+          content: "@here Warning: Possible admin abuse detected.",
           embeds: [
             {
               title: `A user has exceeded your action thresholds`,

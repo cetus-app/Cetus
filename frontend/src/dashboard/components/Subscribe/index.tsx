@@ -72,7 +72,10 @@ const Subscribe: FunctionComponent = () => {
       const { error: stripeError } = await stripe?.redirectToCheckout({ sessionId }) || {};
       throw stripeError;
     } catch (e) {
-      setError(e?.message || "Error occurred. Contact support if the issue persists");
+      // In case it fails due to not JSON
+      setError("Error occurred. Contact support if the issue persists");
+      const json = await e.response.json();
+      setError(json.message || "Error occurred. Contact support if the issue persists");
     }
 
     setStripeLoading(false);

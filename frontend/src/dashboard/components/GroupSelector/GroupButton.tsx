@@ -12,7 +12,7 @@ interface GroupButtonProps {
 const GroupButton: FunctionComponent<GroupButtonProps> = ({
   imgUrl, groupName, enabled, handleClick
 }) => (
-  <div className="column is-2 is-half-mobile is-offset-one-quarter-mobile">
+  <div className="column is-2 is-half-tablet is-offset-one-quarter-tablet">
     <div role="button" onClick={() => handleClick()} onKeyPress={() => handleClick()} tabIndex={0} className="group-button has-text-centered has-text-weight-bold has-background-light">
       <div className="image">
         <img src={imgUrl} alt="Group icon" className="group-selector-img" />
