@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 
-export const client = new Redis();
+export const client = new Redis({ password: process.env.redisPassword ? process.env.redisPassword : undefined });
 
 export async function getObject (key: string): Promise<any> {
   const raw = await client.get(key);
