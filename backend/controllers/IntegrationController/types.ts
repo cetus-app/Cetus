@@ -133,7 +133,7 @@ export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
     icon: "fab fa-discord",
     longDesc: "Discord bot long description. Insert some long winded statement about all the features it supports and about how it's generally pretty amazing.\n\nNew line test",
     cost: 5,
-    stripePriceId: "price_1GxbmxGqpYObsvKxGBZQBBS8"
+    stripePriceId: "price_1HDD5AGqpYObsvKxKJGb7sQu"
   },
   [IntegrationType.antiAdminAbuse]: {
     name: "Group defender",
@@ -141,6 +141,6 @@ export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
     icon: "fas fa-shield-alt",
     longDesc: "Group defender gives you peace of mind. It consists of advanced software, running on our servers. It works by monitoring your group audit logs and detecting suspicious actions or users exceed the limits you set.\n\nWhat else can it do?\nGroup defender can detect, report and revert admin abuse to allow your group to continue functioning - with minimal disruption.",
     cost: 5,
-    stripePriceId: "price_1GxblhGqpYObsvKxjWqDyycC"
+    stripePriceId: "price_1HDD4wGqpYObsvKxl7QjkTIM"
   }
 };
