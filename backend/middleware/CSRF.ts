@@ -22,6 +22,7 @@ export async function csrfMiddleware (req: Request, res: Response, next: NextFun
   // It's a GET, Options or HEAD etc.
   if (!req.cookies["CSRF-Token"]) {
     res.cookie("CSRF-Token", await generateToken(25), {
+      domain: process.env.cookieDomain,
       maxAge: 172800000,
       sameSite: "strict",
       httpOnly: false
