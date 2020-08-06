@@ -6,6 +6,6 @@ export const hashRounds = 12;
 export const authLife = 1209600000;
 export const cetusGroupId = 6245155;
 
-export const stripeGroupPriceId = "price_1Gxbg7GqpYObsvKxxgtbaRb5";
+export const stripeGroupPriceId = "price_1HDD2oGqpYObsvKxZ8LLqzyd";
 
 export const botGroupThreshold = 95;
