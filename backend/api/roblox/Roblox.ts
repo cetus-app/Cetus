@@ -4,7 +4,7 @@ import { BadRequestError, ForbiddenError } from "routing-controllers";
 
 import { cetusGroupId, redisPrefixes } from "../../constants";
 import database from "../../database";
-import { Group } from "../../entities";
+import { Bot, Group } from "../../entities";
 import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
@@ -42,11 +42,14 @@ export class InvalidRobloxCookie extends Error {
 }
 
 export default class Roblox {
-  constructor (group: Group) {
+  constructor (bot: Bot, group?: Group) {
+    this.bot = bot;
     this.group = group;
   }
 
-  private group: Group;
+  public bot: Bot;
+
+  private group?: Group;
 
   private cookie: string;
 
@@ -65,9 +68,9 @@ export default class Roblox {
     setInterval(() => this.refreshCookie().catch(async e => {
       if (e instanceof InvalidRobloxCookie) {
         // Clients are not instantiated without an active bot
-        this.group.bot!.dead = true;
-        await database.bots.save(this.group.bot!);
-        throw new Error(`Group ${this.group.id} has invalid cookie`);
+        this.bot!.dead = true;
+        await database.bots.save(this.bot);
+        throw new Error(`Bot ${this.bot.id} has invalid cookie`);
       }
 
       throw e;
@@ -90,6 +93,16 @@ export default class Roblox {
       if (!cookie) throw new Error("Failed to retrieve new cookie");
 
       this.cookie = cookie;
+
+      // Purge clients using this bot so they get the new cookie next time they are created
+      const entries = Array.from(clients.entries());
+      const purgeClients = entries.filter(([_groupId, client]) => client.bot.id === this.bot.id);
+      const groupIds = purgeClients.map(([groupId]) => groupId);
+      groupIds.forEach(id => clients.delete(id));
+
+      this.bot.cookie = cookie;
+      this.bot.cookieUpdated = new Date();
+      await database.bots.save(this.bot);
 
       return cookie;
     } catch (e) {
@@ -317,6 +330,8 @@ export default class Roblox {
   }
 
   async setRank (userId: number, rank: number): Promise<void> {
+    if (!this.group) throw new Error("Attempt to execute `setRank`, but no group set.");
+
     if (!min(rank, 0) || !max(rank, 255)) throw new TypeError("Rank must not be smaller than 0 or larger than 255");
 
     const roles = await Roblox.getRoles(this.group.robloxId);
@@ -343,6 +358,8 @@ export default class Roblox {
   }
 
   async exile (userId: number): Promise<void> {
+    if (!this.group) throw new Error("Attempt to execute `exile`, but no group set.");
+
     const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, { method: "DELETE" }).then(checkStatus).then(res => res && res.json());
 
     if (!data) throw new Error(`Unknown error while exiling ${userId} from group ${this.group.robloxId}`);
@@ -359,6 +376,8 @@ export default class Roblox {
   }
 
   async setShout (newShout: string): Promise<Shout> {
+    if (!this.group) throw new Error("Attempt to execute `setShout`, but no group set.");
+
     const body = { message: newShout };
     const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/status/`, {
       method: "PATCH",
@@ -385,7 +404,7 @@ export default class Roblox {
   }
 }
 
-const clients: Map<string, Roblox> = new Map();
+export const clients: Map<string, Roblox> = new Map();
 
 export const getGroupClient = async (groupId: string): Promise<Roblox> => {
   let client = clients.get(groupId);
@@ -396,7 +415,7 @@ export const getGroupClient = async (groupId: string): Promise<Roblox> => {
 
   if (!group.bot || group.bot.dead) throw new Error(`Group ${groupId} does not have active bot`);
 
-  client = new Roblox(group);
+  client = new Roblox(group.bot, group);
 
   return client.login(group.bot.cookie).then(() => {
     // Client was just defined
