@@ -95,7 +95,7 @@ export default class Account {
 
     // Send email
     try {
-      await request.userService.verifyEmail();
+      await request.userService.verifyEmail(user);
     } catch (e) {
       // Pass it to sentry or something in future - the user does not care about email verification errors for this
       console.log(e);
