@@ -5,9 +5,10 @@ import { QueueItem as QueueItemType } from "../../../api/types/Bot";
 
 export interface QueueItemProps {
   item: QueueItemType;
+  onMarkActive: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
-const QueueItem: FunctionComponent<QueueItemProps> = ({ item: { bot, group } }) => (
+const QueueItem: FunctionComponent<QueueItemProps> = ({ item: { bot, group }, onMarkActive }) => (
   <div className="card bot-queue-item">
     <div className="card-image">
       <figure className="image is-96x96">
@@ -30,7 +31,7 @@ const QueueItem: FunctionComponent<QueueItemProps> = ({ item: { bot, group } }) 
         {
         // Can't bother styling a button to look like an anchor tag
         // eslint-disable-next-line jsx-a11y/anchor-is-valid
-        }Mark as <a href="#">active</a> and remove from the queue
+        }Mark as <a href="#" onClick={onMarkActive}>active</a> and remove from the queue
       </div>
     </div>
   </div>

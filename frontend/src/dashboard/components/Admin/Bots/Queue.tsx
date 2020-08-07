@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 
 import "./Queue.scss";
+import { markBotActive } from "../../../api";
 import { queue as getQueue } from "../../../api/bots";
 import { QueueItem as QueueItemType } from "../../../api/types/Bot";
 import QueueItem from "./QueueItem";
@@ -20,6 +21,24 @@ const BotQueue: FunctionComponent = () => {
     );
   }
 
+  const handleMarkActive = async (groupId: string) => {
+    await markBotActive(groupId);
+
+    setQueue(prev => {
+      if (prev) {
+        const newQueue = prev.slice();
+        const index = newQueue.findIndex(i => i.group.id === groupId);
+
+        if (index >= 0) {
+          newQueue.splice(index, 1);
+          return newQueue;
+        }
+      }
+
+      return prev;
+    });
+  };
+
   return (
     <section className="section columns is-centered bot-queue">
       <div className="column is-10">
@@ -28,7 +47,7 @@ const BotQueue: FunctionComponent = () => {
         <div className="columns is-multiline">
           {queue.map(item => (
             <div key={item.group.id} className="column is-6 is-one-third-desktop is-3-widescreen">
-              <QueueItem item={item} />
+              <QueueItem item={item} onMarkActive={() => handleMarkActive(item.group.id)} />
             </div>
           ))}
         </div>

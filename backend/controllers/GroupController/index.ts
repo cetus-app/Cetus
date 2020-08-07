@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  Authorized,
   BadRequestError,
   Body,
   CurrentUser,
@@ -21,6 +22,7 @@ import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
+import { PermissionLevel } from "../../entities/User.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import stripe from "../../shared/stripe";
 import { UserRobloxGroup } from "../../types";
@@ -154,11 +156,11 @@ export default class Groups {
   @Get("/:id")
   @ResponseSchema(FullGroup)
   async getGroup (@CurrentUser({ required: true }) _user: User,
-                  @Params({
-                    required: true,
-                    validate: true
-                  }) { id }: IdParam,
-                  @Req() request: Request): Promise<FullGroup> {
+    @Params({
+      required: true,
+      validate: true
+    }) { id }: IdParam,
+    @Req() request: Request): Promise<FullGroup> {
     // Drops it if we've already responded, like for unlinked
     // Get specific group
     const group = await request.groupService.canAccessGroup(id, false);
@@ -182,10 +184,23 @@ export default class Groups {
   }
 
   @OpenAPI({ description: "Modifies the state of the currently deployed bot, for example by notifying our server that it has been accepted into the group." })
-  @Patch("/:groupId/bot")
+  @Authorized(PermissionLevel.admin)
+  @Patch("/:id/bot")
   @ResponseSchema(Group)
-  async updateBot (@CurrentUser({ required: true }) _user: User): Promise<any> {
-    return false;
+  async updateBot (@CurrentUser({ required: true }) _user: User, @Params({
+    required: true,
+    validate: true
+  }) { id }: IdParam): Promise<Bot> {
+    const group = await database.groups.findOne(id, { relations: ["bot"] });
+    if (!group) throw new NotFoundError("Group not found");
+
+    if (!group.bot) throw new BadRequestError("Group has no assigned bot");
+
+    group.botActive = true;
+
+    await database.groups.save(group);
+
+    return group.bot;
   }
 
   @OpenAPI({ description: "Removes a group and causes our bot account to leave." })
