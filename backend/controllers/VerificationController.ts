@@ -82,11 +82,20 @@ export default class VerificationController {
     const existing = await verifications.find(v => v.userId === user.id);
 
     if (existing) {
-      return {
-        rId,
-        code: typeof existing.code === "number" ? existing.code : undefined,
-        blurbCode: typeof existing.code === "string" ? existing.code : undefined
-      };
+      // If it's a string, it's a blurb code
+      // This is so we only return if it's the same type.
+      if (typeof existing.code === "string" && blurb) {
+        return {
+          rId,
+          blurbCode: existing.code
+        };
+      }
+      if (typeof existing.code === "number" && !blurb) {
+        return {
+          rId,
+          code: existing.code
+        };
+      }
     }
 
     const code = await verificationService.setNewCode(blurb, user.id, rId);

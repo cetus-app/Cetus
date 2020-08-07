@@ -86,7 +86,7 @@ export default class VerificationService {
     if (blurb) {
       const userBlurb = await Roblox.getBlurb(rId);
 
-      verificationIndex = verifications.findIndex(v => typeof v.code === "string" && userBlurb.includes(v.code));
+      verificationIndex = verifications.findIndex(v => typeof v.code === "string" && userBlurb.toLowerCase().includes(v.code));
     }
 
     // TypeScript bug? Variable is always assigned by code above

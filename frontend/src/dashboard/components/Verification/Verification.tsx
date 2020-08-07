@@ -4,6 +4,8 @@ import React, {
 
 import "./Verification.css";
 
+import { Link } from "react-router-dom";
+
 import {
   ApiError, check, startVerification, verifyBlurb
 } from "../../api";
@@ -44,8 +46,6 @@ const Verify: FunctionComponent = () => {
         else setError("Error occurred. Please try again");
       }
     }
-
-    setVerification(await startVerification(username, blurb));
   };
 
   const handleVerify = async (blurb: boolean) => {
