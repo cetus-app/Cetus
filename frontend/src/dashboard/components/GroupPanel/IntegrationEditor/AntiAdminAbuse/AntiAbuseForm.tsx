@@ -122,7 +122,7 @@ const AntiAbuseForm: FunctionComponent<AntiAbuseFormProps> = ({ integration, upd
                 At present we can only revert rank change abuse, and cannot guarantee that we&apos;ll catch everything.
               </small>
               <small className="help">
-                We take no responsibility for any damage incurred from failed reversion. <a href="/terms">Read more in our terms.</a>
+                We take no responsibility for any damage incurred from failed reversion. <a href="/policies">Read more in our terms.</a>
               </small>
             </div>
             <InputField label="Discord webhook (optional)" type="text" name="webhook" placeholder="https://discordapp.com/api/webhooks/xxxxxx/xxxxxxxxx" disabled={disabled} />

@@ -82,7 +82,7 @@ export const Register: FunctionComponent<RegisterProps> = ({ setUser }) => {
 
             <div className="field">
               <Checkbox name="acceptedTerms">
-                I agree to the <a href="/terms" target="_blank">Terms and conditions</a>.
+                I agree to the <a href="/policies#terms" target="_blank">Terms and conditions</a>.
               </Checkbox>
             </div>
 
