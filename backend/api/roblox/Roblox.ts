@@ -207,6 +207,21 @@ export default class Roblox {
   }
 
   static async getIdFromUsername (username: string): Promise<number | undefined> {
+    const key = redisPrefixes.usernameToIdCache + username;
+    const cached = await redis.get(key);
+    if (cached) return parseInt(cached, 10);
+
+    const id = await this.fetchIdFromUsername(username);
+
+    if (id) {
+      await redis.set(key, `${id}`, "EX", 60 * 60 * 24);
+      return id;
+    }
+
+    return undefined;
+  }
+
+  static async fetchIdFromUsername (username: string): Promise<number | undefined> {
     try {
       const data = await fetch(`${BASE_API_URL}/users/get-by-username?username=${username}`).then(checkStatus).then(res => res && res.json());
 

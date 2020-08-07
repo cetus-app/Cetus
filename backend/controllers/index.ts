@@ -7,11 +7,9 @@ import InternalController from "./InternalController";
 import KeyController from "./KeyController";
 import PaymentController from "./PaymentController";
 import RobloxV1Controller from "./RobloxController/v1";
-import SampleController from "./Sample.controller";
 import VerificationController from "./VerificationController";
 
 export default [
-  SampleController,
   VerificationController,
   GroupController,
   AccountController,
@@ -25,7 +23,6 @@ export default [
 ];
 
 export {
-  SampleController,
   VerificationController,
   GroupController,
   AccountController,

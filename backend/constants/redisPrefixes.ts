@@ -6,6 +6,7 @@ const REDIS_PREFIXES = {
   userGroupsCache: "userGroupsCache-",
   groupRolesCache: "groupRolesCache-",
   idToUsernameCache: "idToUsernameCache-",
+  usernameToIdCache: "usernameToIdCache-",
   userImageCache: "userImageCache-"
 };
 
