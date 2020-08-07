@@ -66,7 +66,7 @@ const IntegrationEditor: FunctionComponent = () => {
   }
 
   return (
-    <section className="section content">
+    <section className="container">
       {renderIntegration}
     </section>
   );

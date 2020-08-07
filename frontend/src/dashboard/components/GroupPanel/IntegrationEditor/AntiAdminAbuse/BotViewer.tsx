@@ -9,11 +9,11 @@ interface BotViewerProps {
 export const BotViewer: FunctionComponent<BotViewerProps> = ({ group: { bot, botActive } }) => (!bot ? null : (
   <div className="bot-viewer">
     <div className="media">
-      <figure className="media-left">
+      <div className="media-left">
         <p className="image is-64x64">
           <img src={`https://verify.nezto.re/api/roblox/${bot.robloxId}/image`} alt={bot.username} />
         </p>
-      </figure>
+      </div>
       <div className="media-content">
         <div className="columns">
           <div className="column is-3">
