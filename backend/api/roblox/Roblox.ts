@@ -9,7 +9,7 @@ import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import {
-  FullRobloxRole, RobloxGroup, RobloxUser, Shout, UserRobloxGroup
+  FullRobloxRole, GroupPermissions, RobloxGroup, RobloxUser, Shout, UserRobloxGroup
 } from "../../types";
 
 const fetch = (url: string, opt?: RequestInit) => {
@@ -400,6 +400,46 @@ export default class Roblox {
       message,
       poster,
       updated
+    };
+  }
+
+  // Undefined: not in group
+  // Returns an object of relevant permissions rather than Roblox's format.
+  async getPermissions (userId: number): Promise<GroupPermissions|undefined> {
+    if (!this.group) throw new Error("Attempt to execute `getPermissions`, but no group set.");
+    const rank = await Roblox.getUserGroup(userId, this.group.robloxId);
+    if (!rank) {
+      return undefined;
+    }
+    const roles = await Roblox.getRoles(this.group.robloxId);
+    if (!roles) throw new Error(`Unknown error occurred while getting roles in group ${this.group.robloxId}`);
+
+    const { id: roleId } = roles.find(r => r.rank === rank.rank) || {};
+
+    if (!roleId) throw new BadRequestError(`Role with rank ${rank} does not exist in group ${this.group.robloxId}`);
+
+    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/roles/${roleId}/permissions`).then(checkStatus).then(res => res && res.json());
+
+    if (data.errors && data.errors.length > 0) {
+      const err = data.errors[0];
+      if (err.code === 3) {
+        // Not allowed
+        return {
+          changeRank: false,
+          name: rank.role
+        };
+      }
+      throw new Error(`Error(s) occurred while getting permissions in ${this.group.robloxId}: ${err.message}`);
+    }
+    const { permissions: { groupPostsPermissions, groupMembershipPermissions, groupManagementPermissions }, role: { name } } = data;
+    return {
+      name,
+      viewShout: groupPostsPermissions.viewStatus,
+      postShout: groupPostsPermissions.postToStatus,
+      viewAudit: groupManagementPermissions.viewAuditLogs,
+      acceptMembers: groupMembershipPermissions.inviteMembers,
+      removeMembers: groupMembershipPermissions.removeMembers,
+      changeRank: groupMembershipPermissions.changeRank
     };
   }
 }

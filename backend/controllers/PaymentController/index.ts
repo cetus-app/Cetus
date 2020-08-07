@@ -141,6 +141,8 @@ export default class PaymentController {
     const bots = await database.bots.createQueryBuilder("bot")
       .select("bot.id", "id")
       .addSelect("COUNT(\"group\".id)", "groupCount")
+      .addSelect("bot.robloxId", "robloxId")
+      .addSelect("bot.dead", "dead")
       .leftJoin(Group, "group", "bot.id = \"group\".\"botId\"")
       .groupBy("bot.id")
       .getRawMany();
@@ -151,11 +153,13 @@ export default class PaymentController {
     if (!bot) {
       Sentry.captureMessage(`No bots with less than ${botGroupThreshold} groups assigned are available. Group ${group.id} is therefore missing bot. Please assign manually and create a new Roblox bot account`);
     }
-
     group.stripeSubscriptionId = subscription.id;
     group.integrations = integrations;
     group.bot = bot;
     await database.groups.save(group);
+
+    // Notify us
+    groupService.notifyDeploy(group);
 
     return { received: true };
   }

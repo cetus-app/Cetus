@@ -5,7 +5,7 @@ import {
 
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
-import { RobloxGroup } from "../../types";
+import { GroupPermissions, RobloxGroup } from "../../types";
 import { Bot } from "../BotController/types";
 import { PartialIntegration } from "../IntegrationController/types";
 
@@ -63,4 +63,9 @@ export class UnlinkedGroup {
   rank: number;
 
   role: string;
+}
+export class EnableBotResponse {
+  bot: Bot
+
+  permissions: GroupPermissions
 }

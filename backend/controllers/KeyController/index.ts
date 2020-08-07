@@ -26,8 +26,8 @@ export default class KeyController {
   @Post("/")
   @ResponseSchema(ApiKeyResponse)
   async addKey (@CurrentUser({ required: true }) _user: User,
-                @Body() { name, groupId }: ApiKeyRequest,
-                @Req() request: Request): Promise<ApiKeyResponse> {
+    @Body() { name, groupId }: ApiKeyRequest,
+    @Req() request: Request): Promise<ApiKeyResponse> {
     // Check they own it/have access
     // Throws an error if no access
     const grp = await request.groupService.canAccessGroup(groupId);
@@ -47,10 +47,10 @@ export default class KeyController {
   @Delete("/:id")
   @OnUndefined(204)
   async removeKey (@CurrentUser({ required: true }) user: User,
-                   @Params({
-                     required: true,
-                     validate: true
-                   }) { id }: DeleteKeyRequest): Promise<void> {
+    @Params({
+      required: true,
+      validate: true
+    }) { id }: DeleteKeyRequest): Promise<void> {
     const key = await database.keys.findOne(id, { relations: ["group", "group.owner"] });
 
     if (!key) throw new NotFoundError();

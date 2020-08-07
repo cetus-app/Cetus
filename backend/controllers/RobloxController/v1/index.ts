@@ -71,8 +71,8 @@ export default class RobloxV1 {
   @ResponseSchema(SetRankResponse)
   async setRank (
     @Params() { uRbxId }: UserRobloxIdParam,
-    @Body() { rank }: SetRankBody,
-    @CurrentGroup() group: Group
+      @Body() { rank }: SetRankBody,
+      @CurrentGroup() group: Group
   ): Promise<SetRankResponse> {
     const isMember = await Roblox.isMember(group.robloxId, uRbxId);
     if (!isMember) {

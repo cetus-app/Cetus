@@ -77,7 +77,7 @@ export default class Account {
   @ResponseSchema(PartialUser)
   async register (
     @Body() { email, password }: UserAccessBody,
-  @Req() request: Request
+      @Req() request: Request
   ): Promise<PartialUser> {
     // Check that email is not in use
     const existingUser = await database.users.findOne({ email });
@@ -126,8 +126,8 @@ export default class Account {
   @Get("/verify/:code")
   @Redirect(`${process.env.frontendUrl}?success=true`)
   async verify (@CurrentUser({ required: true }) _user: User,
-                @Params({ validate: true }) { code }: VerificationCode,
-                @Req() request: Request) {
+    @Params({ validate: true }) { code }: VerificationCode,
+    @Req() request: Request) {
     const succ = await request.userService.checkEmailCode(code);
     return `${process.env.frontendUrl}/dashboard?emailVerified=${succ}`;
   }
@@ -135,8 +135,8 @@ export default class Account {
   @Patch("/password")
   @OnUndefined(204)
   async changePassword (@CurrentUser({ required: true }) user: User,
-                        @Body() { currentPassword, password }: ChangePasswordBody,
-                @Req() request: Request) {
+    @Body() { currentPassword, password }: ChangePasswordBody,
+    @Req() request: Request) {
     const hashUser = await database.users.findOne({ id: user.id }, { select: ["hash"] });
     if (!hashUser || !hashUser.hash) {
       throw new InternalServerError("No hash obtained?");
@@ -161,8 +161,8 @@ export default class Account {
   @Patch("/email")
   @OnUndefined(204)
   async changeEmail (@CurrentUser({ required: true }) user: User,
-                        @Body() { email }: ChangeEmailBody,
-                        @Req() request: Request) {
+    @Body() { email }: ChangeEmailBody,
+    @Req() request: Request) {
     const newUser = { ...user };
     const isResend = email === user.email;
     if (isResend && user.emailVerified) {
@@ -189,8 +189,8 @@ export default class Account {
   @Patch("/reset")
   @OnUndefined(204)
   async forgotPassword (
-                        @Body() { email }: ForgotPasswordBody,
-                        @Req() request: Request
+  @Body() { email }: ForgotPasswordBody,
+    @Req() request: Request
   ) {
     // Additional values are selected for the email sender
     const user = await database.users.findOne({ email }, { select: ["hash", "id", "email", "robloxId"] });
@@ -216,8 +216,8 @@ export default class Account {
   @Patch("/finish-reset")
   @OnUndefined(204)
   async finishReset (
-      @Req() request: Request,
-      @Body() { password, token }: FinishPasswordBody
+  @Req() request: Request,
+    @Body() { password, token }: FinishPasswordBody
   ) {
     // Additional values are selected for the email sender
     const key = redisPrefixes.passwordReset + token;
@@ -244,9 +244,9 @@ export default class Account {
   @Delete("/")
   @OnUndefined(204)
   async deleteAccount (
-      @Req() request: Request,
-      @CurrentUser({ required: true }) user: User,
-      @Body() { password }: DeleteAccountBody
+  @Req() request: Request,
+    @CurrentUser({ required: true }) user: User,
+    @Body() { password }: DeleteAccountBody
   ) {
     console.log(`Deletion request received for ${user.id}`);
     const moreValues = await database.users.findOne({ id: user.id }, { select: ["hash"] });
@@ -270,9 +270,9 @@ export default class Account {
   @Post("/logout")
   @OnUndefined(204)
   async logout (
-      @Req() request: Request,
-      @CurrentUser({ required: true }) user: User,
-      @Body() { all }: SignOutBody
+  @Req() request: Request,
+    @CurrentUser({ required: true }) user: User,
+    @Body() { all }: SignOutBody
   ) {
     if (all) {
       const newUser = { ...user };

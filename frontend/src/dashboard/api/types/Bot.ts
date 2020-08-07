@@ -34,3 +34,17 @@ export interface QueueItem {
 
   bot: Bot;
 }
+interface GroupPermissions {
+  name: string,
+  viewShout?: boolean,
+  postShout?: boolean,
+  viewAudit?: boolean,
+  acceptMembers?: boolean,
+  removeMembers?: boolean,
+  changeRank: boolean
+}
+export interface EnableBotResponse {
+  bot: Bot
+
+  permissions: GroupPermissions
+}

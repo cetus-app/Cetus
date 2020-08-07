@@ -72,8 +72,8 @@ export default class Integrations {
   @Authorized()
   async addIntegration (
     @Params() { groupId }: GroupIdParam,
-    @Body() { type }: AddIntegrationBody,
-    @Req() { groupService }: Request
+      @Body() { type }: AddIntegrationBody,
+      @Req() { groupService }: Request
   ): Promise<PartialIntegration> {
     const group = await groupService.canAccessGroup(groupId);
 
@@ -118,8 +118,8 @@ export default class Integrations {
   @ResponseSchema(PartialIntegration)
   async updateType (
     @Params() { type }: IntegrationTypeParam,
-    @Body() { config }: EditIntegrationBody,
-    @CurrentGroup() group: Group
+      @Body() { config }: EditIntegrationBody,
+      @CurrentGroup() group: Group
   ): Promise<PartialIntegration> {
     const integration = await database.integrations.findOne({
       type,
@@ -158,7 +158,7 @@ export default class Integrations {
   @ResponseSchema(PartialIntegration)
   @Authorized()
   async editIntegration (
-      @Params() { id }: IdParam,
+    @Params() { id }: IdParam,
       @Body() { config }: EditIntegrationBody,
       @Req() request: Request
   ): Promise<PartialIntegration> {

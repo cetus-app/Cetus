@@ -29,9 +29,9 @@ export default class Bot {
   @Column({ type: "timestamptz" })
   cookieUpdated: Date;
 
-@Column({
-  nullable: false,
-  default: false
-})
+  @Column({
+    nullable: false,
+    default: false
+  })
   dead: boolean;
 }

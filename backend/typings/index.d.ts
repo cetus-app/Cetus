@@ -9,7 +9,7 @@ declare namespace Express {
 
 // See: https://docs.sentry.io/platforms/node/typescript/
 declare namespace NodeJS {
-    interface Global {
-      sentryRoot: string;
-    }
+  interface Global {
+    sentryRoot: string;
   }
+}

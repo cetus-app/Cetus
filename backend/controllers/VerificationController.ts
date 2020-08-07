@@ -57,9 +57,9 @@ export default class VerificationController {
   @ResponseSchema(StartResponse)
   async start (
     @QueryParams() { blurb }: StartQuery,
-    @Body() { username }: StartBody,
-    @Req() { verificationService }: Request,
-    @CurrentUser({ required: true }) user: User
+      @Body() { username }: StartBody,
+      @Req() { verificationService }: Request,
+      @CurrentUser({ required: true }) user: User
   ): Promise<StartResponse> {
     if (user.robloxId) throw new BadRequestError("Already verified");
 

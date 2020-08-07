@@ -24,7 +24,7 @@ const SideBar: FunctionComponent<SideBarProps> = props => {
         <ul className="menu-list">
           <NavLink to={`${url}/billing`} activeClassName="is-active">Billing</NavLink>
           <NavLink to={`${url}/unlink`} activeClassName="is-active">Unlink</NavLink>
-          <NavLink to={`${url}/help`} activeClassName="is-active">Get help</NavLink>
+          <a href={process.env.discordInvite} target="_blank" rel="noreferrer">Get help</a>
         </ul>
       </aside>
     </div>

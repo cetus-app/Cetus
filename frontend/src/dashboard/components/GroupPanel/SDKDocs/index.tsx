@@ -32,13 +32,13 @@ const SDKDocs: FunctionComponent<SDKDocsProps> = () => {
       <p>You can find the source code for our SDK here: <a href="https://github.com/cetus-app/cetus-rbx">Github repository</a>.
         If you need a hand using our SDK, <a href={process.env.discordInvite} target="_blank" rel="noreferrer">join our Discord</a>.
       </p>
-      <SDKTitle text="Getting started" size={2} />
-      <SDKTitle text="Installing the SDK" size={3} />
+      <SDKTitle text="1: Getting started" size={2} />
+      <SDKTitle text="1.1: Installing the SDK" size={3} />
       <p>There are two main ways to get our SDK. You clone the Github repository and use Rojo
         (Either directly or through Git submodules), or you can download a prebuilt Roblox model
         from our Github releases page. We recommend downloading a prebuilt release if you are not too experienced.
       </p>
-      <SDKTitle text="Using Rojo" size={4} />
+      <SDKTitle text="1.1.1: Using Rojo" size={4} />
       <p>Note: if you want to use <a href="https://rojo.space">Rojo</a> you must have it installed.</p>
       <p>To use it via. Rojo, navigate to your existing project directory and either:</p>
       <p><code>git clone https://github.com/cetus-app/cetus-rbx</code> or <code>git submodule add https://cetus-app/cetus-rbx</code></p>
@@ -46,7 +46,7 @@ const SDKDocs: FunctionComponent<SDKDocsProps> = () => {
         If not, you might need to add it as a source in your .project.json file.
       </p>
 
-      <SDKTitle text="Using Github releases" size={4} />
+      <SDKTitle text="1.1.2: Using Github releases" size={4} />
       <p>Using our prebuilt models is far simpler but means that you will need to update manually.</p>
       <p>You can find these on
         our <a target="_blank" rel="noreferrer" href="https://github.com/cetus-app/cetus-rbx/releases">releases page</a>.
@@ -55,7 +55,7 @@ const SDKDocs: FunctionComponent<SDKDocsProps> = () => {
       <p>In Studio, right click on where you want to insert the SDK and click &quot;Insert from file&quot;.
         Select the downloaded model, and you&apos;re ready to go!
       </p>
-      <SDKTitle text="Using the SDK" size={2} />
+      <SDKTitle text="2: Using the SDK" size={2} />
       <div className="notification is-warning">
         We do not apply Roblox&apos;s filtering to any of the response strings.
         You must filter text before displaying it to users!
@@ -78,7 +78,7 @@ const SDKDocs: FunctionComponent<SDKDocsProps> = () => {
       <p>Once you have required and configured the SDK, you can use it!
         This pattern, exporting a function, also means that you can have multiple SDK clients in the same script.
       </p>
-      <SDKTitle text="Errors" size={3} />
+      <SDKTitle text="2.1: Errors" size={3} />
       <p>Errors are returned with the following shape:</p>
       <pre className="code">
         {`{
@@ -91,8 +91,8 @@ const SDKDocs: FunctionComponent<SDKDocsProps> = () => {
       </pre>
       <p>Note: <code>message</code>is always returned unless it is an unauthorized error, in which case it may not be.</p>
       <p>Errors are not thrown using the Lua error function due to it&apos;s limitations, as it does not allow us to supply separate fields.</p>
-      <SDKTitle text="SDK API" size={2} />
-      <SDKTitle text="Methods" size={3} />
+      <SDKTitle text="3: SDK API" size={2} />
+      <SDKTitle text="3.1: Methods" size={3} />
       <p>You must call all methods with a semicolon, like: <code>cetus:getGroup()</code>.</p>
       <p>Remember: If displaying the text output from any of these, you <strong>must</strong> filter the text first!</p>
 

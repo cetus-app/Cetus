@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  Authorized,
   BadRequestError,
   Body,
   CurrentUser,
@@ -19,7 +18,7 @@ import {
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
-import Roblox from "../../api/roblox/Roblox";
+import Roblox, { getGroupClient } from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
 import { PermissionLevel } from "../../entities/User.entity";
@@ -28,7 +27,7 @@ import stripe from "../../shared/stripe";
 import { UserRobloxGroup } from "../../types";
 import { Bot } from "../BotController/types";
 import {
-  AddGroupBody, FullGroup, IdParam, PartialGroup, UnlinkedGroup
+  AddGroupBody, EnableBotResponse, FullGroup, IdParam, PartialGroup, UnlinkedGroup
 } from "./types";
 
 // For /unlinked & /:id
@@ -184,23 +183,39 @@ export default class Groups {
   }
 
   @OpenAPI({ description: "Modifies the state of the currently deployed bot, for example by notifying our server that it has been accepted into the group." })
-  @Authorized(PermissionLevel.admin)
   @Patch("/:id/bot")
-  @ResponseSchema(Group)
-  async updateBot (@CurrentUser({ required: true }) _user: User, @Params({
+  @ResponseSchema(EnableBotResponse)
+  async updateBot (@CurrentUser({ required: true }) user: User, @Params({
     required: true,
     validate: true
-  }) { id }: IdParam): Promise<Bot> {
-    const group = await database.groups.findOne(id, { relations: ["bot"] });
+  }) { id }: IdParam,
+    @Req() request: Request): Promise<EnableBotResponse> {
+    let group;
+    if (user.permissionLevel === PermissionLevel.admin) {
+      group = await database.groups.findOne({ id }, { relations: ["bot"] });
+    } else {
+      group = await request.groupService.canAccessGroup(id);
+    }
     if (!group) throw new NotFoundError("Group not found");
 
     if (!group.bot) throw new BadRequestError("Group has no assigned bot");
 
+    // Check it's in the group and has permissions
+    const client = await getGroupClient(group.id);
+    const perms = await client.getPermissions(group.bot.robloxId);
+    if (!perms) {
+      throw new BadRequestError(`The bot is not in the Roblox group.`);
+    } else if (!perms.changeRank) {
+      throw new BadRequestError("The bot must have permission to change ranks.");
+    }
     group.botActive = true;
 
     await database.groups.save(group);
 
-    return group.bot;
+    return {
+      bot: group.bot,
+      permissions: perms
+    };
   }
 
   @OpenAPI({ description: "Removes a group and causes our bot account to leave." })

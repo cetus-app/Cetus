@@ -1,6 +1,8 @@
 import { Request } from "express";
+import fetch from "node-fetch";
 import { ForbiddenError, NotFoundError } from "routing-controllers";
 
+import Roblox from "../api/roblox/Roblox";
 import database from "../database";
 import { Group } from "../entities";
 import User from "../entities/User.entity";
@@ -28,5 +30,48 @@ export default class GroupService {
       return grp;
     }
     throw new ForbiddenError("You do not have access to that group.");
+  }
+
+  async notifyDeploy (group: Group): Promise<void> {
+    const { alertWebhook } = process.env;
+    if (!alertWebhook) {
+      console.error(`Failed to send alert: No alertWebhook!`);
+      return undefined;
+    }
+    try {
+      const body: any = {
+        content: "New group added (Please deploy bot!)",
+        embeds: [
+          {
+            title: "New Group added",
+            description: `ID: \`${group.robloxId}\`\nInternal: ${group.id}`,
+            url: `https://www.roblox.com/groups/${group.robloxId}/-`,
+            fields: [],
+            color: 16689675
+          }
+        ]
+      };
+      if (group.bot) {
+        const botName = await Roblox.getUsernameFromId(group.bot.robloxId);
+        body.embeds[0].fields.push({
+          name: "Bot info",
+          value: `${botName || "Unknown"}(${group.bot.robloxId})\n[Profile link](https://roblox.com/users/${group.bot.robloxId}/profile)
+Internal: ${group.bot.id}, IsDead: ${group.bot.dead}`
+        });
+      } else {
+        body.embeds[0].fields.push({
+          name: "No bot deployed",
+          value: `This group does not have a bot assigned.`
+        });
+      }
+      await fetch(alertWebhook, {
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+        method: "POST"
+      });
+    } catch (e) {
+      console.error("AlertWebhookFail", e.message);
+    }
+    return undefined;
   }
 }
