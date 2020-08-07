@@ -29,13 +29,13 @@ export class AddBotBody {
   robloxId: number;
 
   @IsString()
-  @Length(700, 700)
+  @Length(700, 800)
   cookie: string;
 }
 
 export class UpdateBotBody {
   @IsString()
-  @Length(700, 700)
+  @Length(700, 800)
   @IsOptional()
   cookie?: string;
 
