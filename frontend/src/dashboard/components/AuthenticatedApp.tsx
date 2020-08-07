@@ -59,19 +59,21 @@ const AuthenticatedApp: FunctionComponent = () => {
         </Route>
 
         {user.permissionLevel === PermissionLevel.admin && (
-          <Fragment>
-            <Route path="/admin" exact>
-              <Admin />
-            </Route>
+          <Route path="/admin" exact>
+            <Admin />
+          </Route>
+        )}
 
-            <Route path="/admin/bots/manage">
-              <BotManagement />
-            </Route>
+        {user.permissionLevel === PermissionLevel.admin && (
+          <Route path="/admin/bots/manage">
+            <BotManagement />
+          </Route>
+        )}
 
-            <Route path="/admin/bots/queue">
-              <BotQueue />
-            </Route>
-          </Fragment>
+        {user.permissionLevel === PermissionLevel.admin && (
+          <Route path="/admin/bots/queue">
+            <BotQueue />
+          </Route>
         )}
 
         <Route exact path="/reset">
