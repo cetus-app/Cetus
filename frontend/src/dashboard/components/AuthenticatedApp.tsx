@@ -1,8 +1,7 @@
 import React, { Fragment, FunctionComponent, useContext } from "react";
-import {
-  Link, Redirect, Route, Switch
-} from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 
+import { PermissionLevel } from "../api/types";
 import UserContext from "../context/UserContext";
 import Account from "./Account";
 import Admin from "./Admin/Admin";
@@ -59,17 +58,21 @@ const AuthenticatedApp: FunctionComponent = () => {
           <Subscribe />
         </Route>
 
-        <Route path="/admin" exact>
-          <Admin />
-        </Route>
+        {user.permissionLevel === PermissionLevel.admin && (
+          <Fragment>
+            <Route path="/admin" exact>
+              <Admin />
+            </Route>
 
-        <Route path="/admin/bots/manage">
-          <BotManagement />
-        </Route>
+            <Route path="/admin/bots/manage">
+              <BotManagement />
+            </Route>
 
-        <Route path="/admin/bots/queue">
-          <BotQueue />
-        </Route>
+            <Route path="/admin/bots/queue">
+              <BotQueue />
+            </Route>
+          </Fragment>
+        )}
 
         <Route exact path="/reset">
           <p className="has-text-centered has-text-danger">You cannot reset a password while logged in.</p>

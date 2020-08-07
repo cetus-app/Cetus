@@ -1,3 +1,8 @@
+export enum PermissionLevel {
+  user,
+  admin
+}
+
 export interface PartialUser {
   email: string;
 
@@ -8,6 +13,8 @@ export interface PartialUser {
   robloxId?: number;
 
   discordId?: string;
+
+  permissionLevel: PermissionLevel;
 
   // it isn't a date when returned
   created: string
