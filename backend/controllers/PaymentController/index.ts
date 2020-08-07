@@ -10,13 +10,13 @@ import Stripe from "stripe";
 import { FindOneOptions } from "typeorm";
 
 import Roblox from "../../api/roblox/Roblox";
-import { botGroupThreshold, stripeGroupPriceId } from "../../constants";
+import { botGroupThreshold } from "../../constants";
 import database from "../../database";
 import { Group, Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import stripe from "../../shared/stripe";
-import { integrationDefault, integrationMeta } from "../IntegrationController/types";
+import { integrationDefault } from "../IntegrationController/types";
 import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./types";
 
 @JsonController("/payments")
@@ -25,9 +25,7 @@ export default class PaymentController {
   @UseBefore(csrfMiddleware)
   @ResponseSchema(SessionResponse)
   async createSession (
-    @Body() { groupId, integrations }: SessionBody,
-    @Req() { groupService }: Request,
-    @CurrentUser({ required: true }) user: User
+    @Body() { groupId, integrations }: SessionBody, @Req() { groupService }: Request, @CurrentUser({ required: true }) user: User
   ): Promise<SessionResponse> {
     if (!user.emailVerified) throw new ForbiddenError("Email not verified");
 
@@ -36,10 +34,22 @@ export default class PaymentController {
 
     const { name } = await Roblox.getGroup(group.robloxId) || {};
 
-    const integrationItems: Stripe.Checkout.SessionCreateParams.LineItem[] = integrations.map(integration => ({
-      quantity: 1,
-      price: integrationMeta[integration].stripePriceId
-    }));
+    const stripePrices = await stripe.prices.list({ expand: ["data.product"] });
+    const integrationPrices = stripePrices.data.filter(p => !!(p.product as Stripe.Product).metadata.type);
+
+    const integrationItems: Stripe.Checkout.SessionCreateParams.LineItem[] = integrations.map(integration => {
+      const price = integrationPrices.find(p => (p.product as Stripe.Product).metadata.type === integration);
+
+      if (!price) throw new InternalServerError("Unable to find price for integration. Contact support if the issue persists");
+
+      return {
+        quantity: 1,
+        price: price.id
+      };
+    });
+
+    const groupPrice = stripePrices.data.find(p => (p.product as Stripe.Product).metadata.group === "yes");
+    if (!groupPrice) throw new InternalServerError("Unable to find group price. Contact support if the issue persists");
 
     const { id } = await stripe.checkout.sessions.create({
       // Stripe only allows one of the two following
@@ -50,7 +60,7 @@ export default class PaymentController {
       payment_method_types: ["card"],
       line_items: [
         {
-          price: stripeGroupPriceId,
+          price: groupPrice.id,
           quantity: 1,
           description: `Group plan for ${name || group.robloxId}`
         },
@@ -70,9 +80,7 @@ export default class PaymentController {
   @UseBefore(bodyParser.raw({ type: "application/json" }))
   @ResponseSchema(CompleteSubscriptionResponse)
   async completeSubscription (
-    @HeaderParam("stripe-signature") stripeSig: string,
-    @Body() body: any,
-    @Req() { groupService }: Request
+    @HeaderParam("stripe-signature") stripeSig: string, @Body() body: any, @Req() { groupService }: Request
   ): Promise<CompleteSubscriptionResponse> {
     const { paymentCompleteStripeSecret } = process.env;
     if (!paymentCompleteStripeSecret) throw new InternalServerError("Fatal configuration error");
