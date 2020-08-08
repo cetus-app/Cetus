@@ -40,10 +40,10 @@ import {
 
 
 @JsonController("/integrations")
-@UseBefore(csrfMiddleware)
 export default class Integrations {
   @Get("/global/meta")
   @Authorized()
+  @UseBefore(csrfMiddleware)
   getMetas (): typeof integrationMeta {
     return integrationMeta;
   }
@@ -51,6 +51,7 @@ export default class Integrations {
   @Get("/:groupId")
   @ResponseSchema(PartialIntegration, { isArray: true })
   @Authorized()
+  @UseBefore(csrfMiddleware)
   async getEnabled (@Params() { groupId }: GroupIdParam, @Req() { groupService }: Request): Promise<PartialIntegration[]> {
     const group = await groupService.canAccessGroup(groupId);
     return group.integrations;
@@ -70,6 +71,7 @@ export default class Integrations {
   @Post("/:groupId")
   @ResponseSchema(PartialIntegration)
   @Authorized()
+  @UseBefore(csrfMiddleware)
   async addIntegration (
     @Params() { groupId }: GroupIdParam,
       @Body() { type }: AddIntegrationBody,
@@ -157,6 +159,7 @@ export default class Integrations {
   @Patch("/:id")
   @ResponseSchema(PartialIntegration)
   @Authorized()
+  @UseBefore(csrfMiddleware)
   async editIntegration (
     @Params() { id }: IdParam,
       @Body() { config }: EditIntegrationBody,
@@ -197,6 +200,7 @@ export default class Integrations {
 
   @Delete("/:id")
   @OnUndefined(204)
+  @UseBefore(csrfMiddleware)
   async removeIntegration (@CurrentUser({ required: true }) user: User, @Params() { id }: IdParam): Promise<void> {
     const integration = await database.integrations.findOne(id, { relations: ["group", "group.owner"] });
     if (!integration || !integration.stripeItemId) throw new NotFoundError();
