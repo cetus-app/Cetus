@@ -1,6 +1,8 @@
 import { Guild } from "eris";
 
-Guild.prototype.handleInvalidBindRole = async function handleInvalidBindRole ({ rank, roleId, exclusive }) {
+Guild.prototype.handleInvalidBindRole = async function handleInvalidBindRole ({
+  rank, roleId, exclusive, groupId
+}) {
   const config = await this.getConfigs();
   const binds = config.binds.slice();
 
@@ -18,6 +20,7 @@ The following bind has an invalid/nonexistent role set:
 Rank: ${rank}
 Role ID (invalid): ${roleId}
 Exclusive: ${exclusive ? "Yes" : "No"}.
+Group ID: ${groupId?.toString() || "Not set"}
 This can happen when a role is deleted after the bind is set.
 The bind was deleted, you may create a new one with a valid role.`);
   }

@@ -21,6 +21,7 @@ export interface DiscordBotConfig extends BaseIntegrationConfig {
     roleId: string;
     rank: number;
     exclusive: boolean;
+    groupId?: number;
   }[]
 }
 

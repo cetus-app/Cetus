@@ -91,6 +91,10 @@ export class DiscordBotConfigBindsBody {
 
   @IsBoolean()
   exclusive: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  groupId?: number;
 }
 
 export const integrationConfig: {[key in IntegrationType]: (typeof DiscordBotConfigBody|typeof AntiAbuseConfigBody)} = {
