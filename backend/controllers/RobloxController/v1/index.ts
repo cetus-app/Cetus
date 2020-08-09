@@ -45,7 +45,7 @@ export default class RobloxV1 {
     };
   }
 
-  @Delete("/exile/:uRbxid")
+  @Delete("/exile/:uRbxId")
   @ResponseSchema(ExileUserResponse)
   async exileUser (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<ExileUserResponse> {
     const isMember = await Roblox.isMember(group.robloxId, uRbxId);
