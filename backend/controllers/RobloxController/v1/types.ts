@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import {
-  IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsPositive, IsString, IsUrl, Max, Min, ValidateNested
+  IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, Max, Min, ValidateNested
 } from "class-validator";
 
 export class UserRobloxIdParam {
@@ -125,4 +125,33 @@ export class ExileUserResponse {
   @IsString()
   @IsNotEmpty()
   message: string;
+}
+
+export class GroupPermissions {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsBoolean()
+  @IsOptional()
+  viewShout?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  postShout?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  viewAudit?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  acceptMembers?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  removeMembers?: boolean;
+
+  @IsBoolean()
+  changeRank: boolean;
 }

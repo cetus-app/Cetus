@@ -59,3 +59,13 @@ export interface Shout {
   },
   updated: string
 }
+
+export interface GroupPermissions {
+  name: string,
+  viewShout?: boolean,
+  postShout?: boolean,
+  viewAudit?: boolean,
+  acceptMembers?: boolean,
+  removeMembers?: boolean,
+  changeRank: boolean
+}
