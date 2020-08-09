@@ -7,7 +7,7 @@ import "./Member";
 
 declare module "eris" {
   interface Guild {
-    fetchMember (id: string): Promise<Member>;
+    fetchMember (id: string): Promise<Member | undefined>;
 
     sendMemberMessage (id: string, ...messageArgs: Parameters<PrivateChannel["createMessage"]>): ReturnType<PrivateChannel["createMessage"]>;
 
@@ -31,6 +31,8 @@ declare module "eris" {
   }
 
   interface Member {
+    getName (): string;
+
     computeGroupRoles (): Promise<{ verified: boolean, add: Role[], remove: Role[], unusualConfig: boolean }>;
     setGroupRoles (): Promise<{ verified: boolean, added: Role[], removed: Role[], unusualConfig: boolean }>;
 

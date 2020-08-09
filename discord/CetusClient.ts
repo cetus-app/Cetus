@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {
-  ClientOptions, CommandClient, CommandClientOptions, EmbedOptions
+  ClientOptions, CommandClient, CommandClientOptions, EmbedOptions, User
 } from "eris";
 
 import commands from "./commands";
@@ -66,5 +66,17 @@ export default class CetusClient extends CommandClient {
       url: AQUARIUS_VERIFY_URL,
       ...options
     });
+  }
+
+  // TODO: Replace with regular expression?
+  public parseMention (mention: string): User | undefined {
+    if (!mention.startsWith("<@") || !mention.endsWith(">")) return undefined;
+
+    let id = mention.slice(2, -1);
+
+    // Mention includes exclamation mark if user has nickname
+    if (id.startsWith("!")) id = id.slice(1);
+
+    return this.users.get(id);
   }
 }

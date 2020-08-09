@@ -13,3 +13,8 @@ export interface SetShoutResponse {
   updated: string;
   success: boolean;
 }
+
+export interface ExileUserResponse {
+  success: boolean;
+  message: string;
+}

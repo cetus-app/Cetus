@@ -30,10 +30,14 @@ export default class ShoutCommand extends CetusCommand {
     await msg.channel.sendTyping();
 
     const link = await getLink(msg.author.id);
-    if (!link) return { embed: this.client.generateNotVerifiedEmbed() };
+    if (!link) {
+      reply.delete();
+      return { embed: this.client.generateNotVerifiedEmbed() };
+    }
 
     const permissions = await getPermissions(msg.member.guild.id, link.robloxId);
     if (!permissions.postShout) {
+      reply.delete();
       return { embed: this.client.generateErrorEmbed({ description: `You do not have permission to post shouts (your rank: \`${permissions.name}\`).` }) };
     }
 
@@ -64,7 +68,7 @@ export default class ShoutCommand extends CetusCommand {
       };
     } catch (e) {
       reply.delete();
-      return { embed: this.client.generateErrorEmbed({ description: "An error occurred while posting shout. Does the bot have permission to shout in the group? " }) };
+      return { embed: this.client.generateErrorEmbed({ description: "An error occurred while posting shout. Does the bot have permission to shout in the group?" }) };
     }
   }
 }
