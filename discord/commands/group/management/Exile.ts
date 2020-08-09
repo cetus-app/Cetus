@@ -1,5 +1,4 @@
 import { CommandGeneratorFunction } from "eris";
-import { Response } from "node-fetch";
 
 import { CetusCommand } from "../..";
 import CetusClient from "../../../CetusClient";
