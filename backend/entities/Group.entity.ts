@@ -49,7 +49,10 @@ export default class Group {
   integrations: Integration[];
 
   // Possible problem: What happens when Group ownership is transferred?
-  @ManyToOne(() => User, user => user.groups, { nullable: false })
+  @ManyToOne(() => User, user => user.groups, {
+    nullable: false,
+    onDelete: "CASCADE"
+  })
   owner: User;
 
   @ManyToOne(() => Bot)
