@@ -10,7 +10,15 @@ import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
 import { redis } from "../../../shared";
 import {
-  ExileUserResponse, GetRankResponse, RobloxGroup, SetRankBody, SetRankResponse, SetShoutBody, SetShoutResponse, UserRobloxIdParam
+  ExileUserResponse,
+  GetRankResponse,
+  GroupPermissions,
+  RobloxGroup,
+  SetRankBody,
+  SetRankResponse,
+  SetShoutBody,
+  SetShoutResponse,
+  UserRobloxIdParam
 } from "./types";
 
 @OpenAPI({ security: [{ apiKeyAuth: [] }] })
@@ -37,7 +45,7 @@ export default class RobloxV1 {
     };
   }
 
-  @Delete("/exile/:uRbxid")
+  @Delete("/exile/:uRbxId")
   @ResponseSchema(ExileUserResponse)
   async exileUser (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<ExileUserResponse> {
     const isMember = await Roblox.isMember(group.robloxId, uRbxId);
@@ -88,5 +96,18 @@ export default class RobloxV1 {
       success: true,
       message: "User's rank is updated"
     };
+  }
+
+  @Get("/permissions/:uRbxId")
+  @ResponseSchema(GroupPermissions)
+  async getPermissions (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<GroupPermissions> {
+    const client = await getGroupClient(group.id);
+    const permissions = await client.getPermissions(uRbxId);
+
+    if (!permissions) {
+      throw new BadRequestError("User is not a member of group");
+    }
+
+    return permissions;
   }
 }

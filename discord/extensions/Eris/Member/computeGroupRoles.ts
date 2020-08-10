@@ -1,7 +1,9 @@
 import { Member, Role } from "eris";
 
 import { getRank } from "../../../api";
-import { getLink } from "../../../api/aquarius";
+import { AquariusLink, getLink } from "../../../api/aquarius";
+import Roblox from "../../../api/roblox/Roblox";
+import { DiscordBotConfig } from "../../../api/types";
 
 Member.prototype.computeGroupRoles = async function computeGroupRoles () {
   const addRoles: Role[] = [];
@@ -36,6 +38,30 @@ Member.prototype.computeGroupRoles = async function computeGroupRoles () {
     removeRoles.push(role);
   };
 
+  const handleBind = async (bind: DiscordBotConfig["binds"][number], link: AquariusLink, linkedRank: number): Promise<void> => {
+    const role = this.guild.roles.get(bind.roleId);
+
+    if (role) {
+      let rank: number;
+
+      if (!bind.groupId) rank = linkedRank;
+      else {
+        const userGroup = await Roblox.getUserGroup(link.robloxId, bind.groupId);
+        if (!userGroup || userGroup.rank < 1) return;
+
+        rank = userGroup.rank;
+      }
+
+      const eligible = bind.exclusive ? rank === bind.rank : rank >= bind.rank;
+
+      if (eligible && !this.roles.includes(role.id)) addRole(role);
+
+      if (!eligible && this.roles.includes(role.id)) removeRole(role);
+    } else {
+      this.guild.handleInvalidBindRole(bind);
+    }
+  };
+
   const { binds, unverifiedRoleId, verifiedRoleId } = await this.guild.getConfigs();
   const link = await getLink(this.id);
 
@@ -65,28 +91,15 @@ Member.prototype.computeGroupRoles = async function computeGroupRoles () {
   }
 
   if (link) {
-    const { rank, role: groupRole } = await getRank(this.guild.id, link.robloxId);
+    const { rank: linkedRank, role: linkedGroupRole } = await getRank(this.guild.id, link.robloxId);
 
-    if (rank > 0) {
-      if (binds.length > 0) {
-        for (const bind of binds) {
-          const role = this.guild.roles.get(bind.roleId);
-
-          if (role) {
-            const eligible = bind.exclusive ? rank === bind.rank : rank >= bind.rank;
-
-            if (eligible && !this.roles.includes(role.id)) addRole(role);
-
-            if (!eligible && this.roles.includes(role.id)) removeRole(role);
-          } else {
-            this.guild.handleInvalidBindRole(bind);
-          }
-        }
-      }
-
-      const namedRole = this.guild.roles.find(r => r.name.toLowerCase() === groupRole.toLowerCase());
-      if (namedRole && !this.roles.includes(namedRole.id)) addRole(namedRole);
+    if (binds.length > 0) {
+      const promises: Promise<void>[] = binds.map(b => handleBind(b, link, linkedRank));
+      await Promise.all(promises);
     }
+
+    const namedRole = this.guild.roles.find(r => r.name.toLowerCase() === linkedGroupRole.toLowerCase());
+    if (namedRole && !this.roles.includes(namedRole.id)) addRole(namedRole);
   }
 
   return {
