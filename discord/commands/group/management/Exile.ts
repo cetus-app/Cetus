@@ -2,7 +2,7 @@ import { CommandGeneratorFunction } from "eris";
 
 import { CetusCommand } from "../..";
 import CetusClient from "../../../CetusClient";
-import { exileUser, getPermissions } from "../../../api";
+import { ApiError, exileUser, getPermissions } from "../../../api";
 import { getLink } from "../../../api/aquarius";
 import Roblox from "../../../api/roblox/Roblox";
 
@@ -65,7 +65,7 @@ export default class ExileCommand extends CetusCommand {
     await reply.edit("Attempting to exile user..");
 
     try {
-      const result = await exileUser(msg.member.guild.id, targetRbxId);
+      const { message } = await exileUser(msg.member.guild.id, targetRbxId);
 
       if (mentionedUser && discordKick === "yes") {
         await reply.edit("Kicking user from Discord guild..");
@@ -78,14 +78,19 @@ export default class ExileCommand extends CetusCommand {
       return {
         embed: this.client.generateEmbed({
           title: "Exiled user",
-          description: mentionedUser && discordKick === "yes" ? "Exiled user from linked group and kicked from Discord guild" : result.message
+          description: mentionedUser && discordKick === "yes" ? "Exiled user from linked group and kicked from Discord guild" : message
         })
       };
     } catch (e) {
       reply.delete();
 
-      if (e.message && typeof e.message === "string" && e.message.toLowerCase().includes("not a member")) {
-        return { embed: this.client.generateErrorEmbed({ description: "That user is not a member of the linked group." }) };
+      if (e instanceof ApiError) {
+        const { message } = await e.response.json();
+
+        // TODO: Add `error` codes on "public" API endpoints?
+        if (message && typeof message === "string" && message.toLowerCase().includes("not a member")) {
+          return { embed: this.client.generateErrorEmbed({ description: "That user is not a member of the linked group." }) };
+        }
       }
 
       return { embed: this.client.generateErrorEmbed({ description: "An error occurred while exiling user. Does the bot have permission to remove users from the group?" }) };
