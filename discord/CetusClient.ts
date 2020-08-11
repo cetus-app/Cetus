@@ -19,7 +19,7 @@ export default class CetusClient extends CommandClient {
   private registerEvents (): void {
     this.on("guildMemberAdd", (...params) => guildMemberAdd(this, ...params));
     this.on("messageCreate", (...params) => messageCreate(...params));
-    this.on("error", (...params) => error(...params));
+    this.on("error", (...params) => error(this, ...params));
   }
 
   private registerCommands (): void {
