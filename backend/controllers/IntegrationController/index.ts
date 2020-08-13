@@ -24,8 +24,7 @@ import database from "../../database";
 import CurrentGroup from "../../decorators/CurrentGroup";
 import { Group, Integration } from "../../entities";
 import { csrfMiddleware } from "../../middleware/CSRF";
-import { CustomValidationError } from "../../shared";
-import stripe from "../../shared/stripe";
+import { CustomValidationError, stripe } from "../../shared";
 import {
   AddIntegrationBody,
   AntiAbuseConfigBody,

@@ -15,7 +15,7 @@ import database from "../../database";
 import { Group, Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
-import stripe from "../../shared/stripe";
+import { stripe } from "../../shared";
 import { integrationDefault } from "../IntegrationController/types";
 import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./types";
 

@@ -23,7 +23,7 @@ import database from "../../database";
 import { Group, User } from "../../entities";
 import { PermissionLevel } from "../../entities/User.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
-import stripe from "../../shared/stripe";
+import { stripe } from "../../shared";
 import { UserRobloxGroup } from "../../types";
 import { Bot } from "../BotController/types";
 import {
