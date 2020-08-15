@@ -1,6 +1,6 @@
 {
   "name": "cetus-backend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The backend for Cetus",
   "scripts": {
     "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
@@ -57,7 +57,7 @@
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.8.1",
     "routing-controllers-openapi": "^2.0.0",
-    "stripe": "^8.78.0",
+    "stripe": "^8.86.0",
     "swagger-ui-express": "^4.1.4",
     "typeorm": "^0.2.24"
   }

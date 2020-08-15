@@ -22,6 +22,7 @@ const Subscribe: FunctionComponent = () => {
   const [stripeLoading, setStripeLoading] = useState(false);
   const [error, setError] = useState("");
   const [group, setGroup] = useState<FullGroup>();
+  const [discountCode, setDiscountCode] = useState<string>("");
   const [cart, setCart] = useState<Map<IntegrationType, IntegrationInfo>>(new Map());
 
   const query = new URLSearchParams(search);
@@ -42,7 +43,6 @@ const Subscribe: FunctionComponent = () => {
 
     get();
   }, []);
-
   const toggleItem = (type: IntegrationType, info: IntegrationInfo) => {
     if (!cart.has(type)) {
       setCart(prev => {
@@ -65,7 +65,8 @@ const Subscribe: FunctionComponent = () => {
     try {
       const { sessionId } = await createSession({
         groupId,
-        integrations: Array.from(cart.keys())
+        integrations: Array.from(cart.keys()),
+        discountCode: discountCode || undefined
       });
 
       const stripe = await stripePromise;
@@ -121,11 +122,20 @@ const Subscribe: FunctionComponent = () => {
             <p>Access to one group (which includes API access and our Lua SDK) is always part of your subscription</p>
           </div>
         </div>
+        <div className="columns is-centered">
+          <div className="column is-3">
+            <div className="has-text-centered">
+              <div className="field username-field">
+                <label className="label"><i className="fas fa-tags" /> Discount code (optional)</label>
 
-        <div className="has-text-centered">
-          <button type="submit" className={`button is-primary checkout-button${stripeLoading ? " is-loading" : ""}`} disabled={stripeLoading} onClick={handleCheckout}>Continue to checkout</button>
+                <div className="control">
+                  <input type="text" className="input" value={discountCode} onChange={e => setDiscountCode(e.target.value)} />
+                </div>
+              </div>
+              <button type="submit" className={`button is-primary checkout-button${stripeLoading ? " is-loading" : ""}`} disabled={stripeLoading} onClick={handleCheckout}>Continue to checkout</button>
+            </div>
+          </div>
         </div>
-
         {error && <p className="has-text-centered has-text-danger">{error}</p>}
       </div>
     </section>
