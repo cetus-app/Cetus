@@ -70,7 +70,7 @@ export default class AuthController {
 
   @Get("/callback/discord")
   // @Redirect(`${frontendUrl}/auth/discord?bot=:bot&success=:success`)
-  @Redirect(frontendUrl!)
+  @Redirect(`${frontendUrl}/dashboard`)
   async discordCallback (
     @QueryParams() {
       // eslint-disable-next-line @typescript-eslint/naming-convention
