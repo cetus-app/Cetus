@@ -1,5 +1,5 @@
 import {
-  ArrayUnique, IsEnum, IsNotEmpty, IsString, IsUUID
+  ArrayUnique, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID
 } from "class-validator";
 
 import { IntegrationType } from "../../entities/Integration.entity";
@@ -11,6 +11,10 @@ export class SessionBody {
   @IsEnum(IntegrationType, { each: true })
   @ArrayUnique()
   integrations: IntegrationType[]
+
+  @IsString()
+  @IsOptional()
+  discountCode?: string
 }
 
 export class SessionResponse {

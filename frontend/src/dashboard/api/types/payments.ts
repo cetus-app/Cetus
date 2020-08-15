@@ -4,6 +4,8 @@ export interface SessionBody {
   groupId: string;
 
   integrations: IntegrationType[];
+
+  discountCode?: string;
 }
 
 export interface SessionResponse {
