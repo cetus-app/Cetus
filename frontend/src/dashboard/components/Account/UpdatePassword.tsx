@@ -20,7 +20,7 @@ const UpdatePassword: FunctionComponent<UpdatePasswordProps> = ({ handleDone }) 
       currentPassword: ""
     }}
     validationSchema={Yup.object({
-      currentPassword: PasswordValidation,
+      currentPassword: PasswordValidation.notRequired(),
       newPassword: PasswordValidation,
       confirmNewPassword: PasswordValidation
     })}
@@ -51,7 +51,10 @@ const UpdatePassword: FunctionComponent<UpdatePasswordProps> = ({ handleDone }) 
       <div className="columns">
         <div className="column is-6">
           <Form>
-
+            <p>
+              If you created your account by connecting to Discord and have not set your password yet,
+              leave the <code>Current password</code> field blank.
+            </p>
             <InputField label="Current password" type="password" name="currentPassword" placeholder="Your current password" />
             <InputField label="New password" type="password" name="newPassword" placeholder="Enter your new password" />
             <InputField label="Confirm new password" type="password" name="confirmNewPassword" placeholder="Confirm your new password" />

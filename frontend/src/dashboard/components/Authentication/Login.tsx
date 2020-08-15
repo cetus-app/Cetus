@@ -1,6 +1,7 @@
 import { Form, Formik } from "formik";
 import React, { FunctionComponent, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
+import discordLogo from "url:../../assets/discord_logo_white.svg";
 import * as Yup from "yup";
 import "./auth.css";
 
@@ -67,6 +68,8 @@ export const Login: FunctionComponent<LoginProps> = ({ setUser }) => {
             </div>
 
             <button type="submit" className="button is-fullwidth is-primary">Login</button>
+            <p className="has-text-centered">or</p>
+            <a href={`${process.env.BACKEND_URL}/auth/discord`} className="button is-fullwidth discord-login-button">Login with <img src={discordLogo} alt="Discord" /></a>
           </Form>
         </Formik>
       </div>

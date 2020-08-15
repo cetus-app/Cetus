@@ -115,7 +115,7 @@ export default class Account {
       throw new ForbiddenError("Incorrect email or password");
     }
 
-    const isCorrect = await compare(password, existingUser.hash);
+    const isCorrect = existingUser.hash ? await compare(password, existingUser.hash) : false;
     if (!isCorrect) {
       throw new ForbiddenError("Incorrect email or password");
     }
@@ -138,11 +138,11 @@ export default class Account {
   async changePassword (@CurrentUser({ required: true }) user: User,
     @Body() { currentPassword, password }: ChangePasswordBody,
     @Req() request: Request) {
-    const hashUser = await database.users.findOne({ id: user.id }, { select: ["hash"] });
-    if (!hashUser || !hashUser.hash) {
+    const hashUser = await database.users.findOne({ id: user.id }, { select: ["id", "hash"] });
+    if (!hashUser) {
       throw new InternalServerError("No hash obtained?");
     }
-    if (!await compare(currentPassword, hashUser.hash)) {
+    if (hashUser.hash && (!currentPassword || !await compare(currentPassword, hashUser.hash))) {
       throw new ForbiddenError("Incorrect current password");
     }
     const newPassHash = await hash(password, hashRounds);
@@ -255,7 +255,7 @@ export default class Account {
       throw new Error("Failed to retrieve user for deletion?");
     }// TODO; Cancel stripe billing
     const { hash: userHash } = moreValues;
-    const isCorrect = await compare(password, userHash);
+    const isCorrect = userHash ? await compare(password, userHash) : false;
     if (!isCorrect) {
       throw new ForbiddenError("Incorrect password");
     }

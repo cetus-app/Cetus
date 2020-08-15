@@ -16,8 +16,10 @@ import {
   UseBefore
 } from "routing-controllers";
 
+import { getLink } from "../../api/aquarius";
 import Discord, { BASE_OAUTH2_URL } from "../../api/discord/Discord";
 import database from "../../database";
+import { User } from "../../entities";
 import { DiscordBotConfig, IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import checkStatus from "../../shared/util/fetchCheckStatus";
@@ -58,7 +60,7 @@ export default class AuthController {
     if (!groupKey) {
       const plainState = encodeURIComponent(token);
 
-      return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${scope}&response_type=code&state=${plainState}&redirect_uri=${redirect}`;
+      return `${BASE_OAUTH2_URL}/authorize?client_id=${discordClientId}&scope=${scope}&response_type=code&state=${plainState}&prompt=none&redirect_uri=${redirect}`;
     }
 
     // Bot join OAuth2 flow
@@ -74,7 +76,8 @@ export default class AuthController {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       code, state, guild_id
     }: DiscordOAuth2CallbackQuery,
-    @CookieParam("state") cookieState: string
+    @CookieParam("state") cookieState: string,
+    @Req() { userService }: Request
   ): Promise<{ bot: boolean, success: boolean }> {
     if (!discordClientId || !discordClientSecret || !discordBotApiKey) {
       throw new InternalServerError("Fatal configuration error");
@@ -100,20 +103,27 @@ export default class AuthController {
         throw new ForbiddenError();
       }
 
-      const user = await database.users.findOne({ email });
+      let user = await database.users.findOne({ email });
 
-      if (user && !user.emailVerified) user.emailVerified = true;
-
-      // Handle new users by Discord later; figure out password setting
-      if (!user) {
-        // user = new User();
-        // user.email = email;
-        // user.emailVerified = true;
-        throw new ForbiddenError();
+      if (user && (!user.emailVerified || !user.discordId)) {
+        if (!user.emailVerified) user.emailVerified = true;
+        if (!user.discordId) user.discordId = id;
+        await database.users.save(user);
       }
 
-      user.discordId = id;
-      await database.users.save(user);
+      if (!user) {
+        user = new User();
+        user.email = email;
+        user.emailVerified = true;
+        user.discordId = id;
+
+        const link = await getLink(id);
+        if (link) user.robloxId = link.robloxId;
+
+        await database.users.save(user);
+      }
+
+      await userService.completeAuthentication(user);
 
       return {
         bot: false,

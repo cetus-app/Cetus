@@ -7,7 +7,8 @@ const REDIS_PREFIXES = {
   groupRolesCache: "groupRolesCache-",
   idToUsernameCache: "idToUsernameCache-",
   usernameToIdCache: "usernameToIdCache-",
-  userImageCache: "userImageCache-"
+  userImageCache: "userImageCache-",
+  aquariusLink: "aquarius-link-"
 };
 
 export default REDIS_PREFIXES;
