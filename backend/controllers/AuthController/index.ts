@@ -30,7 +30,7 @@ const {
   discordClientId, discordClientSecret, backendUrl, frontendUrl, discordBotUrl, discordBotApiKey
 } = process.env;
 const scope = "identify email";
-const botScope = "bot";
+const botScope = `${scope} bot`;
 const redirect = `${backendUrl}/auth/callback/discord`;
 
 @Controller("/auth")
