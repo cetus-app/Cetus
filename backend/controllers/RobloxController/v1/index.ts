@@ -105,7 +105,15 @@ export default class RobloxV1 {
     const permissions = await client.getPermissions(uRbxId);
 
     if (!permissions) {
-      throw new BadRequestError("User is not a member of group");
+      return {
+        name: "Guest",
+        changeRank: false,
+        acceptMembers: false,
+        postShout: false,
+        removeMembers: false,
+        viewAudit: false,
+        viewShout: false
+      };
     }
 
     return permissions;
