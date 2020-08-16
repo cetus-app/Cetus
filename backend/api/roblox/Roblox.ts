@@ -441,14 +441,19 @@ export default class Roblox {
         // Not allowed
         return {
           changeRank: false,
-          name: rank.role
+          name: rank.role,
+          rank: rank.rank
         };
       }
       throw new Error(`Error(s) occurred while getting permissions in ${this.group.robloxId}: ${err.message}`);
     }
-    const { permissions: { groupPostsPermissions, groupMembershipPermissions, groupManagementPermissions }, role: { name } } = data;
+    const {
+      permissions: { groupPostsPermissions, groupMembershipPermissions, groupManagementPermissions },
+      role: { name, rank: roleRank }
+    } = data;
     return {
       name,
+      rank: roleRank,
       viewShout: groupPostsPermissions.viewStatus,
       postShout: groupPostsPermissions.postToStatus,
       viewAudit: groupManagementPermissions.viewAuditLogs,

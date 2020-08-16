@@ -107,6 +107,7 @@ export default class RobloxV1 {
     if (!permissions) {
       return {
         name: "Guest",
+        rank: 0,
         changeRank: false,
         acceptMembers: false,
         postShout: false,

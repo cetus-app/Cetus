@@ -132,6 +132,10 @@ export class GroupPermissions {
   @IsNotEmpty()
   name: string;
 
+  @IsNumber()
+  @Min(0)
+  rank: number;
+
   @IsBoolean()
   @IsOptional()
   viewShout?: boolean;
