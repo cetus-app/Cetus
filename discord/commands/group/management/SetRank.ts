@@ -2,7 +2,9 @@ import { CommandGeneratorFunction } from "eris";
 
 import { CetusCommand } from "../..";
 import CetusClient from "../../../CetusClient";
-import { ApiError, getPermissions, setRank } from "../../../api";
+import {
+  ApiError, getPermissions, getRank, setRank
+} from "../../../api";
 import { getLink } from "../../../api/aquarius";
 import Roblox from "../../../api/roblox/Roblox";
 
@@ -67,6 +69,12 @@ export default class SetRankCommand extends CetusCommand {
       }
 
       targetRbxId = id;
+    }
+
+    const targetMembership = await getRank(msg.member.guild.id, targetRbxId);
+    if (targetMembership.rank >= permissions.rank) {
+      reply.delete();
+      return { embed: this.client.generateErrorEmbed({ description: `You do not have permission to change ranks (your rank: \`${permissions.name}\`).` }) };
     }
 
     await reply.edit("Attempting to change user's rank..");
