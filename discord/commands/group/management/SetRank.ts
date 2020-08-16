@@ -43,7 +43,7 @@ export default class SetRankCommand extends CetusCommand {
     }
 
     const permissions = await getPermissions(msg.member.guild.id, link.robloxId);
-    if (!permissions.changeRank) {
+    if (!permissions.changeRank || rank >= permissions.rank) {
       reply.delete();
       return { embed: this.client.generateErrorEmbed({ description: `You do not have permission to change ranks (your rank: \`${permissions.name}\`).` }) };
     }
