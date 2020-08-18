@@ -54,6 +54,10 @@ export default class RobloxV1 {
     }
 
     const client = await getGroupClient(group.id);
+    if (client.bot.robloxId === uRbxId) {
+      throw new BadRequestError("Cannot exile group bot account");
+    }
+
     await client.exile(uRbxId);
     return {
       success: true,

@@ -2,7 +2,9 @@ import { CommandGeneratorFunction } from "eris";
 
 import { CetusCommand } from "../..";
 import CetusClient from "../../../CetusClient";
-import { ApiError, exileUser, getPermissions } from "../../../api";
+import {
+  ApiError, exileUser, getPermissions, getRank
+} from "../../../api";
 import { getLink } from "../../../api/aquarius";
 import Roblox from "../../../api/roblox/Roblox";
 
@@ -60,6 +62,12 @@ export default class ExileCommand extends CetusCommand {
       }
 
       targetRbxId = id;
+    }
+
+    const targetMembership = await getRank(msg.member.guild.id, targetRbxId);
+    if (targetMembership.rank >= permissions.rank) {
+      reply.delete();
+      return { embed: this.client.generateErrorEmbed({ description: `You do not have permission to exile users (your rank: \`${permissions.name}\`).` }) };
     }
 
     await reply.edit("Attempting to exile user..");
