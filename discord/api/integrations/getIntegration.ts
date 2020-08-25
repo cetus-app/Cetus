@@ -5,7 +5,7 @@ import { getObject, setObject } from "../../shared/redis";
 import { DiscordIntegration } from "../types";
 
 export const fetchIntegration = async (guildId: string): Promise<DiscordIntegration> => (
-  authFetch(`${process.env.backendUrl}/integrations/type/"DISCORD_BOT"`, guildId)
+  authFetch(`${process.env.backendUrl}/integrations/type/DISCORD_BOT`, guildId)
     .then(res => res.json())
     .catch(e => {
       if (e instanceof ApiError && (e.response.status === 401 || e.response.status === 403 || e.response.status === 404)) {
