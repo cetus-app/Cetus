@@ -1,5 +1,8 @@
 import error from "./error";
 import guildMemberAdd from "./guildMemberAdd";
 import messageCreate from "./messageCreate";
+import ready from "./ready";
 
-export { guildMemberAdd, messageCreate, error };
+export {
+  error, guildMemberAdd, messageCreate, ready
+};

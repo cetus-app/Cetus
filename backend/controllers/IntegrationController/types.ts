@@ -77,6 +77,10 @@ export class DiscordBotConfigBody {
   @IsOptional()
   unverifiedRoleId?: string;
 
+  @IsString()
+  @IsOptional()
+  prefix?: string;
+
   @ValidateNested({ each: true })
   @Type(() => DiscordBotConfigBindsBody)
   binds: DiscordBotConfigBindsBody[]
