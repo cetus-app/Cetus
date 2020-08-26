@@ -4,7 +4,7 @@ import { InvalidApiKeyError, client as redis } from "../../shared";
 import { DiscordBotConfig, DiscordIntegration } from "../types";
 
 export const updateIntegration = async (guildId: string, config: Partial<DiscordBotConfig>): Promise<DiscordIntegration> => (
-  authFetch(`${process.env.backendUrl}/integrations/type/"DISCORD_BOT"`, guildId, {
+  authFetch(`${process.env.backendUrl}/integrations/type/DISCORD_BOT`, guildId, {
     method: "PATCH",
     body: { config }
   })
