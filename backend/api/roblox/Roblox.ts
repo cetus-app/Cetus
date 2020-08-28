@@ -64,7 +64,9 @@ export default class Roblox {
       if (e instanceof ExternalHttpError && e.response.status === 401) throw new InvalidRobloxCookie("Invalid login cookie");
       throw e;
     }
-
+    /*
+    TEMP
+    todo: refactor classes
     setInterval(() => this.refreshCookie().catch(async e => {
       if (e instanceof InvalidRobloxCookie) {
         // Clients are not instantiated without an active bot
@@ -76,7 +78,7 @@ export default class Roblox {
       throw e;
     // 24 hours
     }), 1000 * 60 * 60 * 24);
-
+    */
 
     return undefined;
   }

@@ -249,7 +249,7 @@ export default class Account {
     @Body() { password }: DeleteAccountBody
   ) {
     console.log(`Deletion request received for ${user.id}`);
-    const moreValues = await database.users.findOne({ id: user.id }, { select: ["hash"] });
+    const moreValues = await database.users.findOne({ id: user.id }, { select: ["hash", "id"] });
     if (!moreValues) {
       throw new Error("Failed to retrieve user for deletion?");
     }// TODO; Cancel stripe billing

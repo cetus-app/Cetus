@@ -57,12 +57,11 @@ export default class UserService {
       // Set to `lax` so cookie is sent on initial navigation (for email verification and such)
       sameSite: "lax"
     });
-    return {
-      email: user.email,
-      id: user.id,
-      created: user.created,
-      robloxId: user.robloxId
-    };
+    const newUser = { ...user };
+    delete newUser.auth;
+    delete newUser.hash;
+    delete newUser.groups;
+    return newUser;
   }
 
   // Option to pass user for endpoints like login or register where one isn't set on request
@@ -79,6 +78,7 @@ export default class UserService {
         name = info.name;
       }
     }
+    console.log(`Sending email to ${name} (${targetUser.email})`);
 
     const toSend:any = { ...content };
     toSend.name = name;
@@ -119,7 +119,7 @@ export default class UserService {
   async verifyEmail (userOverride?: User): Promise<boolean> {
     const user = userOverride || this.request.user;
     if (!user) {
-      throw new Error("Cannot verify email - no user on request.");
+      throw new Error("Cannot send verification email - no user on request.");
     }
     const key = redisPrefixes.emailVerification + user.id;
 
@@ -138,7 +138,7 @@ export default class UserService {
       }
     }
     const code = await generateToken(50);
-    const sent = await this.sendVerificationEmail(code);
+    const sent = await this.sendVerificationEmail(code, userOverride);
     if (sent) {
       const values: EmailVerification = {
         code,
@@ -176,7 +176,7 @@ export default class UserService {
     return false;
   }
 
-  private sendVerificationEmail (code: string): Promise<string|boolean> {
+  private sendVerificationEmail (code: string, user?: User): Promise<string|boolean> {
     const url = `${process.env.backendUrl}/account/verify/${encodeURIComponent(code)}`;
     return this.sendEmail(EmailGroup.account, {
       title: "Verify your email",
@@ -184,6 +184,7 @@ export default class UserService {
       buttonText: "Verify your email",
       buttonUrl: url,
       text: `Click the button below to complete your email verification. Can't use the button? Copy this link into your Browser: <a href="${url}">${url}</a>`
-    });
+    },
+    user);
   }
 }
