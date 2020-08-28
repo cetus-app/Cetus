@@ -1,6 +1,6 @@
 import {
   IsAscii, IsBoolean, IsDate,
-  IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, IsUUID, maxLength, MaxLength, MinLength
+  IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUrl, IsUUID, MaxLength, MinLength, ValidateIf
 } from "class-validator";
 
 // TODO: Combine common fields?
@@ -62,9 +62,10 @@ export class ChangePasswordBody {
   password: string
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  @ValidateIf(body => body.currentPassword !== "")
   @MinLength(5)
-  currentPassword: string
+  currentPassword?: string
 }
 export class ForgotPasswordBody {
   @IsEmail()

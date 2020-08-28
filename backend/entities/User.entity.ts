@@ -38,9 +38,10 @@ export default class User {
   // The Bcrypt hash of the password. These are always 60 characters long.
   @Column({
     length: 60,
-    select: false
+    select: false,
+    nullable: true
   })
-  hash: string;
+  hash?: string;
 
   @Column({
     length: 50,

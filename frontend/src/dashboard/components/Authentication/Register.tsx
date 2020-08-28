@@ -2,7 +2,9 @@
 import { Form, Formik } from "formik";
 import React, { FunctionComponent, useState } from "react";
 import { Redirect } from "react-router-dom";
+import discordLogo from "url:../../assets/discord_logo_white.svg";
 import * as Yup from "yup";
+
 import "./auth.css";
 
 import registerPost from "../../api/authentication/register";
@@ -87,6 +89,9 @@ export const Register: FunctionComponent<RegisterProps> = ({ setUser }) => {
             </div>
 
             <button type="submit" className="button is-fullwidth is-primary">Get started</button>
+            <p className="has-text-centered">or</p>
+            <a href={`${process.env.BACKEND_URL}/auth/discord`} className="button is-fullwidth discord-login-button">Register with <img src={discordLogo} alt="Discord" /></a>
+            <p className="has-text-centered">Clicking the button above implies that you agree to our <a href="/policies#terms" target="_blank">Terms and conditions</a></p>
           </Form>
         </Formik>
       </div>

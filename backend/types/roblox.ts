@@ -61,6 +61,7 @@ export interface Shout {
 }
 export interface GroupPermissions {
   name: string,
+  rank: number,
   viewShout?: boolean,
   postShout?: boolean,
   viewAudit?: boolean,

@@ -15,7 +15,7 @@ import database from "../../database";
 import { Group, Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
-import stripe from "../../shared/stripe";
+import { stripe } from "../../shared";
 import { integrationDefault } from "../IntegrationController/types";
 import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./types";
 
@@ -25,7 +25,7 @@ export default class PaymentController {
   @UseBefore(csrfMiddleware)
   @ResponseSchema(SessionResponse)
   async createSession (
-    @Body() { groupId, integrations }: SessionBody, @Req() { groupService }: Request, @CurrentUser({ required: true }) user: User
+    @Body() { groupId, integrations, discountCode }: SessionBody, @Req() { groupService }: Request, @CurrentUser({ required: true }) user: User
   ): Promise<SessionResponse> {
     if (!user.emailVerified) throw new ForbiddenError("Email not verified");
 
@@ -50,8 +50,7 @@ export default class PaymentController {
 
     const groupPrice = stripePrices.data.find(p => (p.product as Stripe.Product).metadata.group === "yes");
     if (!groupPrice) throw new InternalServerError("Unable to find group price. Contact support if the issue persists");
-
-    const { id } = await stripe.checkout.sessions.create({
+    const sessionInfo: Stripe.Checkout.SessionCreateParams = {
       // Stripe only allows one of the two following
       // Stripe complains if value is `null` (thus make sure to set it to `undefined` instead)
       // `||` because `??` does not do anything for booleans
@@ -70,7 +69,19 @@ export default class PaymentController {
       metadata: { groupId: group.id },
       success_url: `${process.env.frontendUrl}/dashboard/groups/${group.id}?stripe_session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.frontendUrl}/dashboard/subscribe/${group.id}?success=false`
-    });
+    };
+    // Coupon codes
+    if (discountCode) {
+      const promotionCodes = await stripe.promotionCodes.list({ code: discountCode });
+      if (promotionCodes.data.length === 0) {
+        throw new BadRequestError("Invalid Coupon code");
+      } else {
+        const couponCode = promotionCodes.data[0].coupon.id;
+        sessionInfo.subscription_data = { coupon: couponCode };
+      }
+    }
+
+    const { id } = await stripe.checkout.sessions.create(sessionInfo);
 
     return { sessionId: id };
   }

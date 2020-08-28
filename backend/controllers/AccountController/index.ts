@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { compare, hash } from "bcrypt";
 import { Request } from "express";
 import {
@@ -24,7 +25,7 @@ import { EmailGroup, hashRounds, redisPrefixes } from "../../constants";
 import database from "../../database";
 import { User } from "../../entities";
 import { csrfMiddleware } from "../../middleware/CSRF";
-import { redis } from "../../shared";
+import { redis, stripe } from "../../shared";
 import generateToken from "../../shared/util/generateToken";
 import { getAuthFromRequest } from "../../shared/util/getAuth";
 import {
@@ -114,7 +115,7 @@ export default class Account {
       throw new ForbiddenError("Incorrect email or password");
     }
 
-    const isCorrect = await compare(password, existingUser.hash);
+    const isCorrect = existingUser.hash ? await compare(password, existingUser.hash) : false;
     if (!isCorrect) {
       throw new ForbiddenError("Incorrect email or password");
     }
@@ -137,11 +138,11 @@ export default class Account {
   async changePassword (@CurrentUser({ required: true }) user: User,
     @Body() { currentPassword, password }: ChangePasswordBody,
     @Req() request: Request) {
-    const hashUser = await database.users.findOne({ id: user.id }, { select: ["hash"] });
-    if (!hashUser || !hashUser.hash) {
+    const hashUser = await database.users.findOne({ id: user.id }, { select: ["id", "hash"] });
+    if (!hashUser) {
       throw new InternalServerError("No hash obtained?");
     }
-    if (!await compare(currentPassword, hashUser.hash)) {
+    if (hashUser.hash && (!currentPassword || !await compare(currentPassword, hashUser.hash))) {
       throw new ForbiddenError("Incorrect current password");
     }
     const newPassHash = await hash(password, hashRounds);
@@ -254,7 +255,7 @@ export default class Account {
       throw new Error("Failed to retrieve user for deletion?");
     }// TODO; Cancel stripe billing
     const { hash: userHash } = moreValues;
-    const isCorrect = await compare(password, userHash);
+    const isCorrect = userHash ? await compare(password, userHash) : false;
     if (!isCorrect) {
       throw new ForbiddenError("Incorrect password");
     }
@@ -264,6 +265,17 @@ export default class Account {
       subject: "Account deleted",
       text: `We're sorry to see you go :(<br>Following your request (authenticated with your password) we have deleted your account and all groups on our service. We'll also cancel your billing with our payments provider, Stripe, shortly.<br>This is a permanent change that cannot be reversed. As per our Privacy Policy, your data will not be retained except as required for billing/regulatory compliance. If you did not make this change, <a href="mailto:account@cetus.app">Contact us</a> <strong>immediately</strong> by email or by <a href="${discordInvite}">joining our Discord.</a>`
     });
+
+    if (user.stripeCustomerId) {
+      try {
+        await stripe.customers.del(user.stripeCustomerId);
+      } catch (e) {
+        Sentry.captureException(e);
+
+        throw new InternalServerError("An error occurred while deleting your active subscriptions. Please contuct support if the issue persists");
+      }
+    }
+
     await database.users.remove(user);
   }
 

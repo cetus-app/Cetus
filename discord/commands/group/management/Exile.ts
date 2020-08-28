@@ -2,7 +2,9 @@ import { CommandGeneratorFunction } from "eris";
 
 import { CetusCommand } from "../..";
 import CetusClient from "../../../CetusClient";
-import { exileUser, getPermissions } from "../../../api";
+import {
+  ApiError, exileUser, getPermissions, getRank
+} from "../../../api";
 import { getLink } from "../../../api/aquarius";
 import Roblox from "../../../api/roblox/Roblox";
 
@@ -12,7 +14,7 @@ export default class ExileCommand extends CetusCommand {
       aliases: ["groupkick"],
       caseInsensitive: true,
       cooldown: 1000 * 60,
-      description: "Exile/kick a user from linked group. Supply a Roblox username or mention a Discord user to exile them.",
+      description: "Exile/kick a user from linked group. Supply a Roblox username or mention a Discord user to exile them. Can also kick Discord user if a mention/ping is supplied (disabled by default).",
       guildOnly: true
     }, client);
   }
@@ -21,9 +23,9 @@ export default class ExileCommand extends CetusCommand {
     // `guildOnly` option should prevent this
     if (!msg.member) throw new Error("This command can only be ran in guilds");
 
-    const [target] = args;
+    const [target, discordKick] = args;
     if (!target || target.trim().length <= 0) {
-      return { embed: this.client.generateErrorEmbed({ description: "This command requires one argument; a Roblox username or a Discord user mention" }) };
+      return { embed: this.client.generateErrorEmbed({ description: "This command requires one argument; a Roblox username or a Discord user mention. You can also (optionally) set `discordKick` (second argument) to `yes` or `no` (will kick user from Discord if mention is supplied, defaults to `no`)" }) };
     }
 
     const reply = await msg.channel.createMessage("Checking account link and permissions..");
@@ -62,12 +64,18 @@ export default class ExileCommand extends CetusCommand {
       targetRbxId = id;
     }
 
+    const targetMembership = await getRank(msg.member.guild.id, targetRbxId);
+    if (targetMembership.rank >= permissions.rank) {
+      reply.delete();
+      return { embed: this.client.generateErrorEmbed({ description: `You do not have permission to exile users (your rank: \`${permissions.name}\`).` }) };
+    }
+
     await reply.edit("Attempting to exile user..");
 
     try {
-      const result = await exileUser(msg.member.guild.id, targetRbxId);
+      const { message } = await exileUser(msg.member.guild.id, targetRbxId);
 
-      if (mentionedUser) {
+      if (mentionedUser && discordKick === "yes") {
         await reply.edit("Kicking user from Discord guild..");
         const targetMember = await msg.member.guild.fetchMember(mentionedUser.id);
         if (targetMember) await targetMember.kick(`Exiled/kicked by ${msg.member.getName()}`);
@@ -78,14 +86,19 @@ export default class ExileCommand extends CetusCommand {
       return {
         embed: this.client.generateEmbed({
           title: "Exiled user",
-          description: mentionedUser ? "Exiled user from linked group and kicked from Discord guild" : result.message
+          description: mentionedUser && discordKick === "yes" ? "Exiled user from linked group and kicked from Discord guild" : message
         })
       };
     } catch (e) {
       reply.delete();
 
-      if (e.message && typeof e.message === "string" && e.message.toLowerCase().includes("not a member")) {
-        return { embed: this.client.generateErrorEmbed({ description: "That user is not a member of the linked group." }) };
+      if (e instanceof ApiError) {
+        const { message } = await e.response.json();
+
+        // TODO: Add `error` codes on "public" API endpoints?
+        if (message && typeof message === "string" && message.toLowerCase().includes("not a member")) {
+          return { embed: this.client.generateErrorEmbed({ description: "That user is not a member of the linked group." }) };
+        }
       }
 
       return { embed: this.client.generateErrorEmbed({ description: "An error occurred while exiling user. Does the bot have permission to remove users from the group?" }) };

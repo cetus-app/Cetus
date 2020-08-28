@@ -4,6 +4,7 @@ export interface DiscordBotConfig extends BaseIntegrationConfig {
   guildId?: string;
   verifiedRoleId?: string;
   unverifiedRoleId?: string;
+  prefix?: string;
   binds: {
     roleId: string;
     rank: number;

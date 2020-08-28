@@ -6,7 +6,9 @@ import {
 
 import commands from "./commands";
 import { AQUARIUS_VERIFY_URL, BRAND_COLOURS } from "./constants";
-import { error, guildMemberAdd, messageCreate } from "./events";
+import {
+  error, guildMemberAdd, messageCreate, ready
+} from "./events";
 
 export default class CetusClient extends CommandClient {
   constructor (token: string, options?: ClientOptions, commandOptions?: CommandClientOptions) {
@@ -17,9 +19,10 @@ export default class CetusClient extends CommandClient {
   }
 
   private registerEvents (): void {
+    this.on("ready", (...params) => ready(this, ...params));
     this.on("guildMemberAdd", (...params) => guildMemberAdd(this, ...params));
     this.on("messageCreate", (...params) => messageCreate(...params));
-    this.on("error", (...params) => error(...params));
+    this.on("error", (...params) => error(this, ...params));
   }
 
   private registerCommands (): void {
