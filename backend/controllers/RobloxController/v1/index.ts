@@ -4,7 +4,7 @@ import {
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
-import Roblox, { getGroupClient } from "../../../api/roblox/Roblox";
+import Roblox from "../../../api/roblox/Roblox";
 import { redisPrefixes } from "../../../constants";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
@@ -37,7 +37,7 @@ export default class RobloxV1 {
   @Patch("/shout")
   @ResponseSchema(SetShoutResponse)
   async postShout (@CurrentGroup() group: Group, @Body() { message }: SetShoutBody): Promise<SetShoutResponse> {
-    const client = await getGroupClient(group.id);
+    const client = await Roblox.getClient(group.id);
     const newShout = await client.setShout(message);
     return {
       success: true,
@@ -53,8 +53,8 @@ export default class RobloxV1 {
       throw new BadRequestError("User is not a member of group");
     }
 
-    const client = await getGroupClient(group.id);
-    if (client.bot.robloxId === uRbxId) {
+    const client = await Roblox.getClient(group.id);
+    if (client.bot.dbBot.robloxId === uRbxId) {
       throw new BadRequestError("Cannot exile group bot account");
     }
 
@@ -91,7 +91,7 @@ export default class RobloxV1 {
       throw new BadRequestError("User is not a member of group");
     }
 
-    const client = await getGroupClient(group.id);
+    const client = await Roblox.getClient(group.id);
 
     await client.setRank(uRbxId, rank);
     await redis.del(redisPrefixes.userGroupsCache + uRbxId);
@@ -105,7 +105,7 @@ export default class RobloxV1 {
   @Get("/permissions/:uRbxId")
   @ResponseSchema(GroupPermissions)
   async getPermissions (@Params() { uRbxId }: UserRobloxIdParam, @CurrentGroup() group: Group): Promise<GroupPermissions> {
-    const client = await getGroupClient(group.id);
+    const client = await Roblox.getClient(group.id);
     const permissions = await client.getPermissions(uRbxId);
 
     if (!permissions) {

@@ -1,18 +1,19 @@
 import { max, min } from "class-validator";
-import realFetch, { Headers, RequestInit, Response } from "node-fetch";
+import realFetch, { Headers, RequestInit } from "node-fetch";
 import { BadRequestError, ForbiddenError } from "routing-controllers";
 
-import { cetusGroupId, redisPrefixes } from "../../constants";
+import { redisPrefixes } from "../../constants";
 import database from "../../database";
-import { Bot, Group } from "../../entities";
+import { Group } from "../../entities";
 import { ExternalHttpError, redis } from "../../shared";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import {
   FullRobloxRole, GroupPermissions, RobloxGroup, RobloxUser, Shout, UserRobloxGroup
 } from "../../types";
+import RobloxBot from "./RobloxBot";
 
-const fetch = (url: string, opt?: RequestInit) => {
+export const fetch = (url: string, opt?: RequestInit) => {
   const newOpt = opt || {};
 
   console.log(`${newOpt.method || "GET"} ${url}`);
@@ -31,127 +32,35 @@ export const GROUPS_API_URL = "https://groups.roblox.com";
 export const THUMBNAILS_API_URL = "https://thumbnails.roblox.com";
 export const AUTH_API_URL = "https://auth.roblox.com";
 
-export class InvalidRobloxCookie extends Error {
-  constructor (...params: ConstructorParameters<typeof Error>) {
-    super(...params);
-
-    Error.captureStackTrace(this, ExternalHttpError);
-
-    this.name = "InvalidRobloxCookie";
-  }
-}
-
 export default class Roblox {
-  constructor (bot: Bot, group?: Group) {
+  readonly bot: RobloxBot;
+
+  private readonly group: Group;
+
+  private static readonly instances: Map<string, Roblox> = new Map<string, Roblox>();
+
+  private constructor (bot: RobloxBot, group: Group) {
     this.bot = bot;
     this.group = group;
   }
 
-  public bot: Bot;
+  static async getClient (groupId: string): Promise<Roblox> {
+    let client = this.instances.get(groupId);
 
-  private group?: Group;
+    if (!client) {
+      const group = await database.groups.getGroupWithCookie(groupId);
 
-  private cookie: string;
+      if (!group) throw new Error(`Group ${groupId} not found`);
 
-  private csrfToken: string;
+      if (!group.bot || group.bot.dead) throw new Error(`Group ${groupId} does not have active bot`);
 
-  async login (cookie: string): Promise<void> {
-    this.cookie = cookie;
+      const botClient = await RobloxBot.getClient(group.bot);
+      client = new Roblox(botClient, group);
 
-    try {
-      await this.authHttp(`${GROUPS_API_URL}/v1/groups/${cetusGroupId}/audit-log`).then(checkStatus).then(res => res && res.json());
-    } catch (e) {
-      if (e instanceof ExternalHttpError && e.response.status === 401) throw new InvalidRobloxCookie("Invalid login cookie");
-      throw e;
-    }
-    /*
-    TEMP
-    todo: refactor classes
-    setInterval(() => this.refreshCookie().catch(async e => {
-      if (e instanceof InvalidRobloxCookie) {
-        // Clients are not instantiated without an active bot
-        this.bot!.dead = true;
-        await database.bots.save(this.bot);
-        throw new Error(`Bot ${this.bot.id} has invalid cookie`);
-      }
-
-      throw e;
-    // 24 hours
-    }), 1000 * 60 * 60 * 24);
-    */
-
-    return undefined;
-  }
-
-  async refreshCookie (): Promise<string> {
-    try {
-      const res = await this.authHttp("https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate", { method: "POST" }).then(checkStatus);
-
-      const cookies = res?.headers.get("set-cookie");
-
-      // Definitely not from Noblox source
-      const cookie = cookies?.match(/\.ROBLOSECURITY=(.*?);/)?.[1];
-
-      if (!cookie) throw new Error("Failed to retrieve new cookie");
-
-      this.cookie = cookie;
-
-      // Purge clients using this bot so they get the new cookie next time they are created
-      const entries = Array.from(clients.entries());
-      const purgeClients = entries.filter(([_groupId, client]) => client.bot.id === this.bot.id);
-      const groupIds = purgeClients.map(([groupId]) => groupId);
-      groupIds.forEach(id => clients.delete(id));
-
-      this.bot.cookie = cookie;
-      this.bot.cookieUpdated = new Date();
-      await database.bots.save(this.bot);
-
-      return cookie;
-    } catch (e) {
-      // Roblox responds with bad request for invalid authentication on this endpoint
-      if (e instanceof ExternalHttpError && e.response.status === 400) throw new InvalidRobloxCookie("Current cookie is invalid");
-      throw e;
-    }
-  }
-
-  async authHttp (url: string, opts: RequestInit = {}): Promise<Response> {
-    const newOpts = opts;
-    newOpts.headers = new Headers(opts.headers);
-
-    if (this.cookie) newOpts.headers.append("Cookie", `.ROBLOSECURITY=${this.cookie}`);
-
-    if (!this.csrfToken) {
-      try {
-        const res = await fetch(`${AUTH_API_URL}/v2/logout`, {
-          method: "POST",
-          headers: newOpts.headers
-        }).then(checkStatus);
-
-        if (!res) throw new Error("Unknown error occurred while fetching CSRF token");
-      } catch (e) {
-        if (e instanceof ExternalHttpError && Roblox.csrfFailed(e.response)) this.csrfToken = e.response.headers.get("x-csrf-token") || "";
-        else throw e;
-      }
+      this.instances.set(group.id, client);
     }
 
-    newOpts.headers.set("x-csrf-token", this.csrfToken);
-
-    return fetch(url, newOpts).then(res => {
-      if (Roblox.csrfFailed(res)) {
-        const header = res.headers.get("x-csrf-token");
-        if (!header) throw new ExternalHttpError(res, "CSRF token validation failed, but was unable to retrieve new token");
-
-        this.csrfToken = header;
-
-        return this.authHttp(url, opts);
-      }
-
-      return res;
-    });
-  }
-
-  static csrfFailed (res: Response): boolean {
-    return res.status === 403 && res.statusText.toLowerCase().includes("token validation failed");
+    return client;
   }
 
   static async getUsernameFromId (id: number): Promise<string | undefined> {
@@ -359,7 +268,7 @@ export default class Roblox {
 
     const body = JSON.stringify({ roleId });
 
-    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, {
+    const data = await this.bot.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, {
       method: "PATCH",
       body
     }).then(checkStatus).then(res => res && res.json());
@@ -377,7 +286,7 @@ export default class Roblox {
   async exile (userId: number): Promise<void> {
     if (!this.group) throw new Error("Attempt to execute `exile`, but no group set.");
 
-    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, { method: "DELETE" }).then(checkStatus).then(res => res && res.json());
+    const data = await this.bot.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/users/${userId}`, { method: "DELETE" }).then(checkStatus).then(res => res && res.json());
 
     if (!data) throw new Error(`Unknown error while exiling ${userId} from group ${this.group.robloxId}`);
 
@@ -396,7 +305,7 @@ export default class Roblox {
     if (!this.group) throw new Error("Attempt to execute `setShout`, but no group set.");
 
     const body = { message: newShout };
-    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/status/`, {
+    const data = await this.bot.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/status/`, {
       method: "PATCH",
       body: JSON.stringify(body)
     }).then(checkStatus).then(res => res && res.json());
@@ -435,7 +344,7 @@ export default class Roblox {
 
     if (!roleId) throw new BadRequestError(`Role with rank ${rank} does not exist in group ${this.group.robloxId}`);
 
-    const data = await this.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/roles/${roleId}/permissions`).then(checkStatus).then(res => res && res.json());
+    const data = await this.bot.authHttp(`${GROUPS_API_URL}/v1/groups/${this.group.robloxId}/roles/${roleId}/permissions`).then(checkStatus).then(res => res && res.json());
 
     if (data.errors && data.errors.length > 0) {
       const err = data.errors[0];
@@ -465,32 +374,3 @@ export default class Roblox {
     };
   }
 }
-
-export const clients: Map<string, Roblox> = new Map();
-
-export const getGroupClient = async (groupId: string): Promise<Roblox> => {
-  let client = clients.get(groupId);
-  if (client) return client;
-
-  const group = await database.groups.getGroupWithCookie(groupId);
-  if (!group) throw new Error(`Group ${groupId} not found`);
-
-  if (!group.bot || group.bot.dead) throw new Error(`Group ${groupId} does not have active bot`);
-
-  client = new Roblox(group.bot, group);
-
-  return client.login(group.bot.cookie).then(() => {
-    // Client was just defined
-    clients.set(group.id, client!);
-    return client!;
-  }).catch(async e => {
-    if (e instanceof InvalidRobloxCookie) {
-      // Litterally a condition for this
-      group.bot!.dead = true;
-      await database.bots.save(group.bot!);
-      throw new Error(`Group ${groupId} has invalid cookie`);
-    }
-
-    throw e;
-  });
-};

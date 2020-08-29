@@ -18,7 +18,7 @@ import {
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
-import Roblox, { getGroupClient } from "../../api/roblox/Roblox";
+import Roblox from "../../api/roblox/Roblox";
 import database from "../../database";
 import { Group, User } from "../../entities";
 import { PermissionLevel } from "../../entities/User.entity";
@@ -201,7 +201,7 @@ export default class Groups {
     if (!group.bot) throw new BadRequestError("Group has no assigned bot");
 
     // Check it's in the group and has permissions
-    const client = await getGroupClient(group.id);
+    const client = await Roblox.getClient(group.id);
     const perms = await client.getPermissions(group.bot.robloxId);
     if (!perms) {
       throw new BadRequestError(`The bot is not in the Roblox group.`);

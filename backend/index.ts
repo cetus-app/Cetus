@@ -17,7 +17,7 @@ createConnection().then(async connection => {
   const bots = await connection.getRepository(Bot).find({ select: ["id", "robloxId", "cookie", "cookieUpdated", "dead"] });
 
   const clients = await initialiseBots(bots);
-  const ids = clients.map(c => c.bot.robloxId).join(", ");
+  const ids = clients.map(c => c.dbBot.robloxId).join(", ");
 
-  console.log(`Attempted to initialise following bots (successful unless there is an error above):\n${ids}`);
+  console.log(`Successfully initialised the following bots:\n${ids}`);
 });
