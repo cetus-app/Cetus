@@ -26,7 +26,6 @@ interface GroupPanelProps {
 const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
   const { groupId } = useParams();
   const { path } = useRouteMatch();
-  const { push } = useHistory();
   const [group, setGroup] = useState<FullGroup|null>(null);
   const [error, setError] = useState<string|undefined>();
 
@@ -34,7 +33,6 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
     (async function getGroupInfo () {
       try {
         const groupInfo = await getGroup(groupId);
-        if (!groupInfo.stripeSubscriptionId) push(`/subscribe/${groupId}`);
         setGroup(groupInfo);
       } catch (e) {
         // do something

@@ -80,6 +80,10 @@ export default class Integrations {
 
     if (group.integrations.some(int => int.type === type)) throw new BadRequestError("Integration already enabled");
 
+    if (!group.stripeSubscriptionId) {
+      throw new BadRequestError("You must subscribe this group first");
+    }
+
     const stripePrices = await stripe.prices.list({ expand: ["data.product"] });
     // Extremely unlikely that we will ever have enough products and prices to trigger pagination
     // Can cast safely because product is expanded by Stripe

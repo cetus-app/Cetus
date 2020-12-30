@@ -15,7 +15,7 @@ interface BotStatusProps {
 }
 
 const BotStatus: FunctionComponent<BotStatusProps> = ({ group, setGroup }) => {
-  if (!group || !group.bot) {
+  if (!group) {
     return <p>Loading...</p>;
   }
 
@@ -36,7 +36,7 @@ const BotStatus: FunctionComponent<BotStatusProps> = ({ group, setGroup }) => {
       }
     }
   }
-  if (enabled) {
+  if (enabled && group.bot) {
     const keys = Object.keys(enabled.permissions) as (keyof typeof enabled.permissions)[];
     const strings = [];
     for (const key of keys) {
@@ -52,10 +52,18 @@ const BotStatus: FunctionComponent<BotStatusProps> = ({ group, setGroup }) => {
       </div>
     );
   }
-  if (group.botActive) {
+  if (group.botActive && group.bot) {
     return (
       <div>
         Bot: <a href={`https://roblox.com/users/${group.bot.robloxId}/profile`} target="_blank" rel="noreferrer">{group.bot.username}</a> ({group.bot.robloxId})
+      </div>
+    );
+  }
+  if (!group.bot) {
+    return (
+      <div className="notification is-danger">
+        <p><span className="is-size-5 has-text-weight-bold">Your group has no bot assigned!</span></p>
+        <p>This indicates an error occurred when you added your group - Please contact us as soon as possible. </p>
       </div>
     );
   }

@@ -34,7 +34,7 @@ const Subscribe: FunctionComponent = () => {
       setLoading(true);
 
       const res = await getGroup(groupId);
-
+      // TODO: update this
       if (res.stripeSubscriptionId) push(`/groups/${groupId}`);
       else setGroup(res);
 

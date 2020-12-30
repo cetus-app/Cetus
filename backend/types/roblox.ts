@@ -1,19 +1,16 @@
 // Roblox have different conventions than us
 /* eslint-disable @typescript-eslint/naming-convention */
 
-interface RobloxRole {
-  name: string,
-  rank: number
-}
-// Like above but before it's converted
-export interface RobloxInputRole {
-  Name: string,
-  Rank: number
-}
+
 interface GroupBase {
   name: string,
   id: number,
   emblemUrl: string,
+}
+
+export interface RobloxGroupIcon {
+  id: number,
+  url: string
 }
 
 // Returned by /users/{userId}/groups
@@ -31,7 +28,9 @@ export interface RobloxGroup extends GroupBase{
     id: number
   },
   description: string,
-  roles: RobloxRole[]
+  memberCount: number,
+  publicEntryAllowed: boolean,
+  isBuildersClubOnly: boolean
 }
 
 export interface RobloxUser{

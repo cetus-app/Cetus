@@ -15,7 +15,6 @@ interface GroupSelectorProps {
 const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   const [groups, setGroups] = useState<undefined |PartialGroup[]>();
   const [redirect, setRedirect] = useState<undefined | PartialGroup["id"]>();
-  const { push } = useHistory();
 
   useEffect(() => {
     if (!groups) {
@@ -29,17 +28,15 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   });
 
   const handleClick = (group: PartialGroup) => {
-    if (group.stripeSubscriptionId) {
-      setRedirect(group.id);
-    } else {
-      push(`/subscribe/${group.id}`);
-    }
+    setRedirect(group.id);
   };
 
   if (redirect) {
     return <Redirect to={`groups/${redirect}`} />;
   }
+  //
   if (groups) {
+    // TODO: update this
     return (
       <Fragment>
         {
@@ -49,8 +46,9 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
               <GroupButton
                 imgUrl={g.robloxInfo ? g.robloxInfo.emblemUrl : "https://jdrf.org.uk/wp-content/uploads/2017/06/placeholder-image.jpg"}
                 groupName={g.robloxInfo ? g.robloxInfo.name : `${g.robloxId}`}
-                enabled={!!g.stripeSubscriptionId}
+                enabled={g.botActive}
                 handleClick={() => handleClick(g)}
+                isPro={!!g.stripeSubscriptionId}
                 key={g.id} />
             ))
       }

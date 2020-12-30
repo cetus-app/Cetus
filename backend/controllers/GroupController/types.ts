@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import {
-  IsBoolean, IsDate, IsNumber, IsPositive, IsUUID
+  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsUUID
 } from "class-validator";
 
 import { ApiKey, Integration, User } from "../../entities";
@@ -22,7 +22,11 @@ export class PartialGroup implements Partial<Group> {
   @IsDate()
   created: Date;
 
-  robloxInfo?: RobloxGroup
+  robloxInfo?: RobloxGroup;
+
+  @IsNumber()
+  @IsPositive()
+  actionCount: number
 }
 
 export class FullGroup extends PartialGroup {
@@ -38,7 +42,11 @@ export class FullGroup extends PartialGroup {
   owner: User;
 
   @Type(() => Bot)
-  bot?: Bot
+  bot?: Bot;
+
+  @IsOptional()
+  @IsNumber()
+  actionLimit?: number;
 }
 
 // Issue regarding validation of id in params: https://github.com/typestack/routing-controllers/issues/348

@@ -6,10 +6,17 @@ import { redisPrefixes } from "../../constants";
 import database from "../../database";
 import { Group } from "../../entities";
 import { ExternalHttpError, redis } from "../../shared";
+import { multiGet } from "../../shared/redis";
 import camelify from "../../shared/util/camelify";
 import checkStatus from "../../shared/util/fetchCheckStatus";
 import {
-  FullRobloxRole, GroupPermissions, RobloxGroup, RobloxUser, Shout, UserRobloxGroup
+  FullRobloxRole,
+  GroupPermissions,
+  RobloxGroup,
+  RobloxGroupIcon,
+  RobloxUser,
+  Shout,
+  UserRobloxGroup
 } from "../../types";
 import RobloxBot from "./RobloxBot";
 
@@ -117,6 +124,68 @@ export default class Roblox {
       });
   }
 
+  static async getGroupsImage (groupIds: number[]): Promise<RobloxGroupIcon[]> {
+    // Initially it's all of the ids
+    const toFetch: number[] = groupIds;
+    // Get cached
+    const cachedGroups = await multiGet<RobloxGroupIcon>(redisPrefixes.groupImageCache, groupIds);
+
+    // Remove all of the retrieved groups from those left to be fetched
+    for (const fetchedGrp of cachedGroups) {
+      const pos = toFetch.indexOf(fetchedGrp.id);
+      if (pos !== -1) {
+        toFetch.splice(pos, 1);
+      }
+    }
+    // Either empty or full of the cached groups.
+    const out: RobloxGroupIcon[] = cachedGroups;
+
+    if (toFetch.length !== 0) {
+      // Fetch remaining
+      const resp = await this.fetchGroupsImage(toFetch);
+      // Set fetched
+      if (resp && Array.isArray(resp)) {
+        for (const grp of resp) {
+          out.push(grp);
+          if (grp && grp.id) {
+            redis.set(redisPrefixes.groupImageCache + grp.id, JSON.stringify(grp), "EX", 60 * 30).catch(console.error);
+          }
+        }
+      }
+    }
+
+    // Return all
+    return out;
+  }
+
+
+  /**
+   * Fetches the thumbnail urls of the given groups.
+   * @param ids - The group ids to get the icons for.
+   */
+  static fetchGroupsImage (ids: number[]): Promise<RobloxGroupIcon[]> {
+    const idString = ids.join(",");
+    return fetch(`${THUMBNAILS_API_URL}/v1/groups/icons?groupIds=${idString}&size=150x150&format=Png`)
+      .then(checkStatus).then(res => res && res.json())
+      .then(data => {
+        if (data.data) {
+          // imageUrl is null for "blocked" images.
+          return data.data.map(({ imageUrl, targetId }: any) => ({
+            url: imageUrl || "",
+            id: targetId
+          }));
+        }
+        return [];
+      })
+      .catch(e => {
+        // Roblox responds with 400 for invalid IDs or deleted users
+        if (e instanceof ExternalHttpError && e.response.status === 400) return [];
+
+        console.error(`Error while fetching group images from ID ${ids}`, e);
+        return undefined;
+      });
+  }
+
   static async getIdFromUsername (username: string): Promise<number | undefined> {
     const key = redisPrefixes.usernameToIdCache + username;
     const cached = await redis.get(key);
@@ -176,11 +245,29 @@ export default class Roblox {
   }
 
   static async fetchGroup (groupId: number): Promise<RobloxGroup | undefined> {
-    const url = `${BASE_API_URL}/groups/${groupId}`;
+    const url = `${GROUPS_API_URL}/v1/groups/${groupId}`;
     const data = await fetch(url).then(checkStatus).then(res => res && res.json());
 
     // Data is undefined for 404
-    return data ? camelify(data) : data;
+    if (data) {
+      // Parse shout into the accepted format
+      const { body, poster: { userId, username }, updated } = data.shout;
+      const { userId: ownerId, username: ownerName } = data.owner;
+      data.shout = {
+        message: body,
+        poster: {
+          userId,
+          username
+        },
+        updated
+      };
+      data.owner = {
+        id: ownerId,
+        name: ownerName
+      };
+      return camelify(data);
+    }
+    return undefined;
   }
 
   static getUserInfo (userId: number): Promise<RobloxUser | undefined> {

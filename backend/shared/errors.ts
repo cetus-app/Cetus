@@ -5,22 +5,11 @@
 // TODO: Add different error handling based on production or development
 // "Unfriendly" error messages.
 import { ValidationError } from "class-validator";
-import { NextFunction, Request, Response } from "express";
 import { Response as FetchResponse } from "node-fetch";
-import { BadRequestError } from "routing-controllers";
+import { BadRequestError, HttpError } from "routing-controllers";
 
-function errorHandler (error: any, _req: Request, res: Response, _next: NextFunction):any {
-  if (error instanceof SyntaxError) {
-    // do your own thing here 👍
-    res.status(400).send(errorGenerator(400, "Bad JSON."));
-  } else {
-    console.error(`Error catch`, error);
-    res.status(error.status || 500);
-    return res.send(errorGenerator(500, error.message));
-  }
-}
 
-interface HttpError {
+interface BasicHttpError {
   error: {
     status: number,
     message: string,
@@ -28,7 +17,7 @@ interface HttpError {
 }
 
 // Takes inputs and returns a standard error object. Additional is an object whose properties are merged into the error object.
-function errorGenerator (status: number, message: string, additional?: object): HttpError {
+function errorGenerator (status: number, message: string, additional?: object): BasicHttpError {
   return {
     error: {
       status,
@@ -37,21 +26,6 @@ function errorGenerator (status: number, message: string, additional?: object): 
     }
   };
 }
-
-/*
-  This is an error wrapper. It wraps express route functions and catches any async errors that are thrown.
-  (i.e. the promise rejects)
-  It then passes this error along to the global error handler so it can be dealt with consistently,
-  by returning a 500.
- */
-const errorCatch = (fn: Function) => (
-  (req: Request, res: Response, next: NextFunction) => {
-    const routePromise = fn(req, res, next);
-    if (routePromise && routePromise.catch) {
-      routePromise.catch((err: Error) => { next(err); console.log("Route error caught", err.message); });
-    }
-  }
-);
 
 
 // Contains common errors
@@ -84,6 +58,16 @@ export class CustomValidationError extends BadRequestError {
 
   errors: ValidationError[];
 }
-export {
-  errorHandler, errorGenerator, errors, errorCatch
-};
+
+export class TooManyRequestsError extends HttpError {
+  message: string;
+
+  name = "TooManyRequestsError";
+
+  constructor (msg: string) {
+    super(429);
+    Object.setPrototypeOf(this, TooManyRequestsError.prototype);
+    this.message = msg;
+  }
+}
+export { errorGenerator, errors };

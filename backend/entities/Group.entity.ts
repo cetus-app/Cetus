@@ -33,6 +33,9 @@ export default class Group {
   })
   stripeSubscriptionId?: string;
 
+  @Column({ default: 0 })
+  actionCount: number;
+
   @Column("boolean", { default: false })
   // Partial index as per https://stackoverflow.com/a/42972924/6090379
   // Few groups will have `false`

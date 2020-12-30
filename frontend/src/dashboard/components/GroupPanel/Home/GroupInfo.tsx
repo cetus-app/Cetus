@@ -12,6 +12,7 @@ const GroupInfo: FunctionComponent<GroupInfoProps> = () => {
   const [group, setGroup] = useContext(GroupContext);
   if (group) {
     const { robloxInfo } = group;
+    console.log(robloxInfo);
     return (
       <div className="columns is-mobile group-info">
         <div className="column is-2">

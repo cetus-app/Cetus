@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { NextFunction, Request, Response } from "express";
 import {
   BadRequestError,
@@ -19,6 +20,7 @@ import {
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
 import Roblox from "../../api/roblox/Roblox";
+import { botGroupThreshold, FREE_REQUESTS } from "../../constants";
 import database from "../../database";
 import { Group, User } from "../../entities";
 import { PermissionLevel } from "../../entities/User.entity";
@@ -52,12 +54,17 @@ export default class Groups {
     }
     // Why? Makes them all run at once.
     const promises = [];
+    const groupIds = [];
     for (let counter = 0; counter < groups.length; counter++) {
       promises.push(Roblox.getGroup(groups[counter].robloxId));
+      groupIds.push(groups[counter].robloxId);
     }
     // TODO: Pass to sentry?
     promises.map(p => p.catch(e => { console.error(`Failed to get Roblox info for group ${e}`); return false; }));
+    const iconsPromise = Roblox.getGroupsImage(groupIds);
+
     const resp = await Promise.all(promises);
+    const icons = await iconsPromise;
     for (let counter = 0; counter < resp.length; counter++) {
       try {
         // If it failed it'll be false
@@ -68,6 +75,18 @@ export default class Groups {
         console.error(`Failed to get Roblox info for group ${e}`);
       }
     }
+    // Set emblemUrls
+    for (const icon of icons) {
+      for (const grp of groups) {
+        if (grp.robloxId === icon.id) {
+          if (grp.robloxInfo) {
+            grp.robloxInfo.emblemUrl = icon.url;
+          }
+          break;
+        }
+      }
+    }
+
     return groups;
   }
 
@@ -76,7 +95,8 @@ export default class Groups {
   @OpenAPI({ description: "Begins the link process for a given group." })
   @Post("/")
   @ResponseSchema(PartialGroup)
-  async addGroup (@CurrentUser({ required: true }) user: User, @Body() { robloxId }: AddGroupBody): Promise<PartialGroup> {
+  async addGroup (@CurrentUser({ required: true }) user: User, @Body() { robloxId }: AddGroupBody,
+    @Req() { groupService }: Request): Promise<PartialGroup> {
     // TODO: Check their payment level & if they're allowed to add another one
 
     // Get group info - Check owner
@@ -106,11 +126,32 @@ export default class Groups {
       throw new BadRequestError("Group is already registered");
     } else {
       // Register it
-      // TODO: Assign a bot
       const newGroup = new Group();
       newGroup.robloxId = robloxId;
       newGroup.owner = user;
+
+      // Assign a bot
+      const bots = await database.bots.createQueryBuilder("bot")
+        .select("bot.id", "id")
+        .addSelect("COUNT(\"group\".id)", "groupCount")
+        .addSelect("bot.robloxId", "robloxId")
+        .addSelect("bot.dead", "dead")
+        .leftJoin(Group, "group", "bot.id = \"group\".\"botId\"")
+        .groupBy("bot.id")
+        .getRawMany();
+
+      // Parsing to int - https://github.com/typeorm/typeorm/issues/2708
+      const bot = bots.find(b => parseInt(b.groupCount, 10) < botGroupThreshold);
+
       await database.groups.save(newGroup);
+
+      if (!bot) {
+        Sentry.captureMessage(`No bots with less than ${botGroupThreshold} groups assigned are available. Group ${newGroup.id} is therefore missing bot. Please assign manually and create a new Roblox bot account`);
+      }
+      // Notify us
+      await groupService.notifyDeploy(newGroup);
+
+
       delete newGroup.owner;
       return newGroup;
     }
@@ -132,7 +173,11 @@ export default class Groups {
       // Check for already linked groups
       const ids = groups.map((group: UnlinkedGroup) => (group.id));
 
+      const iconsPromise = Roblox.getGroupsImage(ids);
+
       const linked = await database.groups.getGroupsByRoblox(ids);
+      const icons = await iconsPromise;
+
       for (const group of groups) {
         let isLinked = false;
         for (const item of linked) {
@@ -143,6 +188,8 @@ export default class Groups {
         }
         // We don't get group.owner but if rank is 255, they must own it.
         if (group.rank === 255 && !isLinked) {
+          const icon = icons.find(i => i.id === group.id);
+          group.emblemUrl = icon ? icon.url : "";
           linkable.push(group);
         }
       }
@@ -162,16 +209,22 @@ export default class Groups {
     @Req() request: Request): Promise<FullGroup> {
     // Drops it if we've already responded, like for unlinked
     // Get specific group
-    const group = await request.groupService.canAccessGroup(id, false);
+    const group = await request.groupService.canAccessGroup(id);
     let p;
     if (group && group.bot) {
       p = Roblox.getUsernameFromId(group.bot.robloxId);
       p.catch(console.error);
     }
     const groupInfoPromise = Roblox.getGroup(group.robloxId);
+    const groupIconPromise = Roblox.getGroupsImage([group.robloxId]);
     const groupRobloxInfo = await groupInfoPromise;
+    const groupIcon = await groupIconPromise;
 
     const toSend:FullGroup = { ...group };
+
+    if (!group.stripeSubscriptionId) {
+      toSend.actionLimit = FREE_REQUESTS;
+    }
 
     if (p && group.bot) {
       const toSendBot:Bot = { ...group.bot };
@@ -179,6 +232,11 @@ export default class Groups {
       toSend.bot = toSendBot;
     }
     toSend.robloxInfo = groupRobloxInfo;
+
+    if (toSend.robloxInfo && groupIcon[0] && groupIcon[0].url) {
+      toSend.robloxInfo.emblemUrl = groupIcon[0].url;
+    }
+
     return toSend;
   }
 

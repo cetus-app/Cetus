@@ -58,28 +58,29 @@ export const TokenManager: FunctionComponent<TokenManagerProps> = props => {
   if (error) {
     return <p className="has-text-danger">{error}</p>;
   }
+  // TODO: Reset the actionCount counter at end of month.
+  // Could be a seperate "Process" tbh.
   return (
     <div className="token-manager">
 
-      <div className="columns">
-        <div className="column is-10">
-          <div className="level">
-            <div className="level-left">
-              <div className="level-item">
-                <h2 className="subtitle">Authentication tokens</h2>
-              </div>
-            </div>
 
-            <div className="level-right">
-              <div className="level-item">
-                <button type="button" className="button is-info" onClick={() => setShown(true)}>Add token</button>
-              </div>
-            </div>
+      <div className="level">
+        <div className="level-left">
+          <div className="level-item">
+            <h2 className="subtitle is-4">Authentication tokens</h2>
           </div>
-          {addShown
-            ? <AddForm handleKeyAdd={handleKeyAdd} groupId={group.id} /> : ""}
-          <div>
-            {
+        </div>
+
+        <div className="level-right">
+          <div className="level-item">
+            <button type="button" className="button is-info" onClick={() => setShown(true)}>Add token</button>
+          </div>
+        </div>
+      </div>
+      {addShown
+        ? <AddForm handleKeyAdd={handleKeyAdd} groupId={group.id} /> : ""}
+      <div>
+        {
             group.keys.map((key: ApiKey) => (
               <TokenRow
                 token={key}
@@ -87,13 +88,10 @@ export const TokenManager: FunctionComponent<TokenManagerProps> = props => {
                 key={key.id} />
             ))
           }
-          </div>
-
-        </div>
-
-
       </div>
+
     </div>
+
   );
 };
 export default TokenManager;
