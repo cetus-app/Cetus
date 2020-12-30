@@ -1,7 +1,7 @@
 {
   "name": "cetus-frontend",
   "version": "1.1.0",
-  "description": "The frontend package for Cetus",
+  "description": "The frontend package for Cetus.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf public && rimraf dist && rimraf .parcel-cache && parcel build src/dashboard/index.html src/static/pages/*.html src/404.html --dist-dir public --no-source-maps --log-level verbose",
