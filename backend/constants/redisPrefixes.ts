@@ -8,6 +8,7 @@ const REDIS_PREFIXES = {
   idToUsernameCache: "idToUsernameCache-",
   usernameToIdCache: "usernameToIdCache-",
   userImageCache: "userImageCache-",
+  groupImageCache: "groupImageCache-",
   aquariusLink: "aquarius-link-"
 };
 

@@ -1,6 +1,6 @@
 import {
   BadRequestError,
-  Body, Delete, Get, JsonController, Params, Patch, Post
+  Body, Delete, Get, JsonController, Params, Patch, Post, UseBefore
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 
@@ -8,6 +8,7 @@ import Roblox from "../../../api/roblox/Roblox";
 import { redisPrefixes } from "../../../constants";
 import CurrentGroup from "../../../decorators/CurrentGroup";
 import { Group } from "../../../entities";
+import RatelimitMiddleware from "../../../middleware/Ratelimit";
 import { redis } from "../../../shared";
 import {
   ExileUserResponse,
@@ -23,10 +24,19 @@ import {
 
 @OpenAPI({ security: [{ apiKeyAuth: [] }] })
 @JsonController("/v1/roblox")
+@UseBefore(RatelimitMiddleware)
 export default class RobloxV1 {
   @Get("/info")
   @ResponseSchema(RobloxGroup)
   async getGroupInfo (@CurrentGroup() group: Group): Promise<RobloxGroup> {
+    const userGroup = await Roblox.getGroup(group.robloxId);
+    if (!userGroup) {
+      throw new Error("Failed to get Roblox information");
+    }
+    return userGroup;
+  }
+
+  async getGroupsIcon (@CurrentGroup() group: Group): Promise<RobloxGroup> {
     const userGroup = await Roblox.getGroup(group.robloxId);
     if (!userGroup) {
       throw new Error("Failed to get Roblox information");

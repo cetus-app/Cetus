@@ -1,6 +1,5 @@
 // Created by josh on 07/06/2020
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 import { getDocs } from "../../../api";
 import { SchemaType } from "../../../api/types";
@@ -90,7 +89,9 @@ const SDKDocs: FunctionComponent<SDKDocsProps> = () => {
 `}
       </pre>
       <p>Note: <code>message</code>is always returned unless it is an unauthorized error, in which case it may not be.</p>
-      <p>Errors are not thrown using the Lua error function due to it&apos;s limitations, as it does not allow us to supply separate fields.</p>
+      <p>Errors are not thrown using the Lua error function due to it&apos;s limitations, as it does not allow us
+        to supply separate fields.
+      </p>
       <SDKTitle text="3: SDK API" size={2} />
       <SDKTitle text="3.1: Methods" size={3} />
       <p>You must call all methods with a semicolon, like: <code>cetus:getGroup()</code>.</p>

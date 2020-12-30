@@ -13,7 +13,6 @@ import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import database from "../../database";
 import { User } from "../../entities";
 import ApiKey from "../../entities/ApiKey.entity";
-import Group from "../../entities/Group.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import generateToken from "../../shared/util/generateToken";
 import { ApiKeyRequest, ApiKeyResponse, DeleteKeyRequest } from "./types";

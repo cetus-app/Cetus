@@ -20,7 +20,9 @@ export interface RobloxGroup extends GroupBase{
     id: number
   },
   description: string,
-  roles: RobloxRole[]
+  memberCount: number,
+  publicEntryAllowed: boolean,
+  isBuildersClubOnly: boolean
 }
 
 export class PartialGroup {
@@ -58,4 +60,8 @@ export class FullGroup extends PartialGroup {
   owner: PartialUser;
 
   bot?: Bot
+
+  actionCount: number;
+
+  actionLimit?: number;
 }

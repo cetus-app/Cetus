@@ -40,7 +40,7 @@ const UnlinkedSelector: FunctionComponent = () => {
     return <p className="has-text-centered has-text-danger">Oops! Something went wrong: {error}</p>;
   }
   if (redirect) {
-    return <Redirect to={`/subscribe/${redirect}`} />;
+    return <Redirect to={`/groups/${redirect}`} />;
   }
   if (groups) {
     return (
@@ -54,6 +54,7 @@ const UnlinkedSelector: FunctionComponent = () => {
                 groupName={g.name ? g.name : `${g.id}`}
                 handleClick={() => handleAdd(g.id)}
                 enabled
+                isPro={false}
                 key={g.id} />
             ))
         }

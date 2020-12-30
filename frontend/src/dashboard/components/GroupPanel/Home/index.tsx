@@ -2,16 +2,17 @@
 import React, { FunctionComponent } from "react";
 
 import GroupInfo from "./GroupInfo";
+import LimitDisplay from "./LimitDisplay";
 import TokenMgr from "./TokenManager";
 
 interface GroupHomeProps {
 
 }
 
-const GroupHome: FunctionComponent<GroupHomeProps> = props => (
+const GroupHome: FunctionComponent<GroupHomeProps> = () => (
   <div>
     <GroupInfo />
-    <h2 className="subtitle">Using your group</h2>
+    <h2 className="subtitle is-4">Using your group</h2>
     <div className="indented-text">
       There are lots of ways to get started interacting with your group. Why not:
       <div className="content">
@@ -28,8 +29,14 @@ const GroupHome: FunctionComponent<GroupHomeProps> = props => (
         </ul>
       </div>
     </div>
-    <TokenMgr />
-
+    <div className="columns">
+      <div className="column is-10">
+        <hr />
+        <LimitDisplay />
+        <hr />
+        <TokenMgr />
+      </div>
+    </div>
 
   </div>
 );

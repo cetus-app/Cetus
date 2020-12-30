@@ -1,5 +1,5 @@
 import { Form, Formik } from "formik";
-import React, { Fragment, FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import * as Yup from "yup";
 
 import { updateEmail } from "../../api";

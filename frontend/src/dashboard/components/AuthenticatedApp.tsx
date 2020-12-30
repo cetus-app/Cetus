@@ -8,6 +8,7 @@ import Admin from "./Admin/Admin";
 import BotManagement from "./Admin/Bots/Manage";
 import BotQueue from "./Admin/Bots/Queue";
 import GroupPanel from "./GroupPanel";
+import SDKDocs from "./GroupPanel/SDKDocs";
 import GroupSelector from "./GroupSelector";
 import { Greeting } from "./GroupSelector/Greeting";
 import GroupMenu from "./GroupSelector/GroupMenu";
@@ -56,6 +57,10 @@ const AuthenticatedApp: FunctionComponent = () => {
 
         <Route path="/subscribe/:groupId">
           <Subscribe />
+        </Route>
+
+        <Route exact path="/sdk">
+          <SDKDocs />
         </Route>
 
         {user.permissionLevel === PermissionLevel.admin && (

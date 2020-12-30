@@ -156,7 +156,7 @@ export default class AuthController {
     }
 
     const integration = await key.group.integrations.find(i => i.type === IntegrationType.discordBot);
-
+    // This sub id check remains - Subscription is needed to access bot.
     if (!integration || !key.group.stripeSubscriptionId) {
       throw new ForbiddenError();
     }

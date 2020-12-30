@@ -2,6 +2,7 @@
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 
+import init from "./actionManager";
 import app from "./app";
 import { Bot } from "./entities";
 import initialiseBots from "./initialiseBots";
@@ -20,4 +21,6 @@ createConnection().then(async connection => {
   const ids = clients.map(c => c.dbBot.robloxId).join(", ");
 
   console.log(`Successfully initialised the following bots:\n${ids}`);
+
+  init();
 });

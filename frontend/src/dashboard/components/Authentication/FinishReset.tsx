@@ -3,7 +3,7 @@ import React, { FunctionComponent, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import * as Yup from "yup";
 
-import finishPasswordReset from "../../api/account/finishPasswordReset";
+import finishReset from "../../api/account/finishPasswordReset";
 import mapErrors from "../../api/mapErrors";
 import InputField from "../forms/InputField";
 import { PasswordValidation } from "../shared";
@@ -55,7 +55,7 @@ const FinishReset: FunctionComponent = () => {
             return;
           }
           try {
-            await finishPasswordReset(token, values.newPassword);
+            await finishReset(token, values.newPassword);
             setRedirect("/");
           } catch (err) {
             if (err.response) {

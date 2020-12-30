@@ -98,15 +98,24 @@ export default class Bots {
     groupInfoPromises.map(p => p.catch(console.error));
     const groupInfosProm = Promise.all(groupInfoPromises);
 
-    const [usernames, groupInfos] = await Promise.all([usernamesProm, groupInfosProm]);
+    const iconIds: number[] = groups.map(i => i.robloxId);
+    const iconsPromise = Roblox.getGroupsImage(iconIds);
+
+    const [usernames, groupInfos, icons] = await Promise.all([usernamesProm, groupInfosProm, iconsPromise]);
 
     return groups.map((group, i) => {
       const { bot } = group;
+      const groupInfo = groupInfos[i];
+
+      if (groupInfo) {
+        const icon = icons.find(ic => ic.id === groupInfo.id);
+        groupInfo.emblemUrl = icon ? icon.url : "";
+      }
 
       return {
         group: {
           ...group,
-          robloxInfo: groupInfos[i],
+          robloxInfo: groupInfo,
           bot: undefined
         },
         bot: {

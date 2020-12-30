@@ -47,10 +47,6 @@ export class RobloxGroup {
   @IsString()
   @IsNotEmpty()
   description: string;
-
-  @ValidateNested({ each: true })
-  @Type(() => RobloxRole)
-  roles: RobloxRole[];
 }
 
 // {

@@ -34,7 +34,6 @@ const Subscribe: FunctionComponent = () => {
       setLoading(true);
 
       const res = await getGroup(groupId);
-
       if (res.stripeSubscriptionId) push(`/groups/${groupId}`);
       else setGroup(res);
 
@@ -74,7 +73,8 @@ const Subscribe: FunctionComponent = () => {
       throw stripeError;
     } catch (e) {
       // In case it fails due to not JSON
-      setError("Error occurred. Contact support if the issue persists");
+      setError("Error occurred. Contact support if the issue persists.");
+      console.log(e);
       const json = await e.response.json();
       setError(json.message || "Error occurred. Contact support if the issue persists");
     }
