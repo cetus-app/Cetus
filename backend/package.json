@@ -30,7 +30,6 @@
     "eslint-config-airbnb": "^18.1.0",
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.20.2",
-    "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.1",
     "typescript": "^3.9.7"
   },
@@ -61,6 +60,7 @@
     "routing-controllers-openapi": "^2.0.0",
     "stripe": "^8.86.0",
     "swagger-ui-express": "^4.1.4",
-    "typeorm": "^0.2.29"
+    "typeorm": "^0.2.29",
+    "rimraf": "^3.0.2"
   }
 }
