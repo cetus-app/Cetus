@@ -1,10 +1,9 @@
-// Created by josh on 28/05/2020
 import React, {
   Fragment, FunctionComponent, useEffect, useState
 } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
-import { getGroups } from "../../api/groups";
+import { getGroups } from "../../api";
 import { PartialGroup } from "../../api/types";
 import GroupButton from "./GroupButton";
 
@@ -36,7 +35,6 @@ const GroupMenu: FunctionComponent<GroupSelectorProps> = () => {
   }
   //
   if (groups) {
-    // TODO: update this
     return (
       <Fragment>
         {

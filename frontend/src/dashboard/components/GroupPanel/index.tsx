@@ -1,7 +1,7 @@
 // Allows Groups to be edited and contains all group editor related stuff
 import React, { FunctionComponent, useEffect, useState } from "react";
 import {
-  Redirect, Route, Switch, useHistory, useParams, useRouteMatch
+  Redirect, Route, Switch, useParams, useRouteMatch
 } from "react-router-dom";
 
 import { getGroup } from "../../api/groups";

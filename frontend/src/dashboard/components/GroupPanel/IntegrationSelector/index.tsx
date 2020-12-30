@@ -2,7 +2,7 @@
 import React, {
   Fragment, FunctionComponent, useContext, useEffect, useState
 } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { Redirect, useHistory, useRouteMatch } from "react-router-dom";
 
 import { disableIntegration, getMetas } from "../../../api/integrations";
 import { IntegrationInfo, IntegrationMeta, PartialIntegration } from "../../../api/types";
@@ -52,6 +52,11 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
   function handleClick (id: string) {
     history.push(`${url}/${id}`);
   }
+
+  if (grp && !grp.stripeSubscriptionId) {
+    return <Redirect to={`/subscribe/${grp.id}`} />;
+  }
+
   async function handleDisable (id: string): Promise<void> {
     try {
       setDisableModal(undefined);

@@ -19,13 +19,19 @@ const QueueItem: FunctionComponent<QueueItemProps> = ({ item: { bot, group }, on
     <div className="card-content">
       <div className="media">
         <div className="media-content">
-          <p className="title is-4">{group.robloxInfo.name}</p>
+          <p className="title is-4">
+            <a href={`https://roblox.com/groups/${group.robloxId}/-`} target="_blank" rel="noreferrer">
+              {group.robloxInfo.name}
+            </a>
+          </p>
           <p className="subtitle is-6">Bot - {bot.username || bot.id} {bot.dead && "- marked as \"dead\""}</p>
         </div>
       </div>
 
       <div className="content">
         The bot is currently <b>inactive</b> in the group (not a member of the group, or missing permissions).
+        <br />
+        <a href="https://example.com">Group link</a>
         <br />
         <br />
         {

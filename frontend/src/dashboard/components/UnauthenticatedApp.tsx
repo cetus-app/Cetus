@@ -5,6 +5,7 @@ import FinishReset from "./Authentication/FinishReset";
 import LoginForm from "./Authentication/Login";
 import PasswordReset from "./Authentication/PasswordReset";
 import RegisterForm from "./Authentication/Register";
+import SDKDocs from "./GroupPanel/SDKDocs";
 
 interface UnauthenticatedAppProps {
   setUser: Function
@@ -26,6 +27,9 @@ const UnauthenticatedApp: FunctionComponent<UnauthenticatedAppProps> = ({ setUse
         </Route>
         <Route exact path="/finish-reset">
           <FinishReset />
+        </Route>
+        <Route exact path="/sdk">
+          <SDKDocs />
         </Route>
         <Redirect to="/login" from="/" />
       </Switch>

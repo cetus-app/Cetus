@@ -18,7 +18,7 @@ export interface Bot {
 
 export const addBotBody = object().required().shape({
   robloxId: number().required().positive().label("Roblox ID"),
-  cookie: string().required().length(700).label("Cookie")
+  cookie: string().required().label("Cookie")
 });
 
 export type AddBotBody = InferType<typeof addBotBody>;

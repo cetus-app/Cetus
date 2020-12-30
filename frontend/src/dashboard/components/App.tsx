@@ -1,7 +1,4 @@
-import React, {
-  Fragment, FunctionComponent, useEffect, useState
-} from "react";
-
+import React, { FunctionComponent, useEffect, useState } from "react";
 import "../assets/scss/dashboard.scss";
 import { BrowserRouter } from "react-router-dom";
 
@@ -17,7 +14,6 @@ const App: FunctionComponent = () => {
   const [user, setUserO] = useState<FullUser | null>(null);
   const [error, setError] = useState("");
   function setUser (...content: any[]) {
-    console.log("SetUSerState");
     // @ts-ignore
     setUserO(...content);
   }

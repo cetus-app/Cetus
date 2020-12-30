@@ -9,7 +9,7 @@ interface GroupHomeProps {
 
 }
 
-const GroupHome: FunctionComponent<GroupHomeProps> = props => (
+const GroupHome: FunctionComponent<GroupHomeProps> = () => (
   <div>
     <GroupInfo />
     <h2 className="subtitle is-4">Using your group</h2>

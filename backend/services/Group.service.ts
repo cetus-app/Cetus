@@ -64,6 +64,10 @@ Internal: ${group.bot.id}, IsDead: ${group.bot.dead}`
           value: `This group does not have a bot assigned.`
         });
       }
+      body.embeds[0].fields.push({
+        name: "Env",
+        value: process.env.NODE_ENV || "Not set"
+      });
       await fetch(alertWebhook, {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body),

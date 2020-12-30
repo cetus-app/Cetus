@@ -43,8 +43,9 @@ const BotQueue: FunctionComponent = () => {
     <section className="section columns is-centered bot-queue">
       <div className="column is-10">
         <h1 className="title">Bot queue (inactive bots)</h1>
+        <p>This queue contains groups which have a bot assigned, but it has not yet been deployed or is no longer in it.</p>
 
-        <div className="columns is-multiline">
+        <div className="columns is-multiline mt-2">
           {queue.map(item => (
             <div key={item.group.id} className="column is-6 is-one-third-desktop is-3-widescreen">
               <QueueItem item={item} onMarkActive={() => handleMarkActive(item.group.id)} />

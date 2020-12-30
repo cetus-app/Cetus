@@ -2,7 +2,6 @@
 import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
 
-import { Greeting } from "../GroupSelector/Greeting";
 
 const cetusIcon = require("url:../../../static/assets/Cetus.png");
 

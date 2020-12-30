@@ -16,7 +16,9 @@ const LimitDisplay: FunctionComponent = () => {
         <p>Your integrations and applications which use our group API have made <code>{group.actionCount}</code>
           changes (Rank changes, shouts, exiles) to your group this month.
         </p>
-        <p>Your group is pro - this means that there is no limit to the number of actions you can make
+        <p>
+          <span className="icon has-text-gold"><i className="fas fa-crown ml-1 mr-1" /></span>
+          Your group is pro - there is no limit to the number of actions you can make
           a month.
         </p>
       </div>

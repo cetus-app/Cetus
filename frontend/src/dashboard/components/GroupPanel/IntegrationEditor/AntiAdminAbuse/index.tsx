@@ -1,5 +1,4 @@
-// Created by josh on 07/06/2020
-import React, { FunctionComponent, useContext } from "react";
+import React, { FunctionComponent } from "react";
 
 import { AntiAbuseConfigBody } from "../../../../../../../backend/controllers/IntegrationController/types";
 import { IntegrationProps } from "../index";

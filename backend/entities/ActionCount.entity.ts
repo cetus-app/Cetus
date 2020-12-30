@@ -1,8 +1,6 @@
 // Used for storing historical group action counts for analysis.
 // These values are permanently stored.
-import {
-  Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn
-} from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 
 @Entity()

@@ -420,10 +420,12 @@ export default class Roblox {
   // Returns an object of relevant permissions rather than Roblox's format.
   async getPermissions (userId: number): Promise<GroupPermissions|undefined> {
     if (!this.group) throw new Error("Attempt to execute `getPermissions`, but no group set.");
-    const rank = await Roblox.getUserGroup(userId, this.group.robloxId);
-    if (!rank) {
-      return undefined;
-    }
+    const rankArr = await Roblox.fetchUserGroups(userId);
+    if (!rankArr) return undefined;
+
+    const rank = rankArr.find(grp => grp.id === this.group.robloxId);
+    if (!rank) return undefined;
+
     const roles = await Roblox.getRoles(this.group.robloxId);
     if (!roles) throw new Error(`Unknown error occurred while getting roles in group ${this.group.robloxId}`);
 

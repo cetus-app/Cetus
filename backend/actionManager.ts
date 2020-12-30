@@ -11,14 +11,19 @@ import { ActionCount, Group } from "./entities";
 
 const log = (...args: any[]) => console.log("ActionManager: ", ...args);
 export default function init () {
+  // Run on the first day of the month at 00:01.
 // https://crontab.guru/#1_0_1_*_*
   schedule("1 0 1 * *", () => {
     run().catch(console.error);
   });
 
   async function run () {
-    // todo: check it is right time
     const date = new Date();
+
+    if (date.getDate() !== 1) {
+      return log("Stopped: It is not the first day of the month!");
+    }
+
     log("New month: Resetting action counts and storing values.");
     const repo = await getRepository(ActionCount);
 
@@ -39,13 +44,12 @@ export default function init () {
       count.year = year;
       count.month = month;
 
-      // todo: check for existing
-      insertPromises.push(repo.insert(count));
+      insertPromises.push(repo.save(count));
     }
 
     // Handle errors without dying
     insertPromises.map(i => i.catch(e => console.error(e)));
-    await insertPromises;
+    await Promise.all(insertPromises);
     log("All values inserted!");
 
     // Reset counts
@@ -55,7 +59,6 @@ export default function init () {
       .set({ actionCount: 0 })
       .execute();
 
-    log("Counts reset. Done.");
+    return log("Counts reset. Done.");
   }
-  setTimeout(run, 3000);
 }

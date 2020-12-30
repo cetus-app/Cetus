@@ -23,8 +23,8 @@ import {
 } from "./types";
 
 @OpenAPI({ security: [{ apiKeyAuth: [] }] })
-@UseBefore(RatelimitMiddleware)
 @JsonController("/v1/roblox")
+@UseBefore(RatelimitMiddleware)
 export default class RobloxV1 {
   @Get("/info")
   @ResponseSchema(RobloxGroup)

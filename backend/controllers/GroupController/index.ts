@@ -143,11 +143,12 @@ export default class Groups {
       // Parsing to int - https://github.com/typeorm/typeorm/issues/2708
       const bot = bots.find(b => parseInt(b.groupCount, 10) < botGroupThreshold);
 
-      await database.groups.save(newGroup);
-
       if (!bot) {
         Sentry.captureMessage(`No bots with less than ${botGroupThreshold} groups assigned are available. Group ${newGroup.id} is therefore missing bot. Please assign manually and create a new Roblox bot account`);
       }
+      newGroup.bot = bot;
+      await database.groups.save(newGroup);
+
       // Notify us
       await groupService.notifyDeploy(newGroup);
 

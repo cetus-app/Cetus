@@ -58,12 +58,8 @@ export const TokenManager: FunctionComponent<TokenManagerProps> = props => {
   if (error) {
     return <p className="has-text-danger">{error}</p>;
   }
-  // TODO: Reset the actionCount counter at end of month.
-  // Could be a seperate "Process" tbh.
   return (
     <div className="token-manager">
-
-
       <div className="level">
         <div className="level-left">
           <div className="level-item">

@@ -7,7 +7,7 @@ interface SideBarProps{
 
 }
 
-const SideBar: FunctionComponent<SideBarProps> = props => {
+const SideBar: FunctionComponent<SideBarProps> = () => {
   const { url } = useRouteMatch();
   return (
     <div className="sidebar">
