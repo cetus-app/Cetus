@@ -251,16 +251,21 @@ export default class Roblox {
     // Data is undefined for 404
     if (data) {
       // Parse shout into the accepted format
-      const { body, poster: { userId, username }, updated } = data.shout;
       const { userId: ownerId, username: ownerName } = data.owner;
-      data.shout = {
-        message: body,
-        poster: {
-          userId,
-          username
-        },
-        updated
-      };
+
+      if (data.shout) {
+        const { body, poster: { userId, username }, updated } = data.shout;
+
+        data.shout = {
+          message: body,
+          poster: {
+            userId,
+            username
+          },
+          updated
+        };
+      }
+
       data.owner = {
         id: ownerId,
         name: ownerName
