@@ -29,7 +29,7 @@ export class CustomerPortalSessionResponse {
   url: string;
 }
 
-export class CompleteSubscriptionResponse {
+export class StripeWebhookResponse {
   // Stripe webhook received acknowledgement (only a 2xx response is actually required)
   received: boolean;
 }

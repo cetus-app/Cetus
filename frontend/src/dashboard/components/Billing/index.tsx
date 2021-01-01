@@ -30,10 +30,16 @@ export const Billing = () => {
       <p>If you would like to some billing assistance, <a href={process.env.discordInvite}>join our discord</a>.
         We&apos;d be happy to help!
       </p>
-      <br />
-      <p>You can also click the button below to go to the Stripe customer portal to manage your subscription.</p>
-      <button type="button" className={`button is-info${loading ? ` is-loading` : ""}`} disabled={loading} onClick={createSession}>Go to customer portal</button>
-      {error && <p className="has-text-danger">{error}</p>}
+      {group.stripeSubscriptionId && (
+        <Fragment>
+          <br />
+          <p>
+            You can also click the button below to go to the Stripe customer portal to manage your subscription. Please note that adding or removing integrations is only available through the <Link to={`/groups/${group.id}/integrations`}>dashboard</Link>.
+          </p>
+          <button type="button" className={`button is-info${loading ? ` is-loading` : ""}`} disabled={loading} onClick={createSession}>Go to customer portal</button>
+          {error && <p className="has-text-danger">{error}</p>}
+        </Fragment>
+      )}
 
       {!group.stripeSubscriptionId
         ? (
