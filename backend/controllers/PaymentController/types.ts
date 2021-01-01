@@ -23,13 +23,7 @@ export class SessionResponse {
   sessionId: string;
 }
 
-export class CustomerPortalSessionResponse {
-  @IsString()
-  @IsNotEmpty()
-  url: string;
-}
-
-export class StripeWebhookResponse {
+export class CompleteSubscriptionResponse {
   // Stripe webhook received acknowledgement (only a 2xx response is actually required)
   received: boolean;
 }
