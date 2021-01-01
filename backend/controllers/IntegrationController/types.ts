@@ -138,7 +138,7 @@ export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
     name: "Discord Bot",
     shortDesc: "Power up your Server and get powerful commands and features.",
     icon: "fab fa-discord",
-    longDesc: "Discord bot long description. Insert some long winded statement about all the features it supports and about how it's generally pretty amazing.\n\nNew line test",
+    longDesc: "Our Discord bot will make your life as a server admin easier. Verify users, synchronise roles, send shouts and manage group members from simple commands in one place.\n\nThe bot is frequently updated with new features to simplify your group management.",
     cost: 5
   },
   [IntegrationType.antiAdminAbuse]: {
