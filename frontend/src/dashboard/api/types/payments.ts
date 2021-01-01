@@ -11,7 +11,3 @@ export interface SessionBody {
 export interface SessionResponse {
   sessionId: string;
 }
-
-export interface CustomerPortalSessionResponse {
-  url: string;
-}

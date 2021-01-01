@@ -1,2 +1,2 @@
+// eslint-disable-next-line import/prefer-default-export
 export { default as createSession } from "./createSession";
-export { default as createPortalSession } from "./createPortalSession";

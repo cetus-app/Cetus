@@ -31,7 +31,7 @@ export default class Group {
     type: "text",
     nullable: true
   })
-  stripeSubscriptionId?: string | null;
+  stripeSubscriptionId?: string;
 
   @Column({ default: 0 })
   actionCount: number;
