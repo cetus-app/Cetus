@@ -2,7 +2,7 @@
 import bodyParser from "body-parser";
 import { Request } from "express";
 import {
-  BadRequestError, Body, CurrentUser, ForbiddenError, HeaderParam, InternalServerError, JsonController, Post, Req, UseBefore
+  BadRequestError, Body, CurrentUser, ForbiddenError, HeaderParam, InternalServerError, JsonController, NotFoundError, Post, Req, UseBefore
 } from "routing-controllers";
 import { ResponseSchema } from "routing-controllers-openapi";
 import Stripe from "stripe";
@@ -14,8 +14,10 @@ import { Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import { stripe } from "../../shared";
-import { integrationDefault } from "../IntegrationController/types";
-import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./types";
+import { GroupIdParam, integrationDefault } from "../IntegrationController/types";
+import {
+  CustomerPortalSessionResponse, SessionBody, SessionResponse, StripeWebhookResponse
+} from "./types";
 
 @JsonController("/payments")
 export default class PaymentController {
@@ -85,13 +87,36 @@ export default class PaymentController {
     return { sessionId: id };
   }
 
+  @Post("/customer-portal")
+  @UseBefore(csrfMiddleware)
+  @ResponseSchema(CustomerPortalSessionResponse)
+  async createPortalSession (
+    @Body() { groupId }: GroupIdParam,
+      @Req() { groupService }: Request,
+      @CurrentUser({ required: true }) user: User
+  ): Promise<CustomerPortalSessionResponse> {
+    if (!user.emailVerified) throw new ForbiddenError("Email not verified");
+
+    if (!user.stripeCustomerId) throw new ForbiddenError("No subscriptions");
+
+    const group = await groupService.canAccessGroup(groupId);
+    if (!group.stripeSubscriptionId) throw new BadRequestError("Group does not have a subscription");
+
+    const { url } = await stripe.billingPortal.sessions.create({
+      customer: user.stripeCustomerId,
+      return_url: `${process.env.frontendUrl}/dashboard/groups/${group.id}`
+    });
+
+    return { url };
+  }
+
   // Stripe webhook
   @Post("/complete")
   @UseBefore(bodyParser.raw({ type: "application/json" }))
-  @ResponseSchema(CompleteSubscriptionResponse)
+  @ResponseSchema(StripeWebhookResponse)
   async completeSubscription (
     @HeaderParam("stripe-signature") stripeSig: string, @Body() body: any, @Req() { groupService }: Request
-  ): Promise<CompleteSubscriptionResponse> {
+  ): Promise<StripeWebhookResponse> {
     const { paymentCompleteStripeSecret } = process.env;
     if (!paymentCompleteStripeSecret) throw new InternalServerError("Fatal configuration error");
 
@@ -153,5 +178,47 @@ export default class PaymentController {
     await database.groups.save(group);
 
     return { received: true };
+  }
+
+  // Stripe webhook
+  @Post("/subscription-cancel")
+  @UseBefore(bodyParser.raw({ type: "application/json" }))
+  @ResponseSchema(StripeWebhookResponse)
+  async cancelSubscription (@HeaderParam("stripe-signature") stripeSig: string, @Body() body: any): Promise<StripeWebhookResponse> {
+    const { subscriptionDeleteStripeSecret } = process.env;
+    if (!subscriptionDeleteStripeSecret) throw new InternalServerError("Fatal configuration error");
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(body, stripeSig, subscriptionDeleteStripeSecret);
+    } catch (e) {
+      throw new BadRequestError(e.message);
+    }
+
+    if (event.type !== "customer.subscription.deleted") throw new BadRequestError("Invalid event type");
+
+    const subscription = event.data.object as Stripe.Subscription;
+
+    const grp = await database.groups.findOne({
+      where: { stripeSubscriptionId: subscription.id },
+      relations: ["owner", "integrations"]
+    });
+    if (!grp) {
+      throw new NotFoundError("Group not found");
+    }
+
+    // Check permissions
+    if (grp.owner.stripeCustomerId === subscription.customer) {
+      await database.integrations.remove(grp.integrations);
+
+      grp.stripeSubscriptionId = null;
+      await database.groups.save(grp);
+
+      // TODO: Remove the bot from the group
+      return { received: true };
+    }
+
+    throw new ForbiddenError();
   }
 }
