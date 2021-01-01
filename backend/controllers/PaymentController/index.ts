@@ -14,8 +14,10 @@ import { Integration, User } from "../../entities";
 import { IntegrationType } from "../../entities/Integration.entity";
 import { csrfMiddleware } from "../../middleware/CSRF";
 import { stripe } from "../../shared";
-import { integrationDefault } from "../IntegrationController/types";
-import { CompleteSubscriptionResponse, SessionBody, SessionResponse } from "./types";
+import { GroupIdParam, integrationDefault } from "../IntegrationController/types";
+import {
+  CompleteSubscriptionResponse, CustomerPortalSessionResponse, SessionBody, SessionResponse
+} from "./types";
 
 @JsonController("/payments")
 export default class PaymentController {
@@ -83,6 +85,29 @@ export default class PaymentController {
     const { id } = await stripe.checkout.sessions.create(sessionInfo);
 
     return { sessionId: id };
+  }
+
+  @Post("/customer-portal")
+  @UseBefore(csrfMiddleware)
+  @ResponseSchema(CustomerPortalSessionResponse)
+  async createPortalSession (
+    @Body() { groupId }: GroupIdParam,
+      @Req() { groupService }: Request,
+      @CurrentUser({ required: true }) user: User
+  ): Promise<CustomerPortalSessionResponse> {
+    if (!user.emailVerified) throw new ForbiddenError("Email not verified");
+
+    if (!user.stripeCustomerId) throw new ForbiddenError("No subscriptions");
+
+    const group = await groupService.canAccessGroup(groupId);
+    if (!group.stripeSubscriptionId) throw new BadRequestError("Group does not have a subscription");
+
+    const { url } = await stripe.billingPortal.sessions.create({
+      customer: user.stripeCustomerId,
+      return_url: `${process.env.frontendUrl}/dashboard/groups/${group.id}`
+    });
+
+    return { url };
   }
 
   // Stripe webhook
