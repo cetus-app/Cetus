@@ -49,7 +49,7 @@ export default class PaymentController {
       };
     });
 
-    const groupPrice = stripePrices.data.find(p => (p.product as Stripe.Product).metadata.group === "yes");
+    const groupPrice = stripePrices.data.find(p => p.metadata.primary === "yes");
     if (!groupPrice) throw new InternalServerError("Unable to find group price. Contact support if the issue persists");
     const sessionInfo: Stripe.Checkout.SessionCreateParams = {
       // Stripe only allows one of the two following
