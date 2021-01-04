@@ -17,7 +17,7 @@ export default class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column("int", {
+  @Column("bigint", {
     nullable: true,
     unique: true
   })
