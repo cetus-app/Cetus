@@ -1,6 +1,6 @@
 // Used to present a user on the service
 import {
-  Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn
+  Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
 
 import Auth from "./Auth.entity";
@@ -61,6 +61,10 @@ export default class User {
 
   @OneToMany(() => Group, grp => grp.owner, { onDelete: "CASCADE" })
   groups: Group[];
+
+  // Groups this user has access to, but is not the owner of.
+  @ManyToMany(() => Group, group => group.admins, { nullable: false })
+  sharedGroups: Group[];
 
   @Column({
     type: "enum",

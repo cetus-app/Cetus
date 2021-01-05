@@ -48,7 +48,7 @@ export default class Groups {
   @ResponseSchema(PartialGroup, { isArray: true })
   async getGroups (@CurrentUser({ required: true }) user: User): Promise<PartialGroup[]> {
     // Get user groups
-    const groups: PartialGroup[] = await database.users.getUserGroups(user);
+    const groups: PartialGroup[] = await database.users.getUserGroups(user, true);
     if (!groups) {
       return [];
     }

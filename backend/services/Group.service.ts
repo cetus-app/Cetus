@@ -12,9 +12,10 @@ export default class GroupService {
   constructor (private request: Request) {
   }
 
+
   // Returns either the group or throws an error if the user does not have access
   // Can also have a group passed if we've already fetched it and want to check if they have access
-  async canAccessGroup (group: Group["id"]|Group, user?: User): Promise<Group> {
+  async canAccessGroup (group: Group["id"]|Group, user?: User, includeShared?: boolean): Promise<Group> {
     const usr = this.request.user || user;
     const grp = typeof group !== "string" ? group : await database.groups.getFullGroup(group);
     if (!grp) {
@@ -27,6 +28,9 @@ export default class GroupService {
 
     // Check permissions
     if (grp.owner.id === usr.id) {
+      return grp;
+    }
+    if (includeShared && grp.admins.filter(admin => admin.id === usr.id)) {
       return grp;
     }
     throw new ForbiddenError("You do not have access to that group.");

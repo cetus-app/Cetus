@@ -10,7 +10,7 @@ export default class GroupRepository extends Repository<Group> {
   }
 
   getFullGroup (groupId: string): Promise<Group|undefined> {
-    return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot"] });
+    return this.findOne({ id: groupId }, { relations: ["owner", "integrations", "keys", "bot", "admins"] });
   }
 
   getGroupWithCookie (groupId: string): Promise<Group | undefined> {

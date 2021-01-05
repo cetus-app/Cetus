@@ -6,11 +6,20 @@ import User from "../entities/User.entity";
 @EntityRepository(User)
 export default class UserRepository extends Repository<User> {
   // if we want we can make user a User|String as typeorm will accept both the ID or the user.
-  getUserGroups (user: User): Promise<Group[]> {
-    return this.createQueryBuilder()
-      .relation(User, "groups")
-      .of(user.id)
-      .loadMany();
+  async getUserGroups (user: User, includeShared?: boolean): Promise<Group[]> {
+    const relations = ["groups"];
+    if (includeShared) {
+      relations.push("sharedGroups");
+    }
+
+    const u = await this.findOne({ id: user.id }, { relations });
+    if (!u) return [];
+
+    const groups = [...u.groups];
+    if (includeShared) {
+      return groups.concat(u.sharedGroups);
+    }
+    return groups;
   }
 
   // Get user from UserId
