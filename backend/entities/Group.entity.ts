@@ -32,7 +32,7 @@ export default class Group {
     type: "text",
     nullable: true
   })
-  stripeSubscriptionId?: string;
+  stripeSubscriptionId?: string | null;
 
   @Column({ default: 0 })
   actionCount: number;
