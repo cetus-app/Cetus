@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -60,6 +61,7 @@ export default class Group {
   owner: User;
 
   @ManyToMany(() => User, user => user.sharedGroups, { nullable: false })
+  @JoinTable()
   admins: User[];
 
   @ManyToOne(() => Bot)

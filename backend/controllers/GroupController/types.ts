@@ -47,12 +47,21 @@ export class FullGroup extends PartialGroup {
   @IsOptional()
   @IsNumber()
   actionLimit?: number;
+
+  @Type(() => User)
+  admins: any[];
 }
 
 // Issue regarding validation of id in params: https://github.com/typestack/routing-controllers/issues/348
 export class IdParam {
   @IsUUID("4")
   id: string
+}
+
+// Used for both adding and removing
+export class AdminBodyParam {
+  @IsUUID("4")
+  userId: string
 }
 
 export class AddGroupBody {

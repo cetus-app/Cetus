@@ -2,7 +2,7 @@
 import { ApiKey } from "./ApiKey";
 import { Bot } from "./Bot";
 import { PartialIntegration } from "./Integration";
-import { PartialUser } from "./User";
+import {FullUser, PartialUser} from "./User";
 
 interface GroupBase {
   name: string,
@@ -64,4 +64,6 @@ export class FullGroup extends PartialGroup {
   actionCount: number;
 
   actionLimit?: number;
+
+  admins: FullUser[];
 }

@@ -14,11 +14,14 @@ export default class AuthMiddleware implements ExpressMiddlewareInterface {
 
     const token = getAuthFromRequest(req);
 
-    // An authorization token has been supplied. Verify it.
-    const auth = await authRepository.findOne({
-      where: { token },
-      relations: ["user"]
-    });
+    // an authorization token has been supplied. Verify it.
+    const auth = await authRepository.createQueryBuilder("auth")
+      .leftJoinAndSelect("auth.user", "user")
+      .addSelect("user.stripeCustomerId")
+      .addSelect("user.email")
+      .where("auth.token = :token", { token })
+      .getOne();
+
 
     if (!auth) return next();
 

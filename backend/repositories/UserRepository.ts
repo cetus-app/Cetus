@@ -7,7 +7,7 @@ import User from "../entities/User.entity";
 export default class UserRepository extends Repository<User> {
   // if we want we can make user a User|String as typeorm will accept both the ID or the user.
   async getUserGroups (user: User, includeShared?: boolean): Promise<Group[]> {
-    const relations = ["groups"];
+    const relations: (keyof User)[] = ["groups"];
     if (includeShared) {
       relations.push("sharedGroups");
     }

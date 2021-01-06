@@ -29,7 +29,13 @@ import { stripe } from "../../shared";
 import { UserRobloxGroup } from "../../types";
 import { Bot } from "../BotController/types";
 import {
-  AddGroupBody, EnableBotResponse, FullGroup, IdParam, PartialGroup, UnlinkedGroup
+  AddGroupBody,
+  AdminBodyParam,
+  EnableBotResponse,
+  FullGroup,
+  IdParam,
+  PartialGroup,
+  UnlinkedGroup
 } from "./types";
 
 // For /unlinked & /:id
@@ -210,18 +216,48 @@ export default class Groups {
     @Req() request: Request): Promise<FullGroup> {
     // Drops it if we've already responded, like for unlinked
     // Get specific group
-    const group = await request.groupService.canAccessGroup(id);
+    const group = await request.groupService.canAccessGroup(id, undefined, true);
     let p;
     if (group && group.bot) {
       p = Roblox.getUsernameFromId(group.bot.robloxId);
       p.catch(console.error);
     }
+
+    const adminImagePromises = [];
+    const adminUsernamePromises = [];
+    if (group && group.admins) {
+      for (const admin of group.admins) {
+        if (admin.robloxId) {
+          const usernamePromise = Roblox.getUsernameFromId(admin.robloxId);
+          const imagePromise = Roblox.getUserImage(admin.robloxId);
+          adminImagePromises.push(imagePromise);
+          adminUsernamePromises.push(usernamePromise);
+          usernamePromise.catch(e => e);
+          imagePromise.catch(e => e);
+        }
+      }
+    }
+    // Set up promises
     const groupInfoPromise = Roblox.getGroup(group.robloxId);
     const groupIconPromise = Roblox.getGroupsImage([group.robloxId]);
+    const adminPromises = Promise.all([Promise.all(adminImagePromises), Promise.all(adminUsernamePromises)]);
+
+    // Actually await them
+    const [adminImages, adminUsernames] = await adminPromises;
     const groupRobloxInfo = await groupInfoPromise;
     const groupIcon = await groupIconPromise;
 
     const toSend:FullGroup = { ...group };
+
+    for (let i = 0; i < adminImages.length; i++) {
+      const imageUrl = adminImages[i];
+      toSend.admins[i].robloxInfo = {
+        // Id cannot be undefined.
+        id: group.admins[i].robloxId,
+        username: adminUsernames[i],
+        image: imageUrl || ""
+      };
+    }
 
     if (!group.stripeSubscriptionId) {
       toSend.actionLimit = FREE_REQUESTS;
@@ -253,7 +289,7 @@ export default class Groups {
     if (user.permissionLevel === PermissionLevel.admin) {
       group = await database.groups.findOne({ id }, { relations: ["bot"] });
     } else {
-      group = await request.groupService.canAccessGroup(id);
+      group = await request.groupService.canAccessGroup(id, undefined, true);
     }
     if (!group) throw new NotFoundError("Group not found");
 
@@ -305,5 +341,76 @@ export default class Groups {
       return true;
     }
     throw new ForbiddenError("You do not have access to that group.");
+  }
+
+  @OpenAPI({ description: "Adds a new Admin user to your group." })
+  @Post("/:id/admins")
+  async addAdmin (@CurrentUser({ required: true }) user: User, @Params({
+    required: true,
+    validate: true
+  }) { id }: IdParam, @Body({
+      required: true,
+      validate: true
+    }) { userId } : AdminBodyParam): Promise<FullGroup> {
+    const grp = await database.groups.getFullGroup(id);
+    if (!grp) {
+      throw new NotFoundError("Group not found");
+    }
+
+    const admin = await database.users.getUser(userId);
+    // Admin validation
+    if (!admin) {
+      throw new NotFoundError("User not found");
+    } else if (grp.admins.find(u => u.id === admin.id)) {
+      throw new BadRequestError("That user is already an admin.");
+    } else if (grp.owner.id === admin.id) {
+      throw new BadRequestError("You cannot add the owner as an admin.");
+    }
+
+    // Check permissions
+    if (grp.owner.id === user.id) {
+      grp.admins.push(admin);
+      await database.groups.save(grp);
+
+      return grp;
+    }
+    throw new ForbiddenError("Only the group owner can add group admins.");
+  }
+
+  @OpenAPI({ description: "Removes an admin user from your group." })
+  @Delete("/:id/admins")
+  async rmvAdmin (@CurrentUser({ required: true }) user: User, @Params({
+    required: true,
+    validate: true
+  }) { id }: IdParam, @Body({
+      required: true,
+      validate: true
+    }) { userId } : AdminBodyParam): Promise<FullGroup> {
+    const grp = await database.groups.getFullGroup(id);
+    if (!grp) {
+      throw new NotFoundError("Group not found");
+    }
+
+    const admin = await database.users.getUser(userId);
+    if (!admin) {
+      throw new NotFoundError("User not found");
+    }
+
+    const adminLocation = grp.admins.findIndex(u => u.id === admin.id);
+    // Admin validation
+    if (adminLocation === -1) {
+      throw new BadRequestError("That user is not an admin.");
+    } else if (grp.owner.id === admin.id) {
+      throw new BadRequestError("You cannot add remove the owner as an admin.");
+    }
+
+    // Check permissions
+    if (grp.owner.id === user.id) {
+      grp.admins.splice(adminLocation, 1);
+      await database.groups.save(grp);
+
+      return grp;
+    }
+    throw new ForbiddenError("Only the group owner can remove group admins.");
   }
 }

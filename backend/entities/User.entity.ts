@@ -31,7 +31,8 @@ export default class User {
 
   @Column("text", {
     nullable: true,
-    unique: true
+    unique: true,
+    select: false
   })
   stripeCustomerId?: string;
 
@@ -45,8 +46,8 @@ export default class User {
 
   @Column({
     length: 50,
-    unique: true
-    /* select: false */
+    unique: true,
+    select: false
   })
   email: string;
 

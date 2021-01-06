@@ -30,7 +30,7 @@ export default class GroupService {
     if (grp.owner.id === usr.id) {
       return grp;
     }
-    if (includeShared && grp.admins.filter(admin => admin.id === usr.id)) {
+    if (includeShared && grp.admins.find(admin => admin.id === usr.id)) {
       return grp;
     }
     throw new ForbiddenError("You do not have access to that group.");
