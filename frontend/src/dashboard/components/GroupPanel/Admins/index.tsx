@@ -1,7 +1,8 @@
-import React, { FunctionComponent, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { FunctionComponent, useContext, useState } from "react";
 
+import { FullGroup } from "../../../api/types";
 import GroupContext from "../../../context/GroupContext";
+import AddAdminModal from "./AddAdminModal";
 import AdminBox from "./AdminBox";
 
 
@@ -10,17 +11,20 @@ interface GroupAdminsProps{
 }
 
 const GroupAdmins: FunctionComponent<GroupAdminsProps> = ({ isOwner }) => {
-  const [group] = useContext(GroupContext);
+  const [group, setGroup] = useContext(GroupContext);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   if (!group) {
     return <p>Loading...</p>;
   }
-  /*
-    Todo: admins stuff
-    - Fix typings
-    - Consider moving admin roblox info fetches to new api
-   */
+
+  function handleAddAdmin (grp?: FullGroup): any {
+    if (!grp) return setModalOpen(false);
+    return setGroup(grp);
+  }
+
   return (
     <div>
+      { modalOpen ? <AddAdminModal handleDone={handleAddAdmin} groupId={group.id} /> : ""}
       <div className="level mt-2">
         <div className="level-left">
           <div className="level-item">
@@ -29,7 +33,7 @@ const GroupAdmins: FunctionComponent<GroupAdminsProps> = ({ isOwner }) => {
         </div>
         <div className="level-right">
           <div className="level-item">
-            <Link to="unlinked" className="button is-primary">Add admin</Link>
+            <button className="button is-primary" type="button" onClick={() => setModalOpen(true)}>Add admin</button>
           </div>
         </div>
       </div>

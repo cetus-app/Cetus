@@ -79,23 +79,26 @@ const schemas = validationMetadatasToSchemas({
 const metadataStorage = getMetadataArgsStorage();
 const openApiSpec = routingControllersToSpec(metadataStorage, options, { components: { schemas } });
 
-if (openApiSpec.paths) {
-  const pathKeys: (keyof typeof openApiSpec.paths)[] = Object.keys(openApiSpec.paths);
-  for (const pathKey of pathKeys) {
-    if (typeof pathKey === "string" && !pathKey.toLowerCase().includes("/roblox/")) {
-      delete openApiSpec.paths[pathKey];
+if (process.env.NODE_ENV !== "development") {
+  if (openApiSpec.paths) {
+    const pathKeys: (keyof typeof openApiSpec.paths)[] = Object.keys(openApiSpec.paths);
+    for (const pathKey of pathKeys) {
+      if (typeof pathKey === "string" && !pathKey.toLowerCase().includes("/roblox/")) {
+        delete openApiSpec.paths[pathKey];
+      }
+    }
+  }
+
+  if (openApiSpec.components?.schemas) {
+    const robloxSchemaKeys = Object.keys(RobloxApiSchemas);
+    for (const schemaKey of Object.keys(openApiSpec.components.schemas)) {
+      if (!robloxSchemaKeys.includes(schemaKey)) {
+        delete openApiSpec.components.schemas[schemaKey];
+      }
     }
   }
 }
 
-if (openApiSpec.components?.schemas) {
-  const robloxSchemaKeys = Object.keys(RobloxApiSchemas);
-  for (const schemaKey of Object.keys(openApiSpec.components.schemas)) {
-    if (!robloxSchemaKeys.includes(schemaKey)) {
-      delete openApiSpec.components.schemas[schemaKey];
-    }
-  }
-}
 
 if (!openApiSpec.components) openApiSpec.components = {};
 openApiSpec.components.securitySchemes = {
@@ -107,7 +110,6 @@ openApiSpec.components.securitySchemes = {
 
 app.use("/docs", swaggerServe, setup(openApiSpec));
 
-// Temporary
 app.get("/swagger.json", (_req, res) => {
   res.send(openApiSpec);
 });

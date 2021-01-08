@@ -1,11 +1,12 @@
 import { Type } from "class-transformer";
 import {
-  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsUUID
+  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength
 } from "class-validator";
 
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
-import { GroupPermissions, RobloxGroup } from "../../types";
+import { GroupPermissions, RobloxGroup, RobloxUser } from "../../types";
+import { PartialRobloxUser } from "../AccountController/types";
 import { Bot } from "../BotController/types";
 import { PartialIntegration } from "../IntegrationController/types";
 
@@ -58,7 +59,21 @@ export class IdParam {
   id: string
 }
 
-// Used for both adding and removing
+export class GetAdminUserParam {
+  @IsString()
+  @MinLength(3)
+  @MaxLength(20)
+  idOrUsername: string
+}
+export class GetAdminUserResponse {
+  @IsUUID("4")
+  id: string
+
+  @Type(() => PartialRobloxUser)
+  robloxInfo: PartialRobloxUser
+}
+
+// Used to add or remove an admin
 export class AdminBodyParam {
   @IsUUID("4")
   userId: string

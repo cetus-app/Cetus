@@ -2,7 +2,7 @@
 import { ApiKey } from "./ApiKey";
 import { Bot } from "./Bot";
 import { PartialIntegration } from "./Integration";
-import {FullUser, PartialUser} from "./User";
+import { FullUser, PartialUser, RobloxUser } from "./User";
 
 interface GroupBase {
   name: string,
@@ -66,4 +66,10 @@ export class FullGroup extends PartialGroup {
   actionLimit?: number;
 
   admins: FullUser[];
+}
+
+export class AdminInfo {
+  id: string;
+
+  robloxInfo: RobloxUser
 }
