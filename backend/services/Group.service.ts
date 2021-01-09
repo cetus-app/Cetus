@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import { ForbiddenError, NotFoundError } from "routing-controllers";
 
 import Roblox from "../api/roblox/Roblox";
+import { FullGroup } from "../controllers/GroupController/types";
 import database from "../database";
 import { Group } from "../entities";
 import User from "../entities/User.entity";
@@ -34,6 +35,38 @@ export default class GroupService {
       return grp;
     }
     throw new ForbiddenError("You do not have access to that group.");
+  }
+
+  // Adds the admin robloxInfo to the passed group, and returns the new one.
+  async addAdminInfo (group: Group): Promise<FullGroup> {
+    const toReturn: FullGroup = { ...group };
+    const adminImagePromises = [];
+    const adminUsernamePromises = [];
+    if (group && group.admins) {
+      for (const admin of group.admins) {
+        if (admin.robloxId) {
+          const usernamePromise = Roblox.getUsernameFromId(admin.robloxId);
+          const imagePromise = Roblox.getUserImage(admin.robloxId);
+          adminImagePromises.push(imagePromise);
+          adminUsernamePromises.push(usernamePromise);
+          usernamePromise.catch(e => e);
+          imagePromise.catch(e => e);
+        }
+      }
+    }
+    const adminPromises = Promise.all([Promise.all(adminImagePromises), Promise.all(adminUsernamePromises)]);
+    const [adminImages, adminUsernames] = await adminPromises;
+
+    for (let i = 0; i < adminImages.length; i++) {
+      const imageUrl = adminImages[i];
+      toReturn.admins[i].robloxInfo = {
+        // Id cannot be undefined.
+        id: group.admins[i].robloxId,
+        username: adminUsernames[i],
+        image: imageUrl || ""
+      };
+    }
+    return toReturn;
   }
 
   async notifyDeploy (group: Group): Promise<void> {

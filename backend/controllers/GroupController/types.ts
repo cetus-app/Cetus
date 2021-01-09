@@ -5,7 +5,7 @@ import {
 
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
-import { GroupPermissions, RobloxGroup, RobloxUser } from "../../types";
+import { GroupPermissions, RobloxGroup } from "../../types";
 import { PartialRobloxUser } from "../AccountController/types";
 import { Bot } from "../BotController/types";
 import { PartialIntegration } from "../IntegrationController/types";

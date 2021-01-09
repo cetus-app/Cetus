@@ -16,7 +16,10 @@ export async function csrfMiddleware (req: Request, res: Response, next: NextFun
         return next();
       }
     }
-    throw new BadRequestError("Failed CSRF Token validation");
+    // Sent manually due to routing-controllers bug
+    // https://github.com/typestack/routing-controllers/issues/563
+    const e = new BadRequestError("Failed CSRF Token validation");
+    return res.status(e.httpCode).send(e);
   }
 
   // It's a GET, Options or HEAD etc.

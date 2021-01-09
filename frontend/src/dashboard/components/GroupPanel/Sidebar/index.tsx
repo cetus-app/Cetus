@@ -22,6 +22,7 @@ const SideBar: FunctionComponent<SideBarProps> = ({ isOwner }) => {
         </ul>
         <p className="menu-label">Manage</p>
         <ul className="menu-list">
+          <NavLink to={`${url}/admins`} activeClassName="is-active">Admins</NavLink>
           {
             (isOwner) ? (
               <Fragment>
@@ -30,7 +31,6 @@ const SideBar: FunctionComponent<SideBarProps> = ({ isOwner }) => {
               </Fragment>
             ) : ""
           }
-          <NavLink to={`${url}/admins`} activeClassName="is-active">Admins</NavLink>
           <a href={process.env.discordInvite} target="_blank" rel="noreferrer">Get help</a>
         </ul>
       </aside>

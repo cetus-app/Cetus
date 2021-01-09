@@ -57,12 +57,12 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
     }
     return <p className="has-text-danger">{error}</p>;
   }
-  const isOwner = group && user && user.id === group.owner.id;
+  const isOwner = !!(group && user && user.id === group.owner.id);
   return (
     <GroupProvider value={[group, setGroup]}>
       <div className="columns">
         <div className="column is-one-fifth sidebar-container">
-          <SideBar isOwner={!!isOwner} />
+          <SideBar isOwner={isOwner} />
         </div>
         <div className="panel-right-column column">
           <EmailNotification />
@@ -78,13 +78,13 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             </Route>
 
             <Route path={`${path}/admins`}>
-              <GroupAdmins isOwner={!!isOwner} />
+              <GroupAdmins isOwner={isOwner} />
             </Route>
             <Route path={`${path}/billing`}>
               { isOwner ? <Billing /> : <ForbiddenError message="Only the group owner can change billing settings." />}
             </Route>
             <Route path={`${path}/integrations`} exact>
-              <Integrations />
+              <Integrations isOwner={isOwner} />
             </Route>
             <Route path={`${path}/integrations/:integrationId`}>
               <IntegrationEditor />

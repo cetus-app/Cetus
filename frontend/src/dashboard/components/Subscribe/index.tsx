@@ -90,7 +90,8 @@ const Subscribe: FunctionComponent = () => {
     <section className="section">
       <div className="container">
         <h1 className="title">Subscribing for {group.robloxInfo.name}</h1>
-        <h4 className="subtitle">Select the integrations you would like to use in your group. You can enable and disable these any time in your group dashboard after subscribing.</h4>
+        <h4 className="subtitle mb-0">Select the integrations you would like to use in your group. You can enable and disable these any time in your group dashboard after subscribing.</h4>
+        <p className="mb-2">Integrations are a pro feature, and require you to purchase the pro group plan.</p>
 
         <div className="columns">
           <div className="column is-7 is-6-desktop is-5-widescreen">
@@ -102,7 +103,7 @@ const Subscribe: FunctionComponent = () => {
               <h5>Your cart</h5>
 
               <p>
-                Group with API access<span className="is-pulled-right">£3/month</span>
+                Pro group API access<span className="is-pulled-right">£3/month</span>
 
                 {Array.from(cart.entries()).map(([type, info]) => (
                   <Fragment key={type}>
@@ -119,7 +120,7 @@ const Subscribe: FunctionComponent = () => {
               </strong>
             </div>
 
-            <p>Access to one group (which includes API access and our Lua SDK) is always part of your subscription</p>
+            <p>Pro Access to one group which includes unlimited API access is always part of your subscription</p>
           </div>
         </div>
         <div className="columns is-centered">

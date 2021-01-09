@@ -33,7 +33,9 @@ import {
   AddGroupBody,
   AdminBodyParam,
   EnableBotResponse,
-  FullGroup, GetAdminUserParam, GetAdminUserResponse,
+  FullGroup,
+  GetAdminUserParam,
+  GetAdminUserResponse,
   IdParam,
   PartialGroup,
   UnlinkedGroup
@@ -224,41 +226,17 @@ export default class Groups {
       p.catch(console.error);
     }
 
-    const adminImagePromises = [];
-    const adminUsernamePromises = [];
-    if (group && group.admins) {
-      for (const admin of group.admins) {
-        if (admin.robloxId) {
-          const usernamePromise = Roblox.getUsernameFromId(admin.robloxId);
-          const imagePromise = Roblox.getUserImage(admin.robloxId);
-          adminImagePromises.push(imagePromise);
-          adminUsernamePromises.push(usernamePromise);
-          usernamePromise.catch(e => e);
-          imagePromise.catch(e => e);
-        }
-      }
-    }
     // Set up promises
     const groupInfoPromise = Roblox.getGroup(group.robloxId);
     const groupIconPromise = Roblox.getGroupsImage([group.robloxId]);
-    const adminPromises = Promise.all([Promise.all(adminImagePromises), Promise.all(adminUsernamePromises)]);
+    const groupWithAdminsPromise = request.groupService.addAdminInfo(group);
+
 
     // Actually await them
-    const [adminImages, adminUsernames] = await adminPromises;
     const groupRobloxInfo = await groupInfoPromise;
     const groupIcon = await groupIconPromise;
 
-    const toSend:FullGroup = { ...group };
-
-    for (let i = 0; i < adminImages.length; i++) {
-      const imageUrl = adminImages[i];
-      toSend.admins[i].robloxInfo = {
-        // Id cannot be undefined.
-        id: group.admins[i].robloxId,
-        username: adminUsernames[i],
-        image: imageUrl || ""
-      };
-    }
+    const toSend:FullGroup = await groupWithAdminsPromise;
 
     if (!group.stripeSubscriptionId) {
       toSend.actionLimit = FREE_REQUESTS;
@@ -412,10 +390,15 @@ export default class Groups {
   }) { id }: IdParam, @Body({
       required: true,
       validate: true
-    }) { userId } : AdminBodyParam): Promise<FullGroup> {
+    }) { userId } : AdminBodyParam,
+    @Req() request: Request): Promise<FullGroup> {
     const grp = await database.groups.getFullGroup(id);
     if (!grp) {
       throw new NotFoundError("Group not found");
+    }
+
+    if (grp.admins.length >= 10) {
+      throw new BadRequestError("To prevent abuse, we do not allow you to add more than 10 admins to your group.");
     }
 
     const admin = await database.users.getUser(userId);
@@ -433,7 +416,7 @@ export default class Groups {
       grp.admins.push(admin);
       await database.groups.save(grp);
 
-      return grp;
+      return request.groupService.addAdminInfo(grp);
     }
     throw new ForbiddenError("Only the group owner can add group admins.");
   }
@@ -448,7 +431,8 @@ export default class Groups {
   }) { id }: IdParam, @Body({
       required: true,
       validate: true
-    }) { userId } : AdminBodyParam): Promise<FullGroup> {
+    }) { userId } : AdminBodyParam,
+    @Req() request: Request): Promise<FullGroup> {
     const grp = await database.groups.getFullGroup(id);
     if (!grp) {
       throw new NotFoundError("Group not found");
@@ -472,7 +456,7 @@ export default class Groups {
       grp.admins.splice(adminLocation, 1);
       await database.groups.save(grp);
 
-      return grp;
+      return request.groupService.addAdminInfo(grp);
     }
     throw new ForbiddenError("Only the group owner can remove group admins.");
   }

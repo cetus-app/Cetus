@@ -11,7 +11,7 @@ import { getGroupFromRequest } from "../decorators/CurrentGroup";
 import { TooManyRequestsError } from "../shared";
 
 // Handles rate limiting for state-changing actions.
-export default async function rateLimitMiddleware (req: Request, _res: Response, next: NextFunction) {
+export default async function rateLimitMiddleware (req: Request, res: Response, next: NextFunction) {
   const protectedMethods = ["post", "patch", "put", "delete"];
 
   if (!protectedMethods.includes(req.method.toLowerCase())) {
@@ -27,7 +27,10 @@ export default async function rateLimitMiddleware (req: Request, _res: Response,
   if (newCount >= FREE_REQUESTS) {
     // They have exceeded their quota.
     // Send notification (if not already sent)
-    throw new TooManyRequestsError("You have exceeded your free quota this month. Please upgrade or wait until next month.");
+    // Sent manually due to routing-controllers bug
+    // https://github.com/typestack/routing-controllers/issues/563
+    const e = new TooManyRequestsError("You have exceeded your free quota this month. Please upgrade or wait until next month.");
+    return res.status(e.httpCode).send(e);
   }
   return next();
 }

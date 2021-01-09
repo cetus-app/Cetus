@@ -29,7 +29,7 @@ export default class KeyController {
     @Req() request: Request): Promise<ApiKeyResponse> {
     // Check they own it/have access
     // Throws an error if no access
-    const grp = await request.groupService.canAccessGroup(groupId);
+    const grp = await request.groupService.canAccessGroup(groupId, undefined, true);
 
     const newKey = new ApiKey();
     newKey.name = name;
@@ -50,12 +50,12 @@ export default class KeyController {
       required: true,
       validate: true
     }) { id }: DeleteKeyRequest): Promise<void> {
-    const key = await database.keys.findOne(id, { relations: ["group", "group.owner"] });
+    const key = await database.keys.findOne(id, { relations: ["group", "group.owner", "group.admins"] });
 
     if (!key) throw new NotFoundError();
 
     // Don't expose a valid ID
-    if (key.group.owner.id !== user.id) throw new NotFoundError();
+    if (key.group.owner.id !== user.id && !key.group.admins.find(a => a.id === user.id)) throw new NotFoundError();
 
     await database.keys.remove(key);
   }
