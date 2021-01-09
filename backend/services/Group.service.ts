@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import { ForbiddenError, NotFoundError } from "routing-controllers";
 
 import Roblox from "../api/roblox/Roblox";
+import { FullGroup } from "../controllers/GroupController/types";
 import database from "../database";
 import { Group } from "../entities";
 import User from "../entities/User.entity";
@@ -12,9 +13,10 @@ export default class GroupService {
   constructor (private request: Request) {
   }
 
+
   // Returns either the group or throws an error if the user does not have access
   // Can also have a group passed if we've already fetched it and want to check if they have access
-  async canAccessGroup (group: Group["id"]|Group, user?: User): Promise<Group> {
+  async canAccessGroup (group: Group["id"]|Group, user?: User, includeShared?: boolean): Promise<Group> {
     const usr = this.request.user || user;
     const grp = typeof group !== "string" ? group : await database.groups.getFullGroup(group);
     if (!grp) {
@@ -29,7 +31,42 @@ export default class GroupService {
     if (grp.owner.id === usr.id) {
       return grp;
     }
+    if (includeShared && grp.admins.find(admin => admin.id === usr.id)) {
+      return grp;
+    }
     throw new ForbiddenError("You do not have access to that group.");
+  }
+
+  // Adds the admin robloxInfo to the passed group, and returns the new one.
+  async addAdminInfo (group: Group): Promise<FullGroup> {
+    const toReturn: FullGroup = { ...group };
+    const adminImagePromises = [];
+    const adminUsernamePromises = [];
+    if (group && group.admins) {
+      for (const admin of group.admins) {
+        if (admin.robloxId) {
+          const usernamePromise = Roblox.getUsernameFromId(admin.robloxId);
+          const imagePromise = Roblox.getUserImage(admin.robloxId);
+          adminImagePromises.push(imagePromise);
+          adminUsernamePromises.push(usernamePromise);
+          usernamePromise.catch(e => e);
+          imagePromise.catch(e => e);
+        }
+      }
+    }
+    const adminPromises = Promise.all([Promise.all(adminImagePromises), Promise.all(adminUsernamePromises)]);
+    const [adminImages, adminUsernames] = await adminPromises;
+
+    for (let i = 0; i < adminImages.length; i++) {
+      const imageUrl = adminImages[i];
+      toReturn.admins[i].robloxInfo = {
+        // Id cannot be undefined.
+        id: group.admins[i].robloxId,
+        username: adminUsernames[i],
+        image: imageUrl || ""
+      };
+    }
+    return toReturn;
   }
 
   async notifyDeploy (group: Group): Promise<void> {

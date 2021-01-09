@@ -1,5 +1,7 @@
 // Allows Groups to be edited and contains all group editor related stuff
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent, useContext, useEffect, useState
+} from "react";
 import {
   Redirect, Route, Switch, useParams, useRouteMatch
 } from "react-router-dom";
@@ -8,10 +10,13 @@ import { getGroup } from "../../api/groups";
 import { FullGroup } from "../../api/types";
 import { GroupProvider } from "../../context/GroupContext";
 import "../../assets/scss/GroupPanel.scss";
+import UserContext from "../../context/UserContext";
 import { Billing } from "../Billing";
 import { NoMatch } from "../NoMatch";
 import EmailNotification from "../shared/EmailNotification";
+import ForbiddenError from "../shared/ForbiddenError";
 import APIDocs from "./APIDocs";
+import GroupAdmins from "./Admins";
 import GroupHome from "./Home";
 import IntegrationEditor from "./IntegrationEditor";
 import Integrations from "./IntegrationSelector";
@@ -27,6 +32,7 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
   const { groupId } = useParams();
   const { path } = useRouteMatch();
   const [group, setGroup] = useState<FullGroup|null>(null);
+  const user = useContext(UserContext);
   const [error, setError] = useState<string|undefined>();
 
   useEffect(() => {
@@ -51,11 +57,12 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
     }
     return <p className="has-text-danger">{error}</p>;
   }
+  const isOwner = !!(group && user && user.id === group.owner.id);
   return (
     <GroupProvider value={[group, setGroup]}>
       <div className="columns">
         <div className="column is-one-fifth sidebar-container">
-          <SideBar />
+          <SideBar isOwner={isOwner} />
         </div>
         <div className="panel-right-column column">
           <EmailNotification />
@@ -69,17 +76,21 @@ const GroupPanel: FunctionComponent<GroupPanelProps> = _props => {
             <Route path={`${path}/lua`}>
               <SDKDocs />
             </Route>
+
+            <Route path={`${path}/admins`}>
+              <GroupAdmins isOwner={isOwner} />
+            </Route>
             <Route path={`${path}/billing`}>
-              <Billing />
+              { isOwner ? <Billing /> : <ForbiddenError message="Only the group owner can change billing settings." />}
             </Route>
             <Route path={`${path}/integrations`} exact>
-              <Integrations />
+              <Integrations isOwner={isOwner} />
             </Route>
             <Route path={`${path}/integrations/:integrationId`}>
               <IntegrationEditor />
             </Route>
             <Route path={`${path}/unlink`}>
-              <Unlink />
+              { isOwner ? <Unlink /> : <ForbiddenError message="Only the group owner can unlink the group." />}
             </Route>
             <Route path={path}>
               <NoMatch />

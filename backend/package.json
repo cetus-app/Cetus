@@ -1,6 +1,6 @@
 {
   "name": "cetus-backend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The backend for Cetus",
   "scripts": {
     "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
@@ -35,7 +35,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@sendgrid/mail": "^7.1.0",
+    "@sendgrid/mail": "^7.4.0",
     "@sentry/integrations": "^5.17.0",
     "@sentry/node": "^5.17.0",
     "@types/helmet": "0.0.47",
@@ -57,11 +57,11 @@
     "pg": "^8.0.3",
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
     "routing-controllers": "^0.8.1",
     "routing-controllers-openapi": "^2.0.0",
     "stripe": "^8.86.0",
     "swagger-ui-express": "^4.1.4",
-    "typeorm": "^0.2.29",
-    "rimraf": "^3.0.2"
+    "typeorm": "^0.2.29"
   }
 }

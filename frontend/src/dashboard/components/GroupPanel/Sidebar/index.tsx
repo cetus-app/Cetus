@@ -1,13 +1,13 @@
 // Created by josh on 07/06/2020
-import React, { FunctionComponent } from "react";
+import React, { Fragment, FunctionComponent } from "react";
 import { NavLink, useRouteMatch } from "react-router-dom";
 
 
 interface SideBarProps{
-
+  isOwner: boolean
 }
 
-const SideBar: FunctionComponent<SideBarProps> = () => {
+const SideBar: FunctionComponent<SideBarProps> = ({ isOwner }) => {
   const { url } = useRouteMatch();
   return (
     <div className="sidebar">
@@ -22,8 +22,15 @@ const SideBar: FunctionComponent<SideBarProps> = () => {
         </ul>
         <p className="menu-label">Manage</p>
         <ul className="menu-list">
-          <NavLink to={`${url}/billing`} activeClassName="is-active">Billing</NavLink>
-          <NavLink to={`${url}/unlink`} activeClassName="is-active">Unlink</NavLink>
+          <NavLink to={`${url}/admins`} activeClassName="is-active">Admins</NavLink>
+          {
+            (isOwner) ? (
+              <Fragment>
+                <NavLink to={`${url}/billing`} activeClassName="is-active">Billing</NavLink>
+                <NavLink to={`${url}/unlink`} activeClassName="is-active">Unlink</NavLink>
+              </Fragment>
+            ) : ""
+          }
           <a href={process.env.discordInvite} target="_blank" rel="noreferrer">Get help</a>
         </ul>
       </aside>

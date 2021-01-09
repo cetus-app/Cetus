@@ -14,14 +14,15 @@ import PurchaseModal from "./PurchaseModal";
 
 
 interface IntegrationsProps {
-
+  isOwner: boolean
 }
 interface IntegrationState {
   unused: IntegrationInfo[]
   info: IntegrationMeta
+
 }
 
-const Integrations: FunctionComponent<IntegrationsProps> = () => {
+const Integrations: FunctionComponent<IntegrationsProps> = ({ isOwner }) => {
   const [grp, setGrp] = useContext(GroupContext);
   const history = useHistory();
   const { url } = useRouteMatch();
@@ -53,7 +54,7 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
     history.push(`${url}/${id}`);
   }
 
-  if (grp && !grp.stripeSubscriptionId) {
+  if (grp && !grp.stripeSubscriptionId && isOwner) {
     return <Redirect to={`/subscribe/${grp.id}`} />;
   }
 
@@ -92,7 +93,9 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
           this includes both those enabled and disabled integrations.
         </p>
         <p className="last-para">Integrations are individually priced. Click an integration to configure it, or find out more information.</p>
+        {!isOwner && <p>You cannot enable new integrations as you are not the group owner.</p>}
         {error && <p className="has-text-danger last-para">{error}</p>}
+
         <div className="columns is-mobile is-multiline">
           {
               grp.integrations.map((i:PartialIntegration) => (
@@ -107,7 +110,13 @@ const Integrations: FunctionComponent<IntegrationsProps> = () => {
               ))
             }
           {
-              integrationInfo.unused.map(i => <IntegrationButton meta={i} handleClick={() => setModal(i)} key={i.name} inactive />)
+              integrationInfo.unused.map(i => (
+                <IntegrationButton
+                  meta={i}
+                  handleClick={() => isOwner && setModal(i)}
+                  key={i.name}
+                  inactive />
+              ))
             }
         </div>
       </div>

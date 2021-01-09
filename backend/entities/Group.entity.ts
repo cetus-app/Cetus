@@ -8,6 +8,8 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn
@@ -57,6 +59,10 @@ export default class Group {
     onDelete: "CASCADE"
   })
   owner: User;
+
+  @ManyToMany(() => User, user => user.sharedGroups, { nullable: false })
+  @JoinTable()
+  admins: User[];
 
   @ManyToOne(() => Bot)
   bot?: Bot;

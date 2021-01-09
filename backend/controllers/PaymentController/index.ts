@@ -139,7 +139,10 @@ export default class PaymentController {
     const query: FindOneOptions<User>["where"] = customerId
       ? [{ stripeCustomerId: customerId }, { email: session.customer_email }]
       : { email: session.customer_email };
-    const user = await database.users.findOne({ where: query });
+    const user = await database.users.findOne({
+      where: query,
+      select: ["emailVerified", "email", "id", "stripeCustomerId"]
+    });
 
     if (!user) throw new BadRequestError("User not found");
     if (!user.emailVerified) throw new BadRequestError("Email not verified");
@@ -202,7 +205,7 @@ export default class PaymentController {
 
     const grp = await database.groups.findOne({
       where: { stripeSubscriptionId: subscription.id },
-      relations: ["owner", "integrations"]
+      relations: ["owner", "integrations", "owner.stripeCustomerId"]
     });
     if (!grp) {
       throw new NotFoundError("Group not found");

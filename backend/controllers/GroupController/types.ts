@@ -1,11 +1,12 @@
 import { Type } from "class-transformer";
 import {
-  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsUUID
+  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength
 } from "class-validator";
 
 import { ApiKey, Integration, User } from "../../entities";
 import Group from "../../entities/Group.entity";
 import { GroupPermissions, RobloxGroup } from "../../types";
+import { PartialRobloxUser } from "../AccountController/types";
 import { Bot } from "../BotController/types";
 import { PartialIntegration } from "../IntegrationController/types";
 
@@ -47,12 +48,35 @@ export class FullGroup extends PartialGroup {
   @IsOptional()
   @IsNumber()
   actionLimit?: number;
+
+  @Type(() => User)
+  admins: any[];
 }
 
 // Issue regarding validation of id in params: https://github.com/typestack/routing-controllers/issues/348
 export class IdParam {
   @IsUUID("4")
   id: string
+}
+
+export class GetAdminUserParam {
+  @IsString()
+  @MinLength(3)
+  @MaxLength(20)
+  idOrUsername: string
+}
+export class GetAdminUserResponse {
+  @IsUUID("4")
+  id: string
+
+  @Type(() => PartialRobloxUser)
+  robloxInfo: PartialRobloxUser
+}
+
+// Used to add or remove an admin
+export class AdminBodyParam {
+  @IsUUID("4")
+  userId: string
 }
 
 export class AddGroupBody {

@@ -20,7 +20,9 @@ export interface PartialUser {
   created: string
 }
 
-export interface FullUser extends PartialUser {}
+export interface FullUser extends PartialUser {
+  robloxInfo: RobloxUser
+}
 
 export interface RobloxUser {
   id: number
