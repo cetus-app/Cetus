@@ -139,13 +139,13 @@ export const integrationMeta: {[key in IntegrationType]: IntegrationInfo} = {
     shortDesc: "Power up your Server and get powerful commands and features.",
     icon: "fab fa-discord",
     longDesc: "Our Discord bot will make your life as a server admin easier. Verify users, synchronise roles, send shouts and manage group members from simple commands in one place.\n\nThe bot is frequently updated with new features to simplify your group management.",
-    cost: 5
+    cost: 3
   },
   [IntegrationType.antiAdminAbuse]: {
     name: "Group defender",
     shortDesc: "Protect your group against admin abuse.",
     icon: "fas fa-shield-alt",
     longDesc: "Group defender gives you peace of mind. It consists of advanced software, running on our servers. It works by monitoring your group audit logs and detecting suspicious actions or users exceed the limits you set.\n\nWhat else can it do?\nGroup defender can detect, report and revert admin abuse to allow your group to continue functioning - with minimal disruption.",
-    cost: 5
+    cost: 3
   }
 };
