@@ -103,7 +103,7 @@ export default class AuthController {
         throw new ForbiddenError();
       }
 
-      let user = await database.users.findOne({ email }, { select: ["email", "discordId", "emailVerified", "robloxId"] });
+      let user = await database.users.findOne({ email }, { select: ["id", "email", "discordId", "emailVerified", "robloxId"] });
 
       if (user && (!user.emailVerified || !user.discordId)) {
         if (!user.emailVerified) user.emailVerified = true;
