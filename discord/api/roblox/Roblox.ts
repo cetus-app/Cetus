@@ -158,12 +158,19 @@ export default class Roblox {
 
   static async fetchIdFromUsername (username: string): Promise<number | undefined> {
     try {
-      const data = await fetch(`${BASE_API_URL}/users/get-by-username?username=${username}`).then(checkStatus).then(res => res && res.json());
+      const body = {
+        usernames: [username],
+        excludeBannedUsers: true
+      };
 
+      const { data } = await fetch(`${USERS_API_URL}/v1/usernames/users`, {
+        method: "POST",
+        body: JSON.stringify(body)
+      }).then(checkStatus).then(res => res && res.json());
       if (data) {
-        if (data.Id) return data.Id;
+        if (data.length < 1) return undefined;
 
-        if (data.success === false && data.errorMessage && data.errorMessage.toLowerCase() === "user not found") return undefined;
+        if (data[0].id) return data[0].id;
       }
 
       // Is caught below
