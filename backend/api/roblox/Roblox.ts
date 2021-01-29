@@ -86,11 +86,12 @@ export default class Roblox {
   }
 
   static fetchUsernameFromId (id: number): Promise<string | undefined> {
-    return fetch(`${BASE_API_URL}/users/${id}`).then(checkStatus).then(res => res && res.json())
-      .then(data => data?.Username)
+    return fetch(`${USERS_API_URL}/v1/users/${id}`).then(checkStatus).then(res => res && res.json())
+      .then(data => (data?.isBanned ? undefined : data?.name))
       .catch(e => {
         // Roblox responds with 400 for invalid IDs or deleted users
-        if (e instanceof ExternalHttpError && e.response.status === 400) return undefined;
+        // (before API changes 28.01.2021, 404 seems to be the default for invalid IDs/not found now)
+        if (e instanceof ExternalHttpError && (e.response.status === 400 || e.response.status === 404)) return undefined;
 
         console.error(`Error while fetching username from ID ${id}`, e);
         return undefined;
