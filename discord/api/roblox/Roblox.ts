@@ -1,10 +1,10 @@
 import realFetch, { Headers, RequestInit } from "node-fetch";
 
 import { REDIS_PREFIXES } from "../../constants";
-import { ExternalHttpError, client as redis, multiGet } from "../../shared";
-import { camelify, checkStatus } from "../../shared/util";
+import { ExternalHttpError, multiGet, client as redis } from "../../shared";
+import { checkStatus } from "../../shared/util";
 import {
-  FullRobloxRole, RobloxGroup, RobloxUser, UserRobloxGroup, RobloxGroupIcon
+  FullRobloxRole, RobloxGroup, RobloxGroupIcon, RobloxRole, RobloxUser, UserRobloxGroup
 } from "../../types";
 
 const fetch = (url: string, opt?: RequestInit) => {
@@ -114,7 +114,6 @@ export default class Roblox {
     return out;
   }
 
-
   /**
    * Fetches the thumbnail urls of the given groups.
    * @param ids - The group ids to get the icons for.
@@ -201,11 +200,32 @@ export default class Roblox {
   }
 
   static async fetchGroup (groupId: number): Promise<RobloxGroup | undefined> {
-    const url = `${BASE_API_URL}/groups/${groupId}`;
-    const data = await fetch(url).then(checkStatus).then(res => res && res.json());
+    const groupUrl = `${GROUPS_API_URL}/v1/groups/${groupId}`;
+    const groupPromise = fetch(groupUrl).then(checkStatus).then(res => res && res.json());
 
-    // Data is undefined for 404
-    return data ? camelify(data) : data;
+    const rolesUrl = `${groupUrl}/roles`;
+    const rolesPromise = fetch(rolesUrl).then(checkStatus).then(res => res && res.json());
+
+    const iconPromise = this.getGroupsImage([groupId]);
+
+    const [group, { roles }, [icon]] = await Promise.all([groupPromise, rolesPromise, iconPromise]);
+    const outRoles: RobloxRole[] = roles.map(({ name, rank }: any) => ({
+      name,
+      rank
+    }));
+
+    // Data is undefined for 404 (not sure if this applies after API changes 28.01.2021, but keeping for good measure)
+    return group ? {
+      id: group.id,
+      name: group.name,
+      description: group.description,
+      owner: {
+        id: group.owner.userId,
+        name: group.owner.username
+      },
+      emblemUrl: icon.url,
+      roles: outRoles
+    } : undefined;
   }
 
   static getUserInfo (userId: number): Promise<RobloxUser | undefined> {
