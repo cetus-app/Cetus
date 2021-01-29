@@ -16,9 +16,7 @@ export interface RobloxGroupIcon {
 // Returned by /users/{userId}/groups
 export interface UserRobloxGroup extends GroupBase{
   rank: number,
-  role: string,
-  isInClan: boolean, // we dont care
-  isPrimary: boolean
+  role: string
 }
 
 // /groups/{groupId}

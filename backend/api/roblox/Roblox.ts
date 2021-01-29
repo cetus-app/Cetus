@@ -297,13 +297,27 @@ export default class Roblox {
   }
 
   static async fetchUserGroups (userId: number): Promise<UserRobloxGroup[] | undefined> {
-    const url = `${BASE_API_URL}/users/${userId}/groups`;
-    const data = await fetch(url).then(checkStatus).then(res => res && res.json());
+    const url = `${GROUPS_API_URL}/v2/users/${userId}/groups/roles`;
+    const { data } = await fetch(url).then(checkStatus).then(res => res && res.json());
 
     if (data) {
+      const ids = data.map((item: any) => item.group.id);
+      const icons = await this.getGroupsImage(ids);
+
       const outGroups: UserRobloxGroup[] = [];
-      for (const group of data) {
-        outGroups.push(camelify(group));
+      for (const { group, role } of data) {
+        const { id, name } = group;
+
+        const icon = icons.find(i => i.id === group.id)!;
+        const newGroup: UserRobloxGroup = {
+          id,
+          name,
+          rank: role.rank,
+          role: role.name,
+          emblemUrl: icon.url
+        };
+
+        outGroups.push(newGroup);
       }
       return outGroups;
     }
