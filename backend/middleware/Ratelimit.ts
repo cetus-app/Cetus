@@ -24,7 +24,7 @@ export default async function rateLimitMiddleware (req: Request, res: Response, 
   const newCount = grp.actionCount + 1;
   await database.groups.update({ id: grp.id }, { actionCount: newCount });
 
-  if (newCount >= FREE_REQUESTS) {
+  if (newCount >= FREE_REQUESTS && !grp.stripeSubscriptionId) {
     // They have exceeded their quota.
     // Send notification (if not already sent)
     // Sent manually due to routing-controllers bug
