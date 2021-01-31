@@ -203,10 +203,13 @@ export default class PaymentController {
 
     const subscription = event.data.object as Stripe.Subscription;
 
-    const grp = await database.groups.findOne({
-      where: { stripeSubscriptionId: subscription.id },
-      relations: ["owner", "integrations", "owner.stripeCustomerId"]
-    });
+    const grp = await database.groups.createQueryBuilder("group")
+      .select("group")
+      .leftJoinAndSelect("group.owner", "owner")
+      .leftJoinAndSelect("group.integrations", "integrations")
+      .addSelect("owner.stripeCustomerId")
+      .where("group.stripeSubscriptionId = :id", { id: subscription.id })
+      .getOne();
     if (!grp) {
       throw new NotFoundError("Group not found");
     }
