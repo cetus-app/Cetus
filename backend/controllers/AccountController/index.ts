@@ -255,10 +255,14 @@ export default class Account {
       throw new Error("Failed to retrieve user for deletion?");
     }// TODO; Cancel stripe billing
     const { hash: userHash } = moreValues;
-    const isCorrect = userHash ? await compare(password, userHash) : false;
-    if (!isCorrect) {
-      throw new ForbiddenError("Incorrect password");
+    // No hash if user signed up with Discord and didn't set password
+    if (userHash) {
+      const isCorrect = password ? await compare(password, userHash) : false;
+      if (!isCorrect) {
+        throw new ForbiddenError("Incorrect password");
+      }
     }
+
     console.log(`Deleting user ${user.id}`);
     await request.userService.sendEmail(EmailGroup.account, {
       title: "Account deleted",
