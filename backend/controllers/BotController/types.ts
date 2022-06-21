@@ -29,7 +29,6 @@ export class AddBotBody {
   robloxId: number;
 
   @IsString()
-  @Length(700, 800)
   cookie: string;
 }
 
