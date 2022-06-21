@@ -21,7 +21,6 @@ export default class Bot {
   @Column({
     nullable: false,
     select: false,
-    length: 800,
     unique: true
   })
   cookie: string;
