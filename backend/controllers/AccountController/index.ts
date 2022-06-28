@@ -80,6 +80,9 @@ export default class Account {
     @Body() { email, password }: UserAccessBody,
       @Req() request: Request
   ): Promise<PartialUser> {
+    throw new BadRequestError("We are in our sunset phase and are no longer accepting registrations as we prepare to wind down operations. Happy managing!");
+    // Main registration logic
+
     // Check that email is not in use
     const existingUser = await database.users.findOne({ email });
     if (existingUser) {
@@ -183,7 +186,6 @@ export default class Account {
     }
     await request.userService.verifyEmail(newUser);
   }
-
 
   // https://www.troyhunt.com/everything-you-ever-wanted-to-know/
   // tODO: add recaptcha?
