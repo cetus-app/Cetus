@@ -23,7 +23,8 @@ const DeleteAccountModal: FunctionComponent<Props> = ({ handleCancel }) => (
     onSubmit={async (values, { setErrors, setFieldError }) => {
       console.log("Deleting account. This action cannot be undone.");
       try {
-        await deleteAccount(values.password);
+        const password = values.password.trim() === "" ? undefined : values.password;
+        await deleteAccount(password);
         // Return to home.
         window.location.href = "/";
       } catch (err) {

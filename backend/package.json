@@ -1,6 +1,6 @@
 {
   "name": "cetus-backend",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "The backend for Cetus",
   "scripts": {
     "start": "ts-node-dev --no-notify --respawn --files --transpile-only -r dotenv/config index.ts",
@@ -55,7 +55,7 @@
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
     "pg": "^8.0.3",
-    "redis": "^3.0.2",
+    "redis": "^3.1.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "routing-controllers": "^0.8.1",

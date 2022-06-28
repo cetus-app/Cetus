@@ -95,7 +95,8 @@ export class DeleteAccountBody {
   @IsString()
   @IsNotEmpty()
   @MinLength(5)
-  password: string
+  @IsOptional()
+  password?: string
 }
 
 export class SignOutBody {

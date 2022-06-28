@@ -8,7 +8,7 @@ export function typedKeys<T> (o: T): (keyof T)[] {
 export const PasswordValidation = Yup.string()
   .min(6, "A password must be at least 6 characters long.")
   .max(100, "Must be 100 characters or less")
-  .required("This field is required.");
+  .optional();
 export function getCookie (cname: string) {
   const name = `${cname}=`;
   const decodedCookie = decodeURIComponent(document.cookie);

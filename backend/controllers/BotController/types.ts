@@ -1,5 +1,5 @@
 import {
-  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Length, ValidateNested
+  IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsString, IsUUID, ValidateNested
 } from "class-validator";
 
 import { PartialGroup } from "../GroupController/types";
@@ -29,13 +29,11 @@ export class AddBotBody {
   robloxId: number;
 
   @IsString()
-  @Length(700, 800)
   cookie: string;
 }
 
 export class UpdateBotBody {
   @IsString()
-  @Length(700, 800)
   @IsOptional()
   cookie?: string;
 
